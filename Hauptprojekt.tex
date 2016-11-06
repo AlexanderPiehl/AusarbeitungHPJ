@@ -39,6 +39,12 @@ Delete & DELETE \\ \hline
 \caption{Beziehung CRUD und HTTP Operatoren \cite{reza2010framework}}
 \end{table}
 
+Neben den CRUD-Operatoren können noch weitere HTTP-Methoden zur Verfügung stehen, wie z.B. HEAD und OPTIONS \cite{porres2011modeling}.
+
+Die jeweiligen Aufrufe müssen Zustandslos erfolgen \cite{reza2010framework, porres2011modeling, kao2013performance}. Im Detail heißt dies, dass der Webservices keine Informationen über den Zustand seiner einzelnen Clients speichert. Sollten Informationen über den Zustand notwendig sein, müssen die Clients die Informationen mitgeben. Dahingehend ist es auch mit REST möglich kompliziertere Programmzustände abzubilden \cite{porres2011modeling}.
+
+
+
  Aus dem Namen kann man ableiten, dass der gegenständliche Zustand übertragen wird. Dies ist ein Hauptmerkmal von REST. Denn bei REST 
 \subsection{Besonderheiten beim Testen}
 \section{Schnittstellen Tests}
