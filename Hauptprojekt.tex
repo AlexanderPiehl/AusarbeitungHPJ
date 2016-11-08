@@ -3,7 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
 \usepackage{graphicx}
-\usepackage{cite}
+
 \usepackage{url}
 \usepackage{natbib}
 
@@ -18,12 +18,13 @@
 \nocite{*}
 \section{REST}
 REST ist ein Architekturstil für verteilte Systeme. Die Abkürzung REST  steht für Representational State Transfer \cite{chakrabarti2009test}.
+Erstmals wurde REST 2000 von Roy Fielding vorgestellt \citep{kao2013performance}.
 Die Rest-Architektur wird häufig für Client-Server Anwendungen verwendet. 
 Dabei ist REST zurzeit sehr belie bbei der  Entwicklung von Webservices, da REST Webservices wohl nicht nur leichter zu implementieren sind, sondern auch einfacher zu skalieren sind. \cite{chakrabarti2009test}. 
 Unter Anderem aus diesen Gründen stellten Google, Facebook und Yahoo ihre Services von SOAP auf REST um \cite{rodriguez2008restful, navas2014rest}.
 
 REST basiert dabei auf Resource Oriented Architecture, kurz ROA \citep{chakrabarti2009test}. Dies bedeutet, dass jede wichtige Information als Ressource zur Verfügung stehen muss \cite{porres2011modeling}.
-Die Zugänglichkeit zu der Ressource muss über eine eindeutige URI gegeben sein. Die Ressourcen sollen zusätzlich über verschiedene Methoden manipuliert werden können. Es müssen mindestens die sogenannten CRUD-Operatoren zur Verfügung stehen. CRUD steht für Create, Read, Update und Delete und beschreibt die grundsätzlichen Daten Operationen. Bei Rest werden dafür die standardisierten HTTP-Methoden verwendet. In der Tabelle 1 werden die Beziehung zwischen den CRUD Operatoren und den HTTP Operatoren dargestellt.
+Die Zugänglichkeit zu der Ressource muss über eine eindeutige URI gegeben sein. Die Ressourcen sollen zusätzlich über verschiedene Methoden manipuliert werden können. Es müssen mindestens die sogenannten CRUD-Operatoren zur Verfügung stehen. CRUD steht für Create, Read, Update und Delete und beschreibt die grundsätzlichen Daten Operationen. Bei Rest werden dafür die standardisierten HTTP-Methoden verwendet, welche im Standard RFC 2616 definiert wurden sind \citep{kao2013performance}. In der Tabelle 1 werden die Beziehung zwischen den CRUD Operatoren und den HTTP Operatoren dargestellt.
 
 \begin{table}[]
 \centering
@@ -43,14 +44,19 @@ Neben den CRUD-Operatoren können noch weitere HTTP-Methoden zur Verfügung steh
 
 Die jeweiligen Aufrufe müssen Zustandslos erfolgen \cite{reza2010framework, porres2011modeling, kao2013performance}. Im Detail heißt dies, dass der Webservices keine Informationen über den Zustand seiner einzelnen Clients speichert. Sollten Informationen über den Zustand notwendig sein, müssen die Clients die Informationen mitgeben. Dahingehend ist es auch mit REST möglich kompliziertere Programmzustände abzubilden \cite{porres2011modeling}.
 
+Die jeweiligen Nachrichten können in verschiedene Formate vorliegen \cite{reza2010framework}. Sehr häufig werden XML oder JSON oder beide Formate für die Nachrichten verwendet. Eine Vorschrift existiert nicht.
+
+Zusammenfassend lässt sich REST in vier Grundprinzipien zusammenfassen \citep{porres2011modeling}: 
+
 \begin{itemize}
-\item Message via JSON/XML
-\item Hinleitung zu den 4 Prinzipien
-\item Roy Fielding einbinden
-\item Restful erklären
+\item \textbf{Addressability: } Jede wichtige Informationen muss als Ressource vorliegen und über eine eindeutige URI erreichbar sein.
+\item \textbf{Connectedness: } Die Repräsentation der Ressourcen ist getrennt von den Ressourcen. Dies bedeutet Ressourcen können in verschiedenen Formate vorliegen, wie JSON und XML.
+\item \textbf{Uniform Interface: } Auf die Ressourcen wird nur über standardisierten HTTP-Methoden zugegriffen.
+\item \textbf{Statelessnes: } Jede Kommunikation erfolgt Zustandslos.
 \end{itemize}
 
- Aus dem Namen kann man ableiten, dass der gegenständliche Zustand übertragen wird. Dies ist ein Hauptmerkmal von REST. Denn bei REST 
+Webservices, welche die vier Grundprinzipien einhalten, bekommen häufig den Beinamen RESTful \citep{porres2011modeling}. Der Begriff RESTful ist jedoch nicht eindeutig definiert.  
+
 \subsection{Besonderheiten beim Testen}
 \section{Schnittstellen Tests}
 \subsection{Consumer Driven Contract Test}
