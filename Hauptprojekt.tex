@@ -59,6 +59,7 @@ Webservices, welche die vier Grundprinzipien einhalten, bekommen häufig den Bei
 
 \subsection{Besonderheiten beim Testen ?}
 \section{Consumer Driven Contract Test}
+
 \begin{itemize}
 \item Erklärung Consumer Driven Ansatz
 \begin{itemize}
@@ -83,6 +84,11 @@ Webservices, welche die vier Grundprinzipien einhalten, bekommen häufig den Bei
 \end{itemize}
 
 \subsection{Warum Consumer Driven Contract Test}
+Bei dem Ansatz Consumer-Driven Contracts werden die Schnittstellen bzw. die Verträge aus der Sicht des Clients/Consumers definiert. Dabei spielt es keine Rolle, ob es nur einen Cosumer oder mehrere existieren. Die jeweiligen Anfragen und gewünschten Antworten werden notiert und auf Grundlage dieser Informationen wird der Service implementiert.
+
+Wie sich aus der generellen Beschreibung dieses Ansatzes ableiten lässt, funktioniert der Ansatz nur, wenn sowohl die Consumer wie der Service neu implementiert werden. Bei bestehenden Anwendungen könnte dieser Verfahren dafür genutzt werden, um zu überprüfen, ob der Service unötige Schnittstellen anbietet.
+
+Auf der Basis dieses Konzeptes setzen die Consumer Driven Contract Tests auf. Ein Tool, welches Consumer Driven Contract Tests unterstützt ist PACT. PACT ist ein Open-Source Tool.
 \begin{itemize}
 \item Vorteile bei Änderungen im Service kann sofort wieder gegen die Datei getestet werden, um zu prüfen, ob alle Consumer noch korrekt funktionieren
 \item übersicht, was die Consumer Anfragen
