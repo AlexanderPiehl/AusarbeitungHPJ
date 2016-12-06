@@ -17,16 +17,16 @@
 \section{Einleitung}
 \nocite{*}
 \section{REST}
-REST ist ein Architekturstil für verteilte Systeme. Die Abkürzung REST  steht für Representational State Transfer \cite{chakrabarti2009test}.
-Erstmals wurde REST 2000 von Roy Fielding vorgestellt \citep{kao2013performance}.
-Die Rest-Architektur wird häufig für Client-Server Anwendungen verwendet. 
-Dabei ist REST zurzeit sehr belie bbei der  Entwicklung von Webservices, da REST Webservices wohl nicht nur leichter zu implementieren sind, sondern auch einfacher zu skalieren sind. \cite{chakrabarti2009test}. 
+REST ist ein Architekturstil für verteilte Systeme. Die Abkürzung REST steht für Representational State Transfer \cite{chakrabarti2009test}.
+Erstmals wurde REST im Jahr 2000 von Roy Fielding vorgestellt \citep{kao2013performance}.
+Die Rest-Architektur wird häufig für Client-Server Anwendungen verwendet, ist jedoch nicht darauf beschränkt.
+Dabei ist REST zurzeit sehr beliebt bei der Entwicklung von Webservices, da aufgrund von REST Webservices wohl nicht nur leichter zu implementieren sind, sondern auch einfacher zu skalieren sind. \cite{chakrabarti2009test}. 
 Unter Anderem aus diesen Gründen stellten Google, Facebook und Yahoo ihre Services von SOAP auf REST um \cite{rodriguez2008restful, navas2014rest}.
 
 REST basiert dabei auf Resource Oriented Architecture, kurz ROA \citep{chakrabarti2009test}. Dies bedeutet, dass jede wichtige Information als Ressource zur Verfügung stehen muss \cite{porres2011modeling}.
 Die Zugänglichkeit zu der Ressource muss über eine eindeutige URI gegeben sein. Die Ressourcen sollen zusätzlich über verschiedene Methoden manipuliert werden können. Es müssen mindestens die sogenannten CRUD-Operatoren zur Verfügung stehen. CRUD steht für Create, Read, Update und Delete und beschreibt die grundsätzlichen Daten Operationen. Bei Rest werden dafür die standardisierten HTTP-Methoden verwendet, welche im Standard RFC 2616 definiert wurden sind \citep{kao2013performance}. In der Tabelle 1 werden die Beziehung zwischen den CRUD Operatoren und den HTTP Operatoren dargestellt.
 
-\begin{table}[]
+\begin{table}[htbp]
 \centering
 \label{CRUD_HTTP_Methods}
 \begin{tabular}{|c|l|p{4cm}|p{4cm}|}
@@ -42,9 +42,11 @@ Delete & DELETE \\ \hline
 
 Neben den CRUD-Operatoren können noch weitere HTTP-Methoden zur Verfügung stehen, wie z.B. HEAD und OPTIONS \cite{porres2011modeling}.
 
-Die jeweiligen Aufrufe müssen Zustandslos erfolgen \cite{reza2010framework, porres2011modeling, kao2013performance}. Im Detail heißt dies, dass der Webservices keine Informationen über den Zustand seiner einzelnen Clients speichert. Sollten Informationen über den Zustand notwendig sein, müssen die Clients die Informationen mitgeben. Dahingehend ist es auch mit REST möglich kompliziertere Programmzustände abzubilden \cite{porres2011modeling}.
+Bei REST müssen die jeweiligen Aufrufe Zustandslos erfolgen \cite{reza2010framework, porres2011modeling, kao2013performance}. Im Detail heißt dies, dass der Webservices keine Informationen über den Zustand seiner einzelnen Clients speichert. Sollten Informationen über den Zustand notwendig sein, müssen die Clients die Informationen mitgeben. Dahingehend ist es auch mit REST möglich kompliziertere Programmzustände abzubilden \cite{porres2011modeling}.
 
-Die jeweiligen Nachrichten können in verschiedene Formate vorliegen \cite{reza2010framework}. Sehr häufig werden XML oder JSON oder beide Formate für die Nachrichten verwendet. Eine Vorschrift existiert nicht.
+Die jeweiligen Nachrichten können in verschiedenen Formate vorliegen
+\cite{reza2010framework}. Sehr häufig werden XML oder JSON oder beide Formate für die Nachrichten verwendet. 
+Eine Vorschrift existiert nicht.
 
 Zusammenfassend lässt sich REST in vier Grundprinzipien zusammenfassen \citep{porres2011modeling}: 
 
@@ -57,25 +59,41 @@ Zusammenfassend lässt sich REST in vier Grundprinzipien zusammenfassen \citep{p
 
 Webservices, welche die vier Grundprinzipien einhalten, bekommen häufig den Beinamen RESTful \citep{porres2011modeling}. Der Begriff RESTful ist jedoch nicht eindeutig definiert.  
 
-\subsection{Besonderheiten beim Testen ?}
-\section{Consumer Driven Contract Test}
-Bei dem Ansatz Consumer-Driven Contracts werden die Schnittstellen bzw. die Verträge aus der Sicht des Clients/Consumers definiert. Dabei spielt es keine Rolle, ob es nur einen Cosumer oder mehrere existieren. Die jeweiligen Anfragen und gewünschten Antworten werden notiert und auf Grundlage dieser Informationen wird der Service implementiert.
+Was ist besonders an Rest? Unterschiede zu SOAP? Warum lieber Rest als SOAP?
+Leichtgewichtig: leichtes ändern der Schnittstelle möglich
 
-Wie sich aus der generellen Beschreibung dieses Ansatzes ableiten lässt, funktioniert der Ansatz nur, wenn sowohl die Consumer wie der Service neu implementiert werden. Bei bestehenden Anwendungen könnte dieser Verfahren dafür genutzt werden, um zu überprüfen, ob der Service unötige Schnittstellen anbietet.
+\subsection{Besonderheiten beim Testen ?}
+Änderung der Schnittstelle kann zu Problemen bei den Clients führen; Besonders wenn viele vorhadnen sind; Verlust der Übersicht; ggf. keinen Plan welche Clients angepasst werden müssen; sowie ob noch alle MEthoden verwendet werden oder benötigt werden;
+Viel Traffic bei MS im Netzwerk; Services müssen mit Fehlern und fehlenden Nachrichten klar kommen;
+\section{Consumer Driven Contract Test}
+Bei dem Ansatz Consumer-Driven Contracts werden die Schnittstellen bzw. die Verträge aus der Sicht des Clients/Consumers definiert. Dabei spielt es keine Rolle, ob es nur einen Cosumer oder mehrere existieren. Die jeweiligen Anfragen und gewünschten Antworten werden notiert und auf Grundlage dieser Informationen wird der Service implementiert. Dabei baut der Ansatz auf der Grundnahme auf, dass der Consumer am besten wüsste, was er nutzen möchte.
+
+Wie sich aus der generellen Beschreibung dieses Ansatzes ableiten lässt, eignet sich dieser Ansatz am Besten, wenn sowohl die Consumer wie der Service neu implementiert werden. Bei bestehenden Anwendungen könnte dieses Verfahren unter anderem dafür genutzt werden, um zu überprüfen, ob der Service unnötige Schnittstellen bzw. Methoden anbietet.
+
+Der Ansatz Consumer Driven Contract hat den Vorteil, dass sehr klar definiert ist, welche Anforderungen der Consumer bzw. die Consumer an den Services haben. Andernfalls könnte der Service nur erahnen, wie er die jeweiligen Anfoderungen umsetzen muss. Durch die eindeutige Definierung der Anforderungen, kann der Service so schlank wie möglich implementiert werden.   
 
 Auf der Basis dieses Konzeptes setzen die Consumer Driven Contract Tests auf. Ein Tool, welches Consumer Driven Contract Tests unterstützt ist PACT. PACT ist ein Open-Source Tool, welches auf Github verwaltet wird.
 
-In der Ausführung von Toby Clemson über das Testen von Microservices wird dieser Verfahren explizit empfohlen. Dabei benennt er neben PACT noch zwei weitere Tools, welche Consumer Driven Contract Tests anbieten. Diese Tools sind PACTO und Janus. Für das Hauptprojekt wurde sich für PACT entschieden, da nach der ersten Recherche PACT den größten Umfang bietete und zum PACT besser dokumentiert ist, als die anderen Tools.
+In der Ausführung von Toby Clemson über das Testen von Microservices wird dieses Verfahren explizit empfohlen. Dabei benennt er neben PACT noch zwei weitere Tools, welche Consumer Driven Contract Tests anbieten. Diese Tools sind PACTO und Janus. Für das Hauptprojekt wurde sich für PACT entschieden, da nach der ersten Recherche PACT den größten Umfang bietet und zumdem PACT besser dokumentiert ist, als die anderen Tools.
+
+Mit dem Tool PACT können die Consumer Driven Contract Tests in verschiedenen Programmiersprachen geschrieben werden. Zur Auswahl stehen dabei Ruby, C\#, JavaScript und Java. Im nächsten Kapitel wird der generelle Ablauf von PACT anhand eines Beispiels erläutert, bevor im darauffolgenden Kapitel die Vorteile beschrieben, die durch die Verwendung von Consumer Driven Contract Tests entstehen sollen. Denn einige vermeintliche Vorteile leiten sich direkt aus dem Ablauf von Consumer Driven Contract Test ab.
+
+\subsection{Ablauf Consumer Driven Contract Test}
+Beispiel raussuchen und anhand daran den Ablauf erläutern
+
+
+\subsection{Vorteile Consumer Driven Contract Test}
+Neben den generellen Vorteilen, welche man sich von dem Ansatz Consumer Driven Contract Test verpricht und schon im vorherigen Kapitel kurz skizziert wurden sind, gibt es noch weitere Vorteile, die sich explizit auf das Testen beziehen.
+
+
+
+Erst die vermeintliche Vorteile benennen und dann den generellen Ablauf
 
 \begin{itemize}
 \item Erklärung Consumer Driven Ansatz
 \begin{itemize}
-\item Nutzer einer Schnittstelle definiert den Contract
-\item Da der Nutzer wohl besser weiß, was er nutzen möchte und was nicht
-\item Service Provider können nur erahnen
-\item Vorteile es ist klar definiert, was der Service nutzen soll. Daher kann er so schlank wie möglich implementiert werden
+
 \item Vorteile dazu gibt es einen feinjörnigen Einblick und schnelles Feedback für das planen von Änderungen. Ergänzend dazu können gezielt einzelnen Consumer angesprochen werden.
-\item Aufgrundlage der Consumer Verträge wird der Service erstellt
 \end{itemize}
 \item Erläuterung Consumer Driven Contract Test
 \begin{itemize}
@@ -106,7 +124,7 @@ Verbindung zu MARS - System im Wandel
 
 \subsection{Implementierung}
 
-\subsection{Einbindung in MARS}
+\subsection{Consumer Driven Contract in MARS}
 \begin{itemize}
 \item Aussuchen eines Services und Consumers
 \item Aufrufen herausfinden via Browser und Postman
