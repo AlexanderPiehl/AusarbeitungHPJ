@@ -63,8 +63,18 @@ Was ist besonders an Rest? Unterschiede zu SOAP? Warum lieber Rest als SOAP?
 Leichtgewichtig: leichtes ändern der Schnittstelle möglich
 
 \subsection{Besonderheiten beim Testen ?}
-Änderung der Schnittstelle kann zu Problemen bei den Clients führen; Besonders wenn viele vorhadnen sind; Verlust der Übersicht; ggf. keinen Plan welche Clients angepasst werden müssen; sowie ob noch alle MEthoden verwendet werden oder benötigt werden;
-Viel Traffic bei MS im Netzwerk; Services müssen mit Fehlern und fehlenden Nachrichten klar kommen;
+Die Kommunikation zwischen Consumer und Service erfolgt nach einem festgelegten Kontrakt, welcher auch häufig Schnittstelle genannt wird. In dem Kontrakt ist festgelegt, wie die Kommunikation zwischen Consumer und Service aussieht. Das heißt, mit dem Kontrakt ist definiert welche Methoden der Service seinen Consumer anbietet und wie die Consumer sie aufrufen können, also welche Parameter benötigt werden und in welchem Format der Consumer seine Antwort erhält. Dahingehend ist es enorm wichtig, dass der Kontrakt eingehalten wird. Denn ansonsten kann es zu Fehlern führen.
+
+Des Wegen muss ein Schwerpunkt beim Testen von Anwendungen, welche REST verwenden, darauf liegen, zu kontrollieren, dass der Kontrakt weiterhin gültig ist. Daher muss geprüft werden, dass Veränderung am Consumer bzw. Service nicht zur einer Verletzung des Kontraktes führen.
+
+Besonders bei Anwendungen mit einer Microservice-Architektur, bei der die Kommunikation hauptsächlich über das Netzwerk geschieht, ist es von großer Bedeutung, dass die Kommunikation funktioniert und nicht auf Grund fehlerhaften Kontrakten zu Fehlern kommt.
+
+Wegen der Verlagerung der Kommunikation in das Netzwerk, wird das überprüfen der Kontrakte umfangreicher, da schlicht und ergreifend sehr viele Kontrakte vorliegen. Ergänzend dazu sind die einzelnen Services gleichzeitig Consumer und Service Provider. Daher kann es schnell unübersichtlich werden, wer welchen Services anfragt und wie.
+
+Besonders bei gewünschten Änderungen eines Kontraktes kann es unübersichtlich werden. Aufgrund der möglichen Vielzahl von Consumer, kann  sehr schnell der Überblick verloren werden, welche Consumer aktualisiert werden müssen und welche nicht. Dies kann zur Folge haben, dass ein Service Methoden oder Variante einer Methode bereitstellt, die nicht mehr benötigt werden.
+
+Eine andere Problematik, die durch der Verlagerung der Kommunikation in das Netzwerk, entsteht ist, dass sehr viel Traffic im Netzwerk herrschen kann. Dadurch kann es vermehrt auftreten, dass Nachrichten beschädigt werden oder auch verloren gehen. Mit dieser Problematik müssen die Services und Consumer umgehen können.
+
 \section{Consumer Driven Contract Test}
 Bei dem Ansatz Consumer-Driven Contracts werden die Schnittstellen bzw. die Verträge aus der Sicht des Clients/Consumers definiert. Dabei spielt es keine Rolle, ob es nur einen Cosumer oder mehrere existieren. Die jeweiligen Anfragen und gewünschten Antworten werden notiert und auf Grundlage dieser Informationen wird der Service implementiert. Dabei baut der Ansatz auf der Grundnahme auf, dass der Consumer am besten wüsste, was er nutzen möchte.
 
@@ -74,7 +84,7 @@ Der Ansatz Consumer Driven Contract hat den Vorteil, dass sehr klar definiert is
 
 Auf der Basis dieses Konzeptes setzen die Consumer Driven Contract Tests auf. Ein Tool, welches Consumer Driven Contract Tests unterstützt ist PACT. PACT ist ein Open-Source Tool, welches auf Github verwaltet wird.
 
-In der Ausführung von Toby Clemson über das Testen von Microservices wird dieses Verfahren explizit empfohlen. Dabei benennt er neben PACT noch zwei weitere Tools, welche Consumer Driven Contract Tests anbieten. Diese Tools sind PACTO und Janus. Für das Hauptprojekt wurde sich für PACT entschieden, da nach der ersten Recherche PACT den größten Umfang bietet und zumdem PACT besser dokumentiert ist, als die anderen Tools.
+In der Ausführung von Toby Clemson über das Testen von Microservices wird dieses Verfahren explizit empfohlen. Dabei benennt er neben PACT noch zwei weitere Tools, welche Consumer Driven Contract Tests anbieten. Diese Tools sind PACTO und Janus. Für das Hauptprojekt wurde sich für PACT entschieden, da nach der ersten Recherche PACT den größten Umfang bietet und zudem PACT besser dokumentiert ist, als die anderen Tools.
 
 Mit dem Tool PACT können die Consumer Driven Contract Tests in verschiedenen Programmiersprachen geschrieben werden. Zur Auswahl stehen dabei Ruby, C\#, JavaScript und Java. Im nächsten Kapitel wird der generelle Ablauf von PACT anhand eines Beispiels erläutert, bevor im darauffolgenden Kapitel die Vorteile beschrieben, die durch die Verwendung von Consumer Driven Contract Tests entstehen sollen. Denn einige vermeintliche Vorteile leiten sich direkt aus dem Ablauf von Consumer Driven Contract Test ab.
 
