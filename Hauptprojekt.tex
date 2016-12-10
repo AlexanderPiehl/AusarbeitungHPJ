@@ -26,7 +26,7 @@ Unter Anderem aus diesen Gründen stellten Google, Facebook und Yahoo ihre Servi
 REST basiert dabei auf Resource Oriented Architecture, kurz ROA \citep{chakrabarti2009test}. Dies bedeutet, dass jede wichtige Information als Ressource zur Verfügung stehen muss \cite{porres2011modeling}.
 Die Zugänglichkeit zu der Ressource muss über eine eindeutige URI gegeben sein. Die Ressourcen sollen zusätzlich über verschiedene Methoden manipuliert werden können. Es müssen mindestens die sogenannten CRUD-Operatoren zur Verfügung stehen. CRUD steht für Create, Read, Update und Delete und beschreibt die grundsätzlichen Daten Operationen. Bei Rest werden dafür die standardisierten HTTP-Methoden verwendet, welche im Standard RFC 2616 definiert wurden sind \citep{kao2013performance}. In der Tabelle 1 werden die Beziehung zwischen den CRUD Operatoren und den HTTP Operatoren dargestellt.
 
-\begin{table}[]
+\begin{table}[htbp]
 \centering
 \label{CRUD_HTTP_Methods}
 \begin{tabular}{|c|l|p{4cm}|p{4cm}|}
@@ -44,7 +44,9 @@ Neben den CRUD-Operatoren können noch weitere HTTP-Methoden zur Verfügung steh
 
 Bei REST müssen die jeweiligen Aufrufe Zustandslos erfolgen \cite{reza2010framework, porres2011modeling, kao2013performance}. Im Detail heißt dies, dass der Webservices keine Informationen über den Zustand seiner einzelnen Clients speichert. Sollten Informationen über den Zustand notwendig sein, müssen die Clients die Informationen mitgeben. Dahingehend ist es auch mit REST möglich kompliziertere Programmzustände abzubilden \cite{porres2011modeling}.
 
-Die jeweiligen Nachrichten können in verschiedene Formate vorliegen \cite{reza2010framework}. Sehr häufig werden XML oder JSON oder beide Formate für die Nachrichten verwendet. Eine Vorschrift existiert nicht.
+Die jeweiligen Nachrichten können in verschiedenen Formate vorliegen
+\cite{reza2010framework}. Sehr häufig werden XML oder JSON oder beide Formate für die Nachrichten verwendet. 
+Eine Vorschrift existiert nicht.
 
 Zusammenfassend lässt sich REST in vier Grundprinzipien zusammenfassen \citep{porres2011modeling}: 
 
@@ -64,27 +66,58 @@ Leichtgewichtig: leichtes ändern der Schnittstelle möglich
 Änderung der Schnittstelle kann zu Problemen bei den Clients führen; Besonders wenn viele vorhadnen sind; Verlust der Übersicht; ggf. keinen Plan welche Clients angepasst werden müssen; sowie ob noch alle MEthoden verwendet werden oder benötigt werden;
 Viel Traffic bei MS im Netzwerk; Services müssen mit Fehlern und fehlenden Nachrichten klar kommen;
 \section{Consumer Driven Contract Test}
-Bei dem Ansatz Consumer-Driven Contracts werden die Schnittstellen bzw. die Verträge aus der Sicht des Clients/Consumers definiert. Dabei spielt es keine Rolle, ob es nur einen Cosumer oder mehrere existieren. Die jeweiligen Anfragen und gewünschten Antworten werden notiert und auf Grundlage dieser Informationen wird der Service implementiert.
+Bei dem Ansatz Consumer-Driven Contracts werden die Schnittstellen bzw. die Verträge aus der Sicht des Clients/Consumers definiert. Dabei spielt es keine Rolle, ob es nur einen Cosumer oder mehrere existieren. Die jeweiligen Anfragen und gewünschten Antworten werden notiert und auf Grundlage dieser Informationen wird der Service implementiert. Dabei baut der Ansatz auf der Grundnahme auf, dass der Consumer am besten wüsste, was er nutzen möchte.
 
 Wie sich aus der generellen Beschreibung dieses Ansatzes ableiten lässt, eignet sich dieser Ansatz am Besten, wenn sowohl die Consumer wie der Service neu implementiert werden. Bei bestehenden Anwendungen könnte dieses Verfahren unter anderem dafür genutzt werden, um zu überprüfen, ob der Service unnötige Schnittstellen bzw. Methoden anbietet.
+
+Der Ansatz Consumer Driven Contract hat den Vorteil, dass sehr klar definiert ist, welche Anforderungen der Consumer bzw. die Consumer an den Services haben. Andernfalls könnte der Service nur erahnen, wie er die jeweiligen Anfoderungen umsetzen muss. Durch die eindeutige Definierung der Anforderungen, kann der Service so schlank wie möglich implementiert werden.   
 
 Auf der Basis dieses Konzeptes setzen die Consumer Driven Contract Tests auf. Ein Tool, welches Consumer Driven Contract Tests unterstützt ist PACT. PACT ist ein Open-Source Tool, welches auf Github verwaltet wird.
 
 In der Ausführung von Toby Clemson über das Testen von Microservices wird dieses Verfahren explizit empfohlen. Dabei benennt er neben PACT noch zwei weitere Tools, welche Consumer Driven Contract Tests anbieten. Diese Tools sind PACTO und Janus. Für das Hauptprojekt wurde sich für PACT entschieden, da nach der ersten Recherche PACT den größten Umfang bietet und zumdem PACT besser dokumentiert ist, als die anderen Tools.
 
-Mit dem Tool PACT können die Consumer Driven Contract Tests in verschiedenen Programmiersprachen geschrieben werden. Zur Auswahl stehen dabei Ruby, C#, JavaScript und Java. Im nächsten Kapitel wird der generelle Ablauf von PACT anhand eines Beispiels erläutert, bevor im darauffolgenden Kapitel die Einbindung von PACT in MARS erläutert wird.
+Mit dem Tool PACT können die Consumer Driven Contract Tests in verschiedenen Programmiersprachen geschrieben werden. Zur Auswahl stehen dabei Ruby, C\#, JavaScript und Java. Im nächsten Kapitel wird der generelle Ablauf von PACT anhand eines Beispiels erläutert, bevor im darauffolgenden Kapitel die Vorteile beschrieben, die durch die Verwendung von Consumer Driven Contract Tests entstehen sollen. Denn einige vermeintliche Vorteile leiten sich direkt aus dem Ablauf von Consumer Driven Contract Test ab.
 
-Erst die vermeintliche Vorteile benennen und dann den generellen Ablauf
+\subsection{Ablauf Consumer Driven Contract Test}
+Beispiel raussuchen und anhand daran den Ablauf erläutern
+
+
+\subsection{Vorteile Consumer Driven Contract Test}
+Neben den generellen Vorteilen, welche man sich von dem Ansatz Consumer Driven Contract Test verspricht und schon im vorherigen Kapitel kurz skizziert wurden sind, gibt es noch weitere Vorteile, die sich explizit auf das Testen beziehen.
+
+In der vorherigen Ausarbeitung zum Grundprojekt wurden die Anforderungen beschrieben, welche beim Testen einer Microserive Anwendung vorliegen. 
+Eine dieser Anforderung war, dass das es vom Testen ein schnelles Feedback gibt. 
+Genau diese Anforderung soll Consumer Driven Contract Test erfüllen. 
+Jede noch so große Änderung am Service soll ohne großen Aufwand gegen das PACT-File getestet werden können. Dadurch soll man eine schnelles Feedback bekommen, ob der Service den Vertrag noch einhält.
+
+Ergänzend dazu verspricht Consumer Driven Contract Test einen feinkörnigen Einblick darin, was die Änderung am Service für Auswirkung hat.
+
+Dazu soll man schnell ein Überblick bekommen, ob die Änderung am Service zu unerwarteten Fehlern führt. Aufgrund des zügigen Feedbacks könnte das Fehlverhalten schnell korrigiert werden.
+
+Bei gewünschten oder notwendigen Änderungen am Service, weil ein neuer Consumer hinzugefügt wurden ist oder es sich bei einem Consumer die Anforderungen an den Service geändert haben. soll man aufgrund von Consumer Driven Contract Test schnell erkennen, ob aufgrund der Änderung andere Consumer angepasst werden müssen. 
+
+Zusammenfassend betrachtet lassen sich die vermeintliche Vorteile von Consumer Driven Contract Test dahingehend vereinen, dass es ein schnelles Feedback gibt, welche Auswirkung die Änderung am Service auf den Kontrakt hat. Dadurch können ungewollte Fehler schnell identifiziert werden oder notwendige Aktualisierungen von Consumer festgestellt werden.
+
+Für ein System wie MARS mit einer Microservice-Architektur bei der das Messaging im Netzwerk extrem relevant ist, sind Fehler aufgrund von falschen Schnittstellen und/oder falschen Anfragen sehr kritisch. Dazu ändern sich innerhalb von MARS immer wieder die Anforderungen, an die auch die jeweiligen Services angepasst werden müssen. Aufgrund der Architektur besteht die Möglichkeit Änderungen schnell umzusetzen und den Service zu deployen. Consumer Driven Contract Test ist dabei sehr vielversprechend diesen Prozess zu begleiten, da es schnelles Feedback geben soll, welche Auswirkungen die Änderungen haben. Ob Consumer Diven Contract Test die beschriebenen Vorteile einhält, wird im nächsten Abschnitt behandelt, bei dem es um die Umsetzung von Consumer Driven Contract Test innerhalb von MARS geht.
+
+\begin{itemize}
+\item Vorteile bei Änderungen im Service kann sofort wieder gegen die Datei getestet werden, um zu prüfen, ob alle Consumer noch korrekt funktionieren
+\item übersicht, was die Consumer Anfragen
+\item sachnelles Feedback
+\item wissen, ob Änderung zu ungewollten Fehlern
+\item wissen, welche consumer aktualisiert werden müssen
+\item MARS System, welches regelmäßig angepoasst wird
+\item Architektur, welche Fokus auf des Netzwerk hat
+\item Fehler wegen Schnittstelle problematisch
+\end{itemize}
+Was verspricht man sich davon?
+Verbindung zu MARS - System im Wandel
 
 \begin{itemize}
 \item Erklärung Consumer Driven Ansatz
 \begin{itemize}
-\item Nutzer einer Schnittstelle definiert den Contract
-\item Da der Nutzer wohl besser weiß, was er nutzen möchte und was nicht
-\item Service Provider können nur erahnen
-\item Vorteile es ist klar definiert, was der Service nutzen soll. Daher kann er so schlank wie möglich implementiert werden
+
 \item Vorteile dazu gibt es einen feinjörnigen Einblick und schnelles Feedback für das planen von Änderungen. Ergänzend dazu können gezielt einzelnen Consumer angesprochen werden.
-\item Aufgrundlage der Consumer Verträge wird der Service erstellt
 \end{itemize}
 \item Erläuterung Consumer Driven Contract Test
 \begin{itemize}
@@ -99,30 +132,22 @@ Erst die vermeintliche Vorteile benennen und dann den generellen Ablauf
 \end{itemize}
 \end{itemize}
 
-\subsection{Warum Consumer Driven Contract Test}
-\begin{itemize}
-\item Vorteile bei Änderungen im Service kann sofort wieder gegen die Datei getestet werden, um zu prüfen, ob alle Consumer noch korrekt funktionieren
-\item übersicht, was die Consumer Anfragen
-\item sachnelles Feedback
-\item wissen, ob Änderung zu ungewollten Fehlern
-\item wissen, welche consumer aktualisiert werden müssen
-\item MARS System, welches regelmäßig angepoasst wird
-\item Architektur, welche Fokus auf des Netzwerk hat
-\item Fehler wegen Schnittstelle problematisch
-\end{itemize}
-Was verspricht man sich davon?
-Verbindung zu MARS - System im Wandel
 
-\subsection{Implementierung}
+\section{Consumer Driven Contract in MARS}
 
-\subsection{Einbindung in MARS}
+
+
 \begin{itemize}
+\item Beschreibung der Testumgebung
+
 \item Aussuchen eines Services und Consumers
-\item Aufrufen herausfinden via Browser und Postman
+\item Aufrufen herausfinden via Browser und Postman + Swagger
 \item Testen der Aufrufe via Postman, um festzustellen das sie funktionieren und koirrekt sind
 \item Aktueller Stand als korrekt anzusehen und Soll-Zustand
+\item Branch
 \item Implementierung des Consumers
 \end{itemize}
+
 \subsection{Fazit}
 \begin{itemize}
 \item Erklärung
@@ -131,7 +156,6 @@ Verbindung zu MARS - System im Wandel
 \item Einbinden in Mars
 \item Fazit
 \end{itemize}
-\subsection{Fazit}
 \section{Ausblick Masterarbeit}
 
 \bibliography{literatur}
