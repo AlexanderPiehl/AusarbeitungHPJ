@@ -76,7 +76,7 @@ Besonders bei gewünschten Änderungen eines Kontraktes kann es unübersichtlich
 Eine andere Problematik, die durch der Verlagerung der Kommunikation in das Netzwerk, entsteht ist, dass sehr viel Traffic im Netzwerk herrschen kann. Dadurch kann es vermehrt auftreten, dass Nachrichten beschädigt werden oder auch verloren gehen. Mit dieser Problematik müssen die Services und Consumer umgehen können.
 
 \section{Consumer Driven Contract Test}
-Bei dem Ansatz Consumer-Driven Contracts werden die Schnittstellen bzw. die Verträge aus der Sicht des Clients/Consumers definiert. Dabei spielt es keine Rolle, ob es nur einen Cosumer oder mehrere existieren. Die jeweiligen Anfragen und gewünschten Antworten werden notiert und auf Grundlage dieser Informationen wird der Service implementiert. Dabei baut der Ansatz auf der Grundnahme auf, dass der Consumer am besten wüsste, was er nutzen möchte.
+Bei dem Ansatz Consumer-Driven Contracts werden die Schnittstellen bzw. die Verträge aus der Sicht des Clients/Consumers definiert \cite{Robinson2006}. Dabei spielt es keine Rolle, ob es nur einen Cosumer oder mehrere existieren. Die jeweiligen Anfragen und gewünschten Antworten werden notiert und auf Grundlage dieser Informationen wird der Service implementiert. Dabei baut der Ansatz auf der Grundnahme auf, dass der Consumer am besten wüsste, was er nutzen möchte.
 
 Wie sich aus der generellen Beschreibung dieses Ansatzes ableiten lässt, eignet sich dieser Ansatz am Besten, wenn sowohl die Consumer wie der Service neu implementiert werden. Bei bestehenden Anwendungen könnte dieses Verfahren unter anderem dafür genutzt werden, um zu überprüfen, ob der Service unnötige Schnittstellen bzw. Methoden anbietet.
 
@@ -89,7 +89,24 @@ In der Ausführung von Toby Clemson über das Testen von Microservices wird dies
 Mit dem Tool PACT können die Consumer Driven Contract Tests in verschiedenen Programmiersprachen geschrieben werden. Zur Auswahl stehen dabei Ruby, C\#, JavaScript und Java. Im nächsten Kapitel wird der generelle Ablauf von PACT anhand eines Beispiels erläutert, bevor im darauffolgenden Kapitel die Vorteile beschrieben, die durch die Verwendung von Consumer Driven Contract Tests entstehen sollen. Denn einige vermeintliche Vorteile leiten sich direkt aus dem Ablauf von Consumer Driven Contract Test ab.
 
 \subsection{Ablauf Consumer Driven Contract Test}
-Beispiel raussuchen und anhand daran den Ablauf erläutern
+In diesem Kapitel wird der generelle Ablauf von Consumer Driven Contract Tests beschrieben. Der Ablauf wird anhand mehrere Beispiele erläutert, welche von verschiedenen Seiten stammen, die Consumer Driven Contract Tests erläutern \cite{bayer2015jaxcenter, vitz2016inno, Vincent2015}.
+
+Wie bereits erläutert basiert Consumer Driven Contract Test auf Consumer Driven Contract. Daher wird auch bei Consumer Driven Contract Test zunächst der Consumer bzw. die Consumer implementiert. In diesem, Beispiel fragt der Consumer Produktdeteils über ein bestimmtes Produkt beim Provider an.
+
+\begin{itemize}
+\item Implementierung Consumer
+\item Definieren der Aufrufe
+\item PACT für Consumer vorbereiten
+\begin{itemize}
+\item createFragment
+\item providerName
+\item consumerName
+\item runTest
+\end{itemize}
+\item erstelltes PACT-File
+\item Verfiy mit Maven Plugin des Providers
+\item weiteres Vorgehen
+\end{itemize}
 
 
 \subsection{Vorteile Consumer Driven Contract Test}
@@ -145,10 +162,16 @@ Verbindung zu MARS - System im Wandel
 
 \section{Consumer Driven Contract in MARS}
 
+\subsection{Testumgebung}
+
+\subsection{Einbindung in MARS}
+
+\subsection{Ergebnisse}
+
 
 \begin{itemize}
 \item Beschreibung der Testumgebung
-
+\item Ziel beschrieben
 \item Aussuchen eines Services und Consumers
 \item Aufrufen herausfinden via Browser und Postman + Swagger
 \item Testen der Aufrufe via Postman, um festzustellen das sie funktionieren und koirrekt sind
