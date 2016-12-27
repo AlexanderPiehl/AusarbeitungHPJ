@@ -141,8 +141,31 @@ Zunächst wird eine Map erstellt, in der verschiedene Optionen für den Header d
 
 
 \begin{itemize}
-\item 
+\item \textbf{uponReciving: } Mit dieser Metohde wird eine neue Interaktion erstellt. Als Parameter bekommt sie eine Beschreibung der Interaktion.
+\item \textbf{path: } Der Methode path wird der aufzurufende Pfad als Parameter übergeben.
+\item \textbf{method: } Über die Methode method wird festgelegt mit welcher HTTP-Methode der Aufruf erfolgt.
+\item \textbf{willRespondWith: } Die Methode gibt an, dass ab hier die zu erwartetende Antwort definiert wird.
+\item \textbf{headers: } Über dieser Methode kann definiert werden, dass entsprechende Werte im Header vorhanden sein müssen.
+\item \textbf{status: } Soll der Statuscode überprüft werden, kann mit dieser Methode der zu erwartetende Statuscode definiert werden.
+\item \textbf{body: } Mit der body wird definiert, welcher Body in der Response erwartet wird.
+\item \textbf{toFragment: } Zum Abschluss wird die Methode toFragment aufgerufen, mit der das Fragment abgeschlossen wird.
 \end{itemize}
+
+Es können auch mehrere Interaktionen mithilfe des Builders erstellt werden. Jeder Interaktion beginnt mit der uponReciving. Um eine weitere Interaktion hinzufügen, kann man einfach nach der Definition der zu erwartetenden Antwort einfach mit der Methode uponReciving eine neue Interaktion hinzugefügt werden, welche nach dem gleichem Schema abläuft. In diesem Beispiel wäre dies nach der Methode body.
+
+Sobald das PactFragment, welches die Interaktionen enthält, implementiert ist, kann getestet werden, ob der Consumer selber den Kontrakt einhält. Dafür wird die Methode runTest umgesetzt.
+
+\lstset{language = Java}
+\begin{lstlisting}
+@Override
+protected void runTest(String url) {
+    URI productDetailsUri = URI.create(String.format("%s/%s/%s", url, "productdetails", 1));
+
+    ProductDetailsFetcher productDetailsFetcher = new ProductDetailsFetcher();
+    ProductDetails productDetails =  productDetailsFetcher.fetchDetails(productDetailsUri);
+    assertEquals(productDetails.getId(), 1);
+}
+\end{lstlisting}
 
 \begin{itemize}
 \item Implementierung Consumer
