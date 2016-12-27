@@ -95,7 +95,55 @@ Wie bereits erläutert basiert Consumer Driven Contract Test auf Consumer Driven
 
 Nach dem die Implementierung des Consumers soweit erfolgt ist, dass er Anfragen stellen und verarbeiten kann, kann PACT für den Consumer implementiert werden. Der größte Aufwand bei PACT ist die Implementierung der Testfälle auf der Seite des Consumers.
 
-Für die Implementierung von PACT auf der Seite vom Consumer wird eine neue Klasse angelegt. Diese Klasse 
+Für die Implementierung von PACT auf der Seite vom Consumer wird eine neue Klasse angelegt. Diese Klasse erbt von der PACT Klasse ConsumerPactTest. Durch die Vererbung müssen vier abstrakte Methoden implementiert werden, welche in der folgenden Auflistung genannt werden:
+\begin{itemize}
+\item providerName
+\item consumerName
+\item createFragment
+\item runTest
+\end{itemize}
+
+
+Mit den Methoden providerName() und consumerName() werden die jeweiligen Bezeichnungen als String zurückgegeben. Der Hintergrund dafür ist, dass man damit mehrere PACT Tests für unterschiedliche Provider und Consumer definieren kann.
+\lstset{language = Java}
+\begin{lstlisting}
+    @Override
+    protected String providerName() {
+        return "Product_Details_Service";
+    }
+
+    @Override
+    protected String consumerName() {
+        return "Product_Service";
+    }
+\end{lstlisting}
+
+Über die Methode createFragment werden wie Aufrufe des Consumers mit den zu erwartetenden Antworten erstellt.
+\lstset{language = Java}
+\begin{lstlisting}
+    @Override
+    protected PactFragment createFragment(PactDslWithProvider builder) {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json;charset=UTF-8");
+        
+        return builder
+        		.uponReceiving("a request for product details")
+                .path("/productdetails/1")
+                .method("GET")
+                .willRespondWith()
+                .headers(headers)
+                .status(200)
+                .body("{\"id\":1,\"description\":\"Thisis the description for product 1\"}")
+                .toFragment();
+    }
+\end{lstlisting}
+Zunächst wird eine Map erstellt, in der verschiedene Optionen für den Header definiert werden können. In diesem Fall wird nur der  Content-Type auf JSON mit dem Zeichensatz UTF-8 festgelegt. Als Rückgabewerttyp gibt die Methode ein sogenanntes PactFragment zurück. Diese PactFragment wird vom PactDslWithProvider erstellt, welches der Methode als Parameter übergeben wird. Da damit das Fragment erstellt, bekommt es den passenden Namen builder. Mit des Builder können die verschiedenen Interaktionen definiert werden.
+
+
+\begin{itemize}
+\item 
+\end{itemize}
+
 \begin{itemize}
 \item Implementierung Consumer
 \item Definieren der Aufrufe
