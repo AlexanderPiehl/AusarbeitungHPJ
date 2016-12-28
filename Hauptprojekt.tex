@@ -167,6 +167,8 @@ protected void runTest(String url) {
 }
 \end{lstlisting}
 
+PACT erstellt auf Grundlage des PactFragments einen Stub vom Provider. Die passende URL zum Provider Stub wird der Methode runTest via Parameter übergeben. Einerseits wird getestet, ob der Consumer eine korrekte Anfrage erstellt und anderseits , ob der Consumer mit der Antwort vom Provider Stub zurecht kommt. Dies wird unter anderm mithilfe von asserts gelöst.
+
 \begin{itemize}
 \item Implementierung Consumer
 \item Definieren der Aufrufe
