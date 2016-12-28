@@ -169,6 +169,70 @@ protected void runTest(String url) {
 
 PACT erstellt auf Grundlage des PactFragments einen Stub vom Provider. Die passende URL zum Provider Stub wird der Methode runTest via Parameter übergeben. Einerseits wird getestet, ob der Consumer eine korrekte Anfrage erstellt und anderseits , ob der Consumer mit der Antwort vom Provider Stub zurecht kommt. Dies wird unter anderm mithilfe von asserts gelöst.
 
+Sobald alle Methoden korrekt implementiert wurden sind, kann die Klasse ausgeführt werden. Entweder kann die Klasse direkt gestartet werden oder man führt die Tests mithilfe eines Maven/Gradle-Plugins von PACT aus.
+
+Sind die Tests erfolgreich durchgelaufen, wird automatisch das sogenannte PACT-File erstellt.
+
+\lstset{language = Java}
+\begin{lstlisting}
+{
+  "provider" : {
+    "name" : "Product_Details_Service"
+  },
+  "consumer" : {
+    "name" : "Product_Service"
+  },
+  "interactions" : [ {
+    "description" : "a request for product details",
+    "request" : {
+      "method" : "GET",
+      "path" : "/productdetails/1"
+    },
+    "response" : {
+      "status" : 200,
+      "headers" : {
+        "Content-Type" : "application/json;charset=UTF-8"
+      },
+      "body" : {
+        "id" : 1,
+        "description" : "This is the description for product 1"
+      }
+    }
+  } ],
+  "metadata" : {
+    "pact-specification" : {
+      "version" : "2.0.0"
+    },
+    "pact-jvm" : {
+      "version" : "2.1.7"
+    }
+  }
+}
+\end{lstlisting}
+
+Das PACT-File ist im Prinzip eine Zusammenfassung der zuvor definierten Klasse. Es befinden sich die jeweiligen Provider und Consumer Namen drin sowie die definierten Interaktionen und die zu erwarteteden Antworten. Ergänzend dazu ist im PACT-File noch angegeben mit welchen Versionen, die Datei erstellt worden ist.
+
+Mit dem eben nun erstellten PACT-File kann der Provider gestestet werden. Dafür muss der Provider entweder das Gradle oder Maven Plugin von PACT für den Provider verwenden. Um das Plugin verwenden zu können, muss einmal der Pfad zum PACT-File angegeben werden. Das PACT-File kann lokal vorliegen, es kann aber auch via eine URL aufgerufen werden. Zusätzlich muss die Adresse des Providers angegeben werden. Die entsprechenden Einstellungen am Beispiel der Verwendung von Gradle sieht so aus:
+
+\lstset{language = Java}
+\begin{lstlisting}
+pact {
+    serviceProviders {
+    productDetailsServiceProvider {
+        protocol = 'http'
+        host = 'localhost'
+        port = 10100
+        path = '/'
+        hasPactWith('productServiceConsumer') {
+            pactFile = file("../product-service/target/pacts/Product_Service-Product_Details_Service.json")
+			}
+		}
+	}
+}
+
+Damit der Test ausgeführt werden kann, muss der Provider gestartet werden. Sobald dies geschehen ist, kann das Plugin für den Provider ausgeführt werden. Das Ergebnis des Tests werden in dann in der Konsole angezeigt.
+\end{lstlisting}
+
 \begin{itemize}
 \item Implementierung Consumer
 \item Definieren der Aufrufe
