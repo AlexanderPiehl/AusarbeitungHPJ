@@ -307,6 +307,16 @@ Im Gegensatz zum eigentlichen gedachten Ablauf von PACT ist MARS ein sehr fortge
 
 Ergänzend dazu ist MARS ein sehr umfangreiches System mit vielen verschiedenen Consumern und Providern. Dahher wird PACT zunächst nur in einem übersichtlichen Teil von MARS verwendet, um eine Machtbarkeitsstudie zu erstellen, ob die Verwendung von PACT innerhalb von MARS sinnvoll ist.
 
+Für die Erstellung der Machtbarkeitsstudie wurde der Bereich der Imports in MARS ausgewählt. Für diese Entscheidung sprechen mehrere Gründe. Zum einem ist es für eine Microservice Architektur ein relatives geschlossenes System und zum anderem sind die einzelnen Komponenten übersichtlich. Dazu ist man in der Lage diesen Bereich des Systems schnell mit Testen zu befüllen. Für die exakte Implementierung von PACT werden die Interaktionen zwischen dem Metadata-Client (Consumer) und dem Provider Metadata verwendet.
+
+\begin{figure}[htbp]
+  \centering
+      \includegraphics[width=1\textwidth]{Images/ImportServices.jpg}
+    \caption{Diagramm der Komponenten für die Import Services}
+    \label{fig:ImportServices}
+\end{figure}
+
+Wie in der Abbildung\ref{fig:ImportServices} zu den Import Services gut erkenntlich interagieren alle Services, die für den Import zuständig sind, mit dem Service Metadata. Der Service Metadata hat die Aufgaben für die einzelne Dateien, die importiert werden, Metadata zu erstellen, zu aktualisieren und ggf. zu löschen. Die erstellten Metadata werden dann in einer Datenbank abgelegt. Dazu kann das Frontend via des Services Metadata auf die einzelnen Metadata zugreifen. Damit nicht jeder Service, der mit dem Service Metadata interagiert die Aufrufe selber implementieren muss und damit ggf. Redundanzen erzeugt, ist die Kommunikation mit dem Service Metadata im Objekt Metadata-Client gekapselt. Wenn eine Interaktion mit Metadata erforderlich ist, wird das Objekt Metadata-Client erzeugt, welches dann die Interaktionen übernimmt.
 
 \subsection{Testumgebung}
 
