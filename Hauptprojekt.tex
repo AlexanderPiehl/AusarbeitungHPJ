@@ -336,13 +336,18 @@ Zwischen dem Metadata-Client und Metadata gibt es mehrere verschiedene Interakti
 \multicolumn{1}{|l|}{Methode} & Beschreibung \\ \hline
 GET & Bekomme einen Metadata-Eintrag via der spezifischen DataID zurück\\ \hline
 GET & Bekomme alle Metadata-Einträge zurück \\ \hline
-PUT & Aktualisiere die Varible, die den aktuellen Zustand des Uploads beschreibt \\ \hline
+PUT & Aktualisiere die Variable, die den aktuellen Zustand des Uploads beschreibt \\ \hline
 POST & Erstelle einen neuen Metadata-Eintrag \\ \hline
 DELETE & Lösche einen Metadata-Eintrag via DataID\\ \hline
 \end{tabular}
 \caption{Interaktionen, die mit PACT umgesetzt wurden sind}
 \label{tab:Interaktionen_PACT}
 \end{table}
+
+Als Soll-Zusand für die Tests wurden der Zustand genommen, der bei der Erstellung des Branches vorlag. Mithilfe dieses Soll-Zustandes wurden die Interaktionen in PACT implementiert. Als vorbereitetete Schrit davor, mussten die Interaktionen genaur analysiert werden, damit klar definiert werden kann, wie die Anfrage und die dazu gehörige Antwort auszusehen hat.
+
+
+Der Zustand der Services besonders der Interaktionen 
 
 Definieren welche Interaktionen mit PACT getestet werdewn sollen. Swagger.io, Postman und Chromium hilfreich
 Anfrage und Antwort definieren, Jetzt-Zustand als Soll-Zustand
