@@ -24,11 +24,10 @@ Dabei ist REST zurzeit sehr beliebt bei der Entwicklung von Webservices, da aufg
 Unter Anderem aus diesen Gründen stellten Google, Facebook und Yahoo ihre Services von SOAP auf REST um \cite{rodriguez2008restful, navas2014rest}.
 
 REST basiert dabei auf Resource Oriented Architecture, kurz ROA \citep{chakrabarti2009test}. Dies bedeutet, dass jede wichtige Information als Ressource zur Verfügung stehen muss \cite{porres2011modeling}.
-Die Zugänglichkeit zu der Ressource muss über eine eindeutige URI gegeben sein. Die Ressourcen sollen zusätzlich über verschiedene Methoden manipuliert werden können. Es müssen mindestens die sogenannten CRUD-Operatoren zur Verfügung stehen. CRUD steht für Create, Read, Update und Delete und beschreibt die grundsätzlichen Daten Operationen. Bei Rest werden dafür die standardisierten HTTP-Methoden verwendet, welche im Standard RFC 2616 definiert wurden sind \citep{kao2013performance}. In der Tabelle 1 werden die Beziehung zwischen den CRUD Operatoren und den HTTP Operatoren dargestellt.
+Die Zugänglichkeit zu der Ressource muss über eine eindeutige URI gegeben sein. Die Ressourcen sollen zusätzlich über verschiedene Methoden manipuliert werden können. Es müssen mindestens die sogenannten CRUD-Operatoren zur Verfügung stehen. CRUD steht für Create, Read, Update und Delete und beschreibt die grundsätzlichen Daten Operationen. Bei Rest werden dafür die standardisierten HTTP-Methoden verwendet, welche im Standard RFC 2616 definiert wurden sind \citep{kao2013performance}. In der Tabelle \ref{tab:CRUD_HTTP_Methods} auf Seite \pageref{tab:CRUD_HTTP_Methods} werden die Beziehung zwischen den CRUD Operatoren und den HTTP Operatoren dargestellt.
 
 \begin{table}[htbp]
 \centering
-\label{CRUD_HTTP_Methods}
 \begin{tabular}{|c|l|p{4cm}|p{4cm}|}
 \hline
 \multicolumn{1}{|l|}{CRUD-Operation} & HTTP-Methode \\ \hline
@@ -38,6 +37,7 @@ Update & PUT \\ \hline
 Delete & DELETE \\ \hline
 \end{tabular}
 \caption{Beziehung CRUD und HTTP Operatoren \cite{reza2010framework}}
+\label{tab:CRUD_HTTP_Methods}
 \end{table}
 
 Neben den CRUD-Operatoren können noch weitere HTTP-Methoden zur Verfügung stehen, wie z.B. HEAD und OPTIONS \cite{porres2011modeling}.
@@ -316,7 +316,7 @@ Für die Erstellung der Machtbarkeitsstudie wurde der Bereich der Imports in MAR
     \label{fig:ImportServices}
 \end{figure}
 
-Wie in der Abbildung\ref{fig:ImportServices} zu den Import Services gut erkenntlich interagieren alle Services, die für den Import zuständig sind, mit dem Service Metadata. Der Service Metadata hat die Aufgaben für die einzelne Dateien, die importiert werden, Metadata zu erstellen, zu aktualisieren und ggf. zu löschen. Die erstellten Metadata werden dann in einer Datenbank abgelegt. Dazu kann das Frontend via des Services Metadata auf die einzelnen Metadata zugreifen. Damit nicht jeder Service, der mit dem Service Metadata interagiert die Aufrufe selber implementieren muss und damit ggf. Redundanzen erzeugt, ist die Kommunikation mit dem Service Metadata im Objekt Metadata-Client gekapselt. Wenn eine Interaktion mit dem Service Metadata erforderlich ist, wird das Objekt Metadata-Client erzeugt, welches dann die Interaktionen übernimmt.
+Wie in der Abbildung \ref{fig:ImportServices} zu den Import Services gut erkenntlich interagieren alle Services, die für den Import zuständig sind, mit dem Service Metadata. Der Service Metadata hat die Aufgaben für die einzelne Dateien, die importiert werden, Metadata zu erstellen, zu aktualisieren und ggf. zu löschen. Die erstellten Metadata werden dann in einer Datenbank abgelegt. Dazu kann das Frontend via des Services Metadata auf die einzelnen Metadata zugreifen. Damit nicht jeder Service, der mit dem Service Metadata interagiert die Aufrufe selber implementieren muss und damit ggf. Redundanzen erzeugt, ist die Kommunikation mit dem Service Metadata im Objekt Metadata-Client gekapselt. Wenn eine Interaktion mit dem Service Metadata erforderlich ist, wird das Objekt Metadata-Client erzeugt, welches dann die Interaktionen übernimmt.
 
 \subsection{Testumgebung}
 Die verwendete Testumgebung ist sehr ähnlich zu der Testumgebung im Grundprojekt. Jedoch wurde nicht mehr mit einer virtuellen Maschine gearbeitet, da der VM nicht genug Leistung zugeteilt werden konnte. Daher wurde Linux Ubuntu als Host-System verwendet. Dies bedeutet aber auch, dass kein geschlossenes System mehr für das Testen verwendet wurde. 
@@ -327,9 +327,32 @@ Zudem wurde wieder Docker in Verbindung mit dem Tool Docker-Compose verwendet, d
 
 Für die Implementierung von PACT wurde Intellij als Entwicklungsumgebung verwendet. Dazu wurde Maven als Build-Management-Tool verwendet, da alle MARS-Projekte Maven verwenden und eine Umstellung auf Gradle zu viel Ressourcen verbraucht hätten, ohne vornhinein ermitteln zu können, ob es sich dadurch Vorteile ergeben. Ergänzend dazu wurden die Entwicklungswerkzeuge von Chromium und das Programm Postman verwendet, um die Interaktionen besser zu verstehen und MARS mit default Werten zu füllen. Postman ist ein Programm zum Erstellen, Testen und Dokumentieren von APIs. Zusätzlich wurde ein Framework für die Erstellung von Mocks verwendet und zwar das Framework Mockito.
 \subsection{Einbindung in MARS}
+Zwischen dem Metadata-Client und Metadata gibt es mehrere verschiedene Interaktionen. Dabei sind alle CRDU-Methoden, also GET,POST,PUT und DELETE, vertreten. Bei der Implementierung von PACT wurden jedoch nicht alle Interaktionen umgesetzt, da es zu aufwendig gewesen wäre. In der Tabelle \ref{tab:Interaktionen_PACT} auf der Seite \pageref{tab:Interaktionen_PACT} sind die Interaktionen kurz beschrieben, welche mit PACT implementiert werden sollten.
 
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|l|p{4cm}|p{4cm}|}
+\hline
+\multicolumn{1}{|l|}{Methode} & Beschreibung \\ \hline
+GET & Bekomme einen Metadata-Eintrag via der spezifischen DataID zurück\\ \hline
+GET & Bekomme alle Metadata-Einträge zurück \\ \hline
+PUT & Aktualisiere die Varible, die den aktuellen Zustand des Uploads beschreibt \\ \hline
+POST & Erstelle einen neuen Metadata-Eintrag \\ \hline
+DELETE & Lösche einen Metadata-Eintrag via DataID\\ \hline
+\end{tabular}
+\caption{Interaktionen, die mit PACT umgesetzt wurden sind}
+\label{tab:Interaktionen_PACT}
+\end{table}
 
-\subsection{Ergebnisse}
+Definieren welche Interaktionen mit PACT getestet werdewn sollen. Swagger.io, Postman und Chromium hilfreich
+Anfrage und Antwort definieren, Jetzt-Zustand als Soll-Zustand
+
+\subsubsection{Implementierung des Consumers}
+Erster Implementierung ausführlich, Probleme beim Definieren des Body, und dann eine Methode nach der anderen
+
+\subsubsection{Implementierung Provider}
+
+\subsection{Untersuchung}
 
 
 \begin{itemize}
