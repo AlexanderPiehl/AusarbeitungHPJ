@@ -311,7 +311,7 @@ Für die Erstellung der Machtbarkeitsstudie wurde der Bereich der Imports in MAR
 
 \begin{figure}[htbp]
   \centering
-      \includegraphics[width=1\textwidth]{Images/ImportServices.jpg}
+      \includegraphics[width=1\textwidth]{./Images/ImportServices}
     \caption{Diagramm der Komponenten für die Import Services}
     \label{fig:ImportServices}
 \end{figure}
@@ -325,8 +325,9 @@ Zudem wurde wieder Docker in Verbindung mit dem Tool Docker-Compose verwendet, d
 
 Ähnlich wie im Grundprojekt wurde auf einem GIT Branch gearbeitet und zwar wurde von den Import-Projekten ein Branch erstellt. Zum Zeitpunkt der Untersuchung von PACT innerhalb von MARS, gab es laufend Änderungen an den Services für den Import. Dies betraff teilweise auch die Schnittstelle. Um sich ausschließlich auf die Einbindung von PACT zu konzentrieren, wurde der Brach erstellt, damit keine Änderungen diesen Prozess beeinträchtigen können.
 
-Linux Host -System keine VM, Docker, Postman, Entwicklungsumgebung, GIT Branch, Maven
+Für die Implementierung von PACT wurde Intellij als Entwicklungsumgebung verwendet. Dazu wurde Maven als Build-Management-Tool verwendet, da alle MARS-Projekte Maven verwenden und eine Umstellung auf Gradle zu viel Ressourcen verbraucht hätten, ohne vornhinein ermitteln zu können, ob es sich dadurch Vorteile ergeben. Ergänzend dazu wurden die Entwicklungswerkzeuge von Chromium und das Programm Postman verwendet, um die Interaktionen besser zu verstehen und MARS mit default Werten zu füllen. Postman ist ein Programm zum Erstellen, Testen und Dokumentieren von APIs. Zusätzlich wurde ein Framework für die Erstellung von Mocks verwendet und zwar das Framework Mockito.
 \subsection{Einbindung in MARS}
+
 
 \subsection{Ergebnisse}
 
