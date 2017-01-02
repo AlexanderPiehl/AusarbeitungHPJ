@@ -325,7 +325,8 @@ Zudem wurde wieder Docker in Verbindung mit dem Tool Docker-Compose verwendet, d
 
 Ähnlich wie im Grundprojekt wurde auf einem GIT Branch gearbeitet und zwar wurde von den Import-Projekten ein Branch erstellt. Zum Zeitpunkt der Untersuchung von PACT innerhalb von MARS, gab es laufend Änderungen an den Services für den Import. Dies betraff teilweise auch die Schnittstelle. Um sich ausschließlich auf die Einbindung von PACT zu konzentrieren, wurde der Brach erstellt, damit keine Änderungen diesen Prozess beeinträchtigen können.
 
-Für die Implementierung von PACT wurde Intellij als Entwicklungsumgebung verwendet. Dazu wurde Maven als Build-Management-Tool verwendet, da alle MARS-Projekte Maven verwenden und eine Umstellung auf Gradle zu viel Ressourcen verbraucht hätten, ohne vornhinein ermitteln zu können, ob es sich dadurch Vorteile ergeben. Ergänzend dazu wurden die Entwicklungswerkzeuge von Chromium und das Programm Postman verwendet, um die Interaktionen besser zu verstehen und MARS mit default Werten zu füllen. Postman ist ein Programm zum Erstellen, Testen und Dokumentieren von APIs. Zusätzlich wurde ein Framework für die Erstellung von Mocks verwendet und zwar das Framework Mockito.
+Für die Implementierung von PACT wurde Intellij als Entwicklungsumgebung verwendet. Dazu wurde Maven als Build-Management-Tool verwendet, da alle MARS-Projekte Maven verwenden und eine Umstellung auf Gradle zu viel Ressourcen verbraucht hätten, ohne vornhinein ermitteln zu können, ob es sich dadurch Vorteile ergeben. Ergänzend dazu wurden die Entwicklungswerkzeuge von Chromium und das Programm Postman verwendet, um die Interaktionen besser zu verstehen und MARS mit default Werten zu füllen. Zusätzlich wurde ein Framework für die Erstellung von Mocks verwendet und zwar das Framework Mockito.
+
 \subsection{Einbindung in MARS}
 Zwischen dem Metadata-Client und Metadata gibt es mehrere verschiedene Interaktionen. Dabei sind alle CRDU-Methoden, also GET,POST,PUT und DELETE, vertreten. Bei der Implementierung von PACT wurden jedoch nicht alle Interaktionen umgesetzt, da es zu aufwendig gewesen wäre. In der Tabelle \ref{tab:Interaktionen_PACT} auf der Seite \pageref{tab:Interaktionen_PACT} sind die Interaktionen kurz beschrieben, welche mit PACT implementiert werden sollten.
 
@@ -344,15 +345,18 @@ DELETE & Lösche einen Metadata-Eintrag via DataID\\ \hline
 \label{tab:Interaktionen_PACT}
 \end{table}
 
-Als Soll-Zusand für die Tests wurden der Zustand genommen, der bei der Erstellung des Branches vorlag. Mithilfe dieses Soll-Zustandes wurden die Interaktionen in PACT implementiert. Als vorbereitetete Schrit davor, mussten die Interaktionen genaur analysiert werden, damit klar definiert werden kann, wie die Anfrage und die dazu gehörige Antwort auszusehen hat.
+Als Soll-Zusand für die Tests wurden der Zustand genommen, der bei der Erstellung des Branches vorlag. Mithilfe dieses Soll-Zustandes wurden die Interaktionen in PACT implementiert. Als vorbereitetete Schrit davor, mussten die Interaktionen genauer analysiert werden, damit klar definiert werden kann, wie die Anfrage und die dazu gehörige Antwort auszusehen hat.
 
+Bei MARS werden die APIs mithilfe von Swagger\citep{swagger} dokumentiert. Swagger ist ein open source Franework, welches beim Entwerfen, bei der Erstellung und Dokumentation unterstützen soll. Swagger erstellt für jede API eine extra Datei, in welcher die Schnittstellen beschrieben werden. Die Datei heoßt mesitens swagger.yaml. An der Endung der Datei kann man erkennen, dass es sich die Datei im YAML-Format vorliegt. In dieser Datei sind alle Methoden beschrieben, die vom Consumer angefragt werden können. Zu den einzelnen Methoden sind wichtige Infromationen angegeben, wie z.B. der Pfad, die Paramter, die erwartet werden. Zu den Parameter ist noch angegeben, welcher Typ vorliegen soll und wie sie mit geschickt werden sollen, also ob sie z.B. im Body als Query im Pfad mitgeschickt werden sollen. Die Swagger-Datei ist sehr hilfreich für das Programm Postman.
 
-Der Zustand der Services besonders der Interaktionen 
+Postman ist ein Programm, welches ähnlich wie Swagger bei der Entwicklung und Dokumentation von Schnittstellen ünterstützen sollen. Bei Postman liegt der Fokus aber auf dem Testen von Schnittstellen und außerdem fügt es im Gegensatz zu Swagger über eine grafische Oberfläche. Mit Postman können Anfragen an einen Provider gestellt werden, um im Anschluss die Antwort zu überprüfen. 
 
-Definieren welche Interaktionen mit PACT getestet werdewn sollen. Swagger.io, Postman und Chromium hilfreich
-Anfrage und Antwort definieren, Jetzt-Zustand als Soll-Zustand
+Die mit Swagger erstellte Datei kann in Postman importiert werden und Postman erstellt auf Grundlage der Informationen aus der Swagger-Datei automatisch Testfälle. Jedoch fehlt diesen Testfällen Bedingungen, ob sie erfolgreich sind. Diese Bedingungen können mit einer von Postman definierten DSL selbst implementiert werden. Postman bietet dafür Templates, um standardmäßige Überprüfungen auf Statuss Code oder ähnliches schnell umsetzen zu können.
+
+Da leider manche Informationen in der Swagger-Datei fehlten oder veraltet waren, mussten die automatische Tests manuell aktualisiert werden. Dafür waren die Entwicklungswerkzeuge vom Browser Chromium bzw. Chrome sehr hilfreich. Denn die einzelnen Interaktionen können einem Tool aufgezeichnet und analysiert werden. Dafür wurden die jeweiligen Interaktionen über das Frontend aufgezeichnet und anschließend ausgewertet. Mithilfe dieser Informationen wurden die Testfälle innerhalb von Postman aktualisiert. Sobald alle Tests in Postman implementiert wurden sind und erfolgreich abliefen, wurde damit begonnen PACT auf der Seite des Consumers einzubinden.
 
 \subsubsection{Implementierung des Consumers}
+
 Erster Implementierung ausführlich, Probleme beim Definieren des Body, und dann eine Methode nach der anderen
 
 \subsubsection{Implementierung Provider}
