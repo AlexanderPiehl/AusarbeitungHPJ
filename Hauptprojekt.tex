@@ -356,6 +356,61 @@ Die mit Swagger erstellte Datei kann in Postman importiert werden und Postman er
 Da leider manche Informationen in der Swagger-Datei fehlten oder veraltet waren, mussten die automatische Tests manuell aktualisiert werden. Dafür waren die Entwicklungswerkzeuge vom Browser Chromium bzw. Chrome sehr hilfreich. Denn die einzelnen Interaktionen können einem Tool aufgezeichnet und analysiert werden. Dafür wurden die jeweiligen Interaktionen über das Frontend aufgezeichnet und anschließend ausgewertet. Mithilfe dieser Informationen wurden die Testfälle innerhalb von Postman aktualisiert. Sobald alle Tests in Postman implementiert wurden sind und erfolgreich abliefen, wurde damit begonnen PACT auf der Seite des Consumers einzubinden.
 
 \subsubsection{Implementierung des Consumers}
+Bei der Implementierung von PACT beim Consumer wurde so ähnlich vorgegangen, wie im allgemeinen Beispiel beschrieben. Auch hier wurde zunächst eine neue Klasse erstellt und zwar die Klasse MetadataClientConsumerTest, welche von ConsumerPactTest erbt. Damit waren wieder die vier Methoden providerName, consumerName, createFragment und runTest vorgegeben. Der Consumer bekam den Namen metadata-client und der Provider den Namen metadata-service. 
+
+In den Methoden createFragment und runTest sind jeweils alle fünf Interaktionen angebildet. Aus Gründen der Übersichtlichkeit wird die Umsetzung einer Interaktionen nach der anderen Interaktionen beschrieben.
+
+Begonnen wurde mit der Interaktionen, bei der via GET ein spezifischer Metadata Eintrag abgefragt werden soll.
+Der für diese Interaktion spezifische Code-Abschnitt in der Methode createFragment ist in \ref{lst:getCreateFragment} abgebildet.
+
+\lstset{language = Java}
+\begin{lstlisting}[caption=Test,label=lst:getCreateFragment]
+.uponReceiving("Get a metadata entry")
+.path("/metadata/" + dataID)
+.method("GET")
+.headers(headerReq)
+.query("")
+.body("")
+.willRespondWith()
+.headers(headersRes)
+.status(200)
+.body(createJsonBody())
+\end{lstlisting}
+
+Wie in der Erklärung von REST erwähnt, muss jede Resoource über eine eindeutige URI erreicht werden. Bei den Metadata Einträgen erfolgt dies über die Eigenschaft DataID. Daher wird dem Pfad einfacher der Wert DataID angehängt. Weitere Informationen sind in der Query und Body nicht notwendig. Im Header ist nur definiert wurden, dass nur JSON akzeptiert wird.
+Der Provider soll auf diesen Aufruf mit dem Statuscode 200 antworten. Obwohl ein Header für die Antwort definiert ist, findet keine Überprüfung statt, da der Header keine Werte enthält. 
+
+Interessant ist vorallem bei dieser Interaktion, dass die Informationen zurück geliefert werden, die auch angefragt werden. Dafür wird beim Body die Methode createJsonBody aufgerufen, die die zu erwartendete Antwort im Body definiert. Diese Methode ist abgebildet in \ref{lst:createJsonBody}.
+
+\lstset{language = Java}
+\begin{lstlisting}[caption=Test,label={lst:createJsonBody}]
+private PactDslJsonBody createJsonBody() {
+    PactDslJsonBody body = new PactDslJsonBody()
+        .stringValue("dataId",dataID)
+        .stringType("title")
+        .stringType("description")
+        .integerType("projectId")
+        .integerType("userId")
+        .stringValue("privacy","PRIVATE")
+        .stringValue("state","FINISHED")
+        .stringValue("errorMessage",null)
+        .stringValue("records",null)
+        .stringValue("type",null)
+        .stringValue("geoindex",null)
+        .object("additionalTypeSpecificData")
+            .object("topLeftBound")
+                .decimalType("lng")
+                .decimalType("lat")
+            .closeObject()
+            .object("bottomRightBound")
+                .decimalType("lng")
+                .decimalType("lat")
+            .closeObject()
+        .closeObject()
+        .asBody();
+    return body;
+}
+\end{lstlisting}
 
 Erster Implementierung ausführlich, Probleme beim Definieren des Body, und dann eine Methode nach der anderen
 
