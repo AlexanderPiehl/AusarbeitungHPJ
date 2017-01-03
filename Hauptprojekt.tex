@@ -446,14 +446,29 @@ URI metadataEntryUri = URI
 
 Metadata metadata = client.fetchMetaData(metadataEntryUri);
 assertEquals(dataID, metadata.getDataId());
-
 \end{lstlisting}
  
-Wie schon in der Testumgebung beschrieben, wird das Framework Mockito verwendet. Die Verwendung ist notwendig um den EurekaClient zu mocken. Eureka \cite{Ranganathan2012} ist ein von Netflix entwickeltes Programm für die Service-Discovery. Vereinfachtgesagt verwaltet es die einzelnen Adressen der Services. Dieser Service steht beim Testen des Consumers nicht zur Verfügung, da nur der Consumer gestartet werden soll und keine weiteren Services. Denn für die Erstellung eines Objektes vom Typ MetadataClient wird der EurekaClient benöigt. Die eigentliche Aufgabe und zwar die Mitteilung der Adresse des gesuchten Services, erfüllt der Mock nicht. Denn PACT erstellt zur Laufzeit eine Adresse für den gestubbten Provider. Bisher war es nicht möglich diese Information in der gemockten EurekaClient unterzubringen. Daher wurden der MetadataClient um Methoden ohne erweitert, die nicht den EurekaClient für die Adresse des Service anfragen, sondern die Adresse als Parameter übergeben bekommen. Eine Auswirkung sollte diese Änderung nicht haben, da ausschließlich die Bereitstellung der Service Adresse geändert wurde. Dies Umstellung betrifft alle Interaktionen.
+Wie schon in der Testumgebung beschrieben, wird das Framework Mockito verwendet. Die Verwendung ist notwendig um den EurekaClient zu mocken. Eureka \cite{Ranganathan2012} ist ein von Netflix entwickeltes Programm für die Service-Discovery. Vereintfachgesagt verwaltet es die einzelnen Adressen der Services. Dieser Service steht beim Testen des Consumers nicht zur Verfügung, da nur der Consumer gestartet werden soll und keine weiteren Services. Denn für die Erstellung eines Objektes vom Typ MetadataClient wird der EurekaClient benöigt. Die eigentliche Aufgabe und zwar die Mitteilung der Adresse des gesuchten Services, erfüllt der Mock nicht. Denn PACT erstellt zur Laufzeit eine Adresse für den gestubbten Provider. Bisher war es nicht möglich diese Information in der gemockten EurekaClient unterzubringen. Daher wurden der MetadataClient um Methoden ohne erweitert, die nicht den EurekaClient für die Adresse des Service anfragen, sondern die Adresse als Parameter übergeben bekommen. Eine Auswirkung sollte diese Änderung nicht haben, da ausschließlich die Bereitstellung der Service Adresse geändert wurde. Dies Umstellung betrifft alle Interaktionen.
 
 Nachdem URI zusammengebaut wurden ist, kann diese URI dem Client übergeben werden. Die damit aufgerufene Methode wird die Metadata zurückliefern, wie im vorher im Fragment definiert worden ist. Deswegen muss diese zurückbekommene Metadata die selbe DataID enthalten, wie bei der Anfrage mitgeschickt wurden ist. Dies wird mit einem Assert überprüft.
 
-Erster Implementierung ausführlich, Probleme beim Definieren des Body, und dann eine Methode nach der anderen
+Damit ist die erste Interaktion implemeniert. Die zweite Interaktion ist auch eine GET-Methode, bei der alle Metadata-Einträge abgefragt werden. Die Implementierung dieser Interaktion unterscheidet sich kaum von eben gerade beschriebenen Interaktion. Nur der Body der zu erwartenden Antwort unterscheidet sich. Es wird nun Array von Metadata-Objekten erwartet. Die für die Erstellung dieses Array zuständige Methode ist verkürzt in \ref{lst:ArrayBody} auf Seite \pageref{lst:ArrayBody} dargestellt.
+
+\lstset{language = Java}
+\begin{lstlisting}[caption=Test,label={lst:ArrayBody}]
+return PactDslJsonArray
+    .arrayEachLike()
+        ...
+    .closeObject();
+\end{lstlisting}
+
+Mit der Methode arrayEachLike wird sichergestellt, dass jedes Objekt in der Liste dem hier definierten Beispiel gleichen soll. Ab dem Aufruf der Methode arrayEachLike wird das Objekt definiert. Auch diese Methode muss mit einem closeObject abgeschlossen werden. Das hier definierte Objekte ist das gleiche wie in \ref{lst:createJsonBody} auf Seite \pageref{lst:createJsonBody} dargstellt.
+
+Auch in der runTest-Methode gibt es keine große Unterschiede. Es wird selbstverständlich eine andere Methode vom Metadata-Client aufgerufen, die eine Liste von Metadata-Objekten zurückgibt. Ergänzend dazu ist die assert-Methode passend angepasst.
+
+
+
+
 
 \subsubsection{Implementierung Provider}
 
