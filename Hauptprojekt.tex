@@ -118,7 +118,7 @@ Mit den Methoden providerName() und consumerName() werden die jeweiligen Bezeich
     }
 \end{lstlisting}
 
-Über die Methode createFragment werden wie Aufrufe des Consumers mit den zu erwartetenden Antworten erstellt.
+Über die Methode createFragment werden wie Aufrufe des Consumers mit den zu erwartetenden Antworten erstellt. Dies geschieht mit einer von PACT definierten DSL.
 \lstset{language = Java}
 \begin{lstlisting}
     @Override
@@ -167,7 +167,7 @@ protected void runTest(String url) {
 }
 \end{lstlisting}
 
-PACT erstellt auf Grundlage des PactFragments einen Stub vom Provider. Die passende URL zum Provider Stub wird der Methode runTest via Parameter übergeben. Einerseits wird getestet, ob der Consumer eine korrekte Anfrage erstellt und anderseits , ob der Consumer mit der Antwort vom Provider Stub zurecht kommt. Dies wird unter anderm mithilfe von asserts gelöst.
+PACT erstellt auf Grundlage des PactFragments einen Stub vom Provider. Die passende URL zum Provider Stub wird der Methode runTest via Parameter übergeben. Einerseits wird getestet, ob der Consumer eine korrekte Anfrage erstellt und anderseits , ob der Consumer mit der Antwort vom Provider Stub zurecht kommt. Dies wird unter anderem mithilfe von asserts gelöst.
 
 Sobald alle Methoden korrekt implementiert wurden sind, kann die Klasse ausgeführt werden. Entweder kann die Klasse direkt gestartet werden oder man führt die Tests mithilfe eines Maven/Gradle-Plugins von PACT aus.
 
@@ -380,7 +380,7 @@ Der für diese Interaktion spezifische Code-Abschnitt in der Methode createFragm
 Wie in der Erklärung von REST erwähnt, muss jede Ressource über eine eindeutige URI erreicht werden. Bei den Metadata Einträgen erfolgt dies über die Eigenschaft DataID. Daher wird dem Pfad einfacher der Wert DataID angehängt. Weitere Informationen sind in der Query und Body nicht notwendig. Im Header ist nur definiert wurden, dass nur JSON akzeptiert wird.
 Der Provider soll auf diesen Aufruf mit dem Statuscode 200 antworten. Obwohl ein Header für die Antwort definiert ist, findet keine Überprüfung statt, da der Header keine Werte enthält. 
 
-Bis auf die einzelnen Werte unterscheidet sich dieses Fragment nicht vom generellen Beispiel. Nur der Body, welcher die Antwort enthalten soll, ist deutlich umfangreicher. Dafür wird beim Body die Methode createJsonBody aufgerufen, die die zu erwartendete Antwort im Body definiert. Diese Methode ist abgebildet in \ref{lst:createJsonBody}.
+Bis auf die einzelnen Werte unterscheidet sich dieses Fragment nicht vom generellen Beispiel. Nur der Body, welcher die Antwort enthalten soll, ist deutlich umfangreicher. Dafür wird beim Body die Methode createJsonBody aufgerufen, die die zu erwartendete Antwort im Body definiert. Diese Methode ist abgebildet in \ref{lst:createJsonBody}. Ähnlich wie bei der Erstellung des Fragments wird auch für die Erstellung des Body eine PACT definierte DSL genutzt.
 
 \lstset{language = Java}
 \begin{lstlisting}[caption=Test,label={lst:createJsonBody}]
@@ -412,10 +412,30 @@ private PactDslJsonBody createJsonBody() {
 }
 \end{lstlisting}
 
-Wie man aus \ref{lst:createJsonBody} gut ableiten kann, ist das Metadata-Objekt recht umfangreich. Da bei der Anfrage definiert wurde, dass nur JSON akzeptiert wird, muss die Antwort selbstverständlich im JSON-Format vorliegen. Um komplexere Antworten in JSON zu definieren, bietet PACT unter anderem die Klasse PactDslJsonBody an. Damit kann ein Objekt erstellt werden, welches unterschiedliche Eigenschaften haben kann. Die einzelnen Eigenschaften werden per Methode hinzugefügt. 
+Wie man aus \ref{lst:createJsonBody} gut ableiten kann, ist das Metadata-Objekt recht umfangreich. Da bei der Anfrage definiert wurde, dass nur JSON akzeptiert wird, muss die Antwort selbstverständlich im JSON-Format vorliegen. Um komplexere Antworten in JSON zu definieren, bietet PACT unter anderem die Klasse PactDslJsonBody an. Damit kann ein Objekt erstellt werden, welches unterschiedliche Eigenschaften haben kann. Die einzelnen Methoden fügen nicht nur die Eigenschaften hinzu, sondern definieren auch die jeweiligen Matcher mit. Generell wird der Typ der jeweiligen Eigenschaften bestimmt und sollte kein Wert angegeben werden, wird ein zufälliger Wert vom festgelegten Typ erstellt. Dazu muss immer der Name der jeweiligen Eigenschaft mitangegeben werden. Die bei der Erstellung des JSON-Bodys verwendeten Methoden sind in der Tabelle \ref{tab:Methoden_jsonBody} auf Seite \pageref{tab:Methoden_jsonBody} näher beschrieben.
 
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|l|p{4cm}|p{4cm}|}
+\hline
+\multicolumn{1}{|l|}{Methode} & Beschreibung \\ \hline
+stringValue & Name, Typ Wert müssen übereinstimmen. \\ \hline
+stringType & Name und Typ müssen übereinstimmen. \\ \hline
+intergerType & Name und Typ müssen übereinstimmen. \\ \hline
+decimalType & Name und Typ müssen übereinstimmen. \\ \hline
+object & Erzeugung eines Objektes. Name muss übereinstimmen  \\ \hline
+closeObject & Schließen des Objektes\\ \hline
+asBody & Abschließende Methode, um es in den Typ PactDslJsonBody zu casten. \\ \hline
+\end{tabular}
+\caption{Erklärung der verwendeten PACT DSL Methoden}
+\label{tab:Methoden_jsonBody}
+\end{table}
 
+Der damit definierte Body soll die in abgebildete Antwort darstellen. Werte werden nur überprüft, wenn sie aufgrund der Anfrage sicher vorliegen sollte. Wenn die Metadata von einer entsprechenden DataID abgefragt werden, dann muss sich diese DataID auch in der Antwort befinden. Da zufällige Werte erzeugt werden, wenn kein Wert definiert ist, muss entsprechend der Null-Wert übergeben werden, wenn die Eigenschaften ohne Wert erwartet wird.
 
+Nun muss für diese Interaktion noch die Methode runTest implementiert werden. Der dazu passende Code-Abschnitt ist in abgebildet.
+
+ 
 Erster Implementierung ausführlich, Probleme beim Definieren des Body, und dann eine Methode nach der anderen
 
 \subsubsection{Implementierung Provider}
