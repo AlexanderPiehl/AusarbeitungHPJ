@@ -345,7 +345,7 @@ DELETE & Lösche einen Metadata-Eintrag via DataID\\ \hline
 \label{tab:Interaktionen_PACT}
 \end{table}
 
-Als Soll-Zusand für die Tests wurden der Zustand genommen, der bei der Erstellung des Branches vorlag. Mithilfe dieses Soll-Zustandes wurden die Interaktionen in PACT implementiert. Als vorbereitetete Schrit davor, mussten die Interaktionen genauer analysiert werden, damit klar definiert werden kann, wie die Anfrage und die dazu gehörige Antwort auszusehen hat.
+Als Soll-Zusand für die Tests wurden der Zustand genommen, der bei der Erstellung des Branches vorlag. Mithilfe dieses Soll-Zustandes wurden die Interaktionen in PACT implementiert. Als vorbereitetet Schritt davor, mussten die Interaktionen genauer analysiert werden, damit klar definiert werden kann, wie die Anfrage und die dazu gehörige Antwort auszusehen hat.
 
 Bei MARS werden die APIs mithilfe von Swagger\citep{swagger} dokumentiert. Swagger ist ein open source Franework, welches beim Entwerfen, bei der Erstellung und Dokumentation unterstützen soll. Swagger erstellt für jede API eine extra Datei, in welcher die Schnittstellen beschrieben werden. Die Datei heoßt mesitens swagger.yaml. An der Endung der Datei kann man erkennen, dass es sich die Datei im YAML-Format vorliegt. In dieser Datei sind alle Methoden beschrieben, die vom Consumer angefragt werden können. Zu den einzelnen Methoden sind wichtige Infromationen angegeben, wie z.B. der Pfad, die Paramter, die erwartet werden. Zu den Parameter ist noch angegeben, welcher Typ vorliegen soll und wie sie mit geschickt werden sollen, also ob sie z.B. im Body als Query im Pfad mitgeschickt werden sollen. Die Swagger-Datei ist sehr hilfreich für das Programm Postman.
 
@@ -353,7 +353,7 @@ Postman ist ein Programm, welches ähnlich wie Swagger bei der Entwicklung und D
 
 Die mit Swagger erstellte Datei kann in Postman importiert werden und Postman erstellt auf Grundlage der Informationen aus der Swagger-Datei automatisch Testfälle. Jedoch fehlt diesen Testfällen Bedingungen, ob sie erfolgreich sind. Diese Bedingungen können mit einer von Postman definierten DSL selbst implementiert werden. Postman bietet dafür Templates, um standardmäßige Überprüfungen auf Statuss Code oder ähnliches schnell umsetzen zu können.
 
-Da leider manche Informationen in der Swagger-Datei fehlten oder veraltet waren, mussten die automatische Tests manuell aktualisiert werden. Dafür waren die Entwicklungswerkzeuge vom Browser Chromium bzw. Chrome sehr hilfreich. Denn die einzelnen Interaktionen können einem Tool aufgezeichnet und analysiert werden. Dafür wurden die jeweiligen Interaktionen über das Frontend aufgezeichnet und anschließend ausgewertet. Mithilfe dieser Informationen wurden die Testfälle innerhalb von Postman aktualisiert. Sobald alle Tests in Postman implementiert wurden sind und erfolgreich abliefen, wurde damit begonnen PACT auf der Seite des Consumers einzubinden.
+Da leider manche Informationen in der Swagger-Datei fehlten oder veraltet waren, mussten die automatische Tests manuell aktualisiert werden. Dafür waren die Entwicklungswerkzeuge vom Browser Chromium bzw. Chrome sehr hilfreich. Denn die einzelnen Interaktionen können einem Tool aufgezeichnet und analysiert werden. Dafür wurden die jeweiligen Interaktionen über das Frontend aufgezeichnet und anschließend ausgewertet. Mithilfe dieser Informationen wurden die Testfälle innerhalb von Postman aktualisiert. Sobald alle Tests in Postman implementiert wurden sind und erfolgreich abliefen, wurde damit begonnen PACT auf der Seite des Consumers einzubinden. Jedoch gab es ein Problem mit der DELETE-Methode. Beim Testen mit Postman konnte der Aufruf nicht ausgeführt werden. Der Service antworte mit dem Statuscode 405. Dies bedeutet, dass die gewählte Methode nicht erlaubt ist. Die Methode wurde jedoch in PACT implementiert, da es sich um einen Bug handelt. Dahingehend wurde die Implementierung der DELETE-Methode in PACT alleine auf Grundlage der Swagger-Datei ausgeführt.
 
 \subsubsection{Implementierung des Consumers}
 Bei der Implementierung von PACT beim Consumer wurde so ähnlich vorgegangen, wie im allgemeinen Beispiel beschrieben. Auch hier wurde zunächst eine neue Klasse erstellt und zwar die Klasse MetadataClientConsumerTest, welche von ConsumerPactTest erbt. Damit waren wieder die vier Methoden providerName, consumerName, createFragment und runTest vorgegeben. Der Consumer bekam den Namen metadata-client und der Provider den Namen metadata-service. 
@@ -470,10 +470,17 @@ Als nächstes wird die PUT Interaktion implementiert. Diese unterscheidet sich d
 Dazu muss für diese Interaktion kein Body definiert werden , der in der Antwort stehen soll, da die Antwort kein Body liefert. Es wird ausschließlich über den Statuscode abgebildet, ob die Anfrage erfolgreich war.
 Die Implementierung in der runTest Methode unterscheidet sich auch nur im Aufruf einer anderen Methode, die die PUT-Anfrage stellt und in der Überprüfung des Ergebnisses.
 
+Als nächstes wurde die Interaktion mit der POST-Methode umgesetzt. Mit dieser Interaktion soll ein neuer Metadata-Eintrag erzeugt werden. Das Erstellen des Fragements unterscheidet sich daher durchaus mehr von den bisherigen Interaktionen. Dieses Mal muss der Body für die Anfrage definiert werden. Denn mit der Anfrage müssen die einzelnen Informationen für den Eintrag mitgeschickt werden. Bei der Antwort wird außerdem der Statuscode 201 erwartet und nicht wie bisher 200. Der Statuscode 201 gibt wieder, dass ein neuer Eintrag erfolgreich erstellt wurde. Im Body der Antwort wird eine UUID als Plain-Text erwartet. Diese UUID wird als DataID verwendet.
 
+Der Aufruf in der runTest-Methode unterscheidet sich dahingehend, dass der Methode im Metadata-Client die einzelnen Informationen zum MetadataEintrag mit übergeben werden muss. Da der genaue Wert der UUID nicht vorher gesagt werden kann, wird kein Assert auf die UUID übernommen. Es wird nur geprüft, dass eine UUID zurück geliefert. Diese Überprüfung übernimmt PACT.
 
+Die DELETE-Interaktion ist sehr ähnlich wie die erste Interaktion, die implementiert wurden ist. Anstatt der GET-Methode wird die DELETE-Methode verwendet und es wird kein Body in der Antwort erwartet.
 
+Der Aufruf in runTest-Methode unterscheidet sich einmal in der Methode, die vom Metadata-Client aufgerufen wird. Da kein Body zurück geliefert wird, findet nur eine Überprüfung auf den Wert des Statuscodes statt. Auch diese Aufgabe übernimmt PACT.
+
+Hiermit ist die Implementierung auf der Seite des Consumers abgeschlossen und es können die PACT-Tests auf der Seite des Consumers ausgeführt werden und das PACT-File erstellt werden. Im Anschluss kann PACT auf Seite des Providers eingebunden werden.
 \subsubsection{Implementierung Provider}
+Einbinden des Maven Plugins, Einzelnen Werte kurz erläutern
 
 \subsection{Untersuchung}
 
