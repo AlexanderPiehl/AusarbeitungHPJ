@@ -433,9 +433,26 @@ asBody & Abschließende Methode, um es in den Typ PactDslJsonBody zu casten. \\ 
 
 Der damit definierte Body soll die in abgebildete Antwort darstellen. Werte werden nur überprüft, wenn sie aufgrund der Anfrage sicher vorliegen sollte. Wenn die Metadata von einer entsprechenden DataID abgefragt werden, dann muss sich diese DataID auch in der Antwort befinden. Da zufällige Werte erzeugt werden, wenn kein Wert definiert ist, muss entsprechend der Null-Wert übergeben werden, wenn die Eigenschaften ohne Wert erwartet wird.
 
-Nun muss für diese Interaktion noch die Methode runTest implementiert werden. Der dazu passende Code-Abschnitt ist in abgebildet.
+Nun muss für diese Interaktion noch die Methode runTest implementiert werden. Der dazu passende Code-Abschnitt ist in \ref{lst:runTestGetOne} auf Seite \pageref{lst:runTestGetOne} abgebildet.
 
+\lstset{language = Java}
+\begin{lstlisting}[caption=Test,label={lst:runTestGetOne}]
+EurekaClientMock mockEureka = new EurekaClientMock();
+MetadataClient client = MetadataClient
+.getInstance(new RestTemplate(), mockEureka.getMockEurekaClient());
+
+URI metadataEntryUri = URI
+.create(String.format("%s/%s/%s", url, "metadata", dataID));
+
+Metadata metadata = client.fetchMetaData(metadataEntryUri);
+assertEquals(dataID, metadata.getDataId());
+
+\end{lstlisting}
  
+Wie schon in der Testumgebung beschrieben, wird das Framework Mockito verwendet. Die Verwendung ist notwendig um den EurekaClient zu mocken. Eureka ist ein von Netflix entwickeltes Programm für die Service-Discovery. Vereinfachtgesagt verwaltet es die einzelnen Adressen der Services. Dieser Service steht beim Testen des Consumers nicht zur Verfügung, da nur der Consumer gestartet werden soll und keine weitere Services. Denn für die Erstellung eines Objektes vom Typ MetadataClient wird der EurekaClient benöigt. Die eigentliche Aufgabe und zwar die Mitteilung der Adresse des gesuchten Services, erfüllt der Mock nicht. Denn PACT erstellt zur Laufzeit eine Adresse für den gestubbten Provider. Bisher war es nicht möglich diese Information in der gemockten EurekaClient unterzubringen. Daher wurden der MetadataClient um Methoden ohne erweitert, die nicht den EurekaClient für die Adresse des Service anfragen, sondern die Adresse als Paramter übergeben bekommen. Eine Auswirkung sollte diese Änderung nicht haben, da ausschließlich die Bereitstellung der Service Adresse geändert wurde. Dies Umstellung betrifft alle Interaktionen.
+
+
+
 Erster Implementierung ausführlich, Probleme beim Definieren des Body, und dann eine Methode nach der anderen
 
 \subsubsection{Implementierung Provider}
