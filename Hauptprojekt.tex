@@ -466,6 +466,9 @@ Mit der Methode arrayEachLike wird sichergestellt, dass jedes Objekt in der List
 
 Auch in der runTest-Methode gibt es keine große Unterschiede. Es wird selbstverständlich eine andere Methode vom Metadata-Client aufgerufen, die eine Liste von Metadata-Objekten zurückgibt. Ergänzend dazu ist die assert-Methode passend angepasst.
 
+Als nächstes wird die PUT Interaktion implementiert. Diese unterscheidet sich durchaus von den bisherigen Implementierungen. Neben den Unterscheidungen im Header der Anfrage, muss für diese Interaktion die Query definiert werden. Denn die Änderung des Upload-Zustandes erfolgt über eine Query in der URI. 
+Dazu muss für diese Interaktion kein Body definiert werden , der in der Antwort stehen soll, da die Antwort kein Body liefert. Es wird ausschließlich über den Statuscode abgebildet, ob die Anfrage erfolgreich war.
+Die Implementierung in der runTest Methode unterscheidet sich auch nur im Aufruf einer anderen Methode, die die PUT-Anfrage stellt und in der Überprüfung des Ergebnisses.
 
 
 
