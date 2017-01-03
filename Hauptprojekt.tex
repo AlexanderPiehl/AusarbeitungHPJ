@@ -377,10 +377,10 @@ Der für diese Interaktion spezifische Code-Abschnitt in der Methode createFragm
 .body(createJsonBody())
 \end{lstlisting}
 
-Wie in der Erklärung von REST erwähnt, muss jede Resoource über eine eindeutige URI erreicht werden. Bei den Metadata Einträgen erfolgt dies über die Eigenschaft DataID. Daher wird dem Pfad einfacher der Wert DataID angehängt. Weitere Informationen sind in der Query und Body nicht notwendig. Im Header ist nur definiert wurden, dass nur JSON akzeptiert wird.
+Wie in der Erklärung von REST erwähnt, muss jede Ressource über eine eindeutige URI erreicht werden. Bei den Metadata Einträgen erfolgt dies über die Eigenschaft DataID. Daher wird dem Pfad einfacher der Wert DataID angehängt. Weitere Informationen sind in der Query und Body nicht notwendig. Im Header ist nur definiert wurden, dass nur JSON akzeptiert wird.
 Der Provider soll auf diesen Aufruf mit dem Statuscode 200 antworten. Obwohl ein Header für die Antwort definiert ist, findet keine Überprüfung statt, da der Header keine Werte enthält. 
 
-Interessant ist vorallem bei dieser Interaktion, dass die Informationen zurück geliefert werden, die auch angefragt werden. Dafür wird beim Body die Methode createJsonBody aufgerufen, die die zu erwartendete Antwort im Body definiert. Diese Methode ist abgebildet in \ref{lst:createJsonBody}.
+Bis auf die einzelnen Werte unterscheidet sich dieses Fragment nicht vom generellen Beispiel. Nur der Body, welcher die Antwort enthalten soll, ist deutlich umfangreicher. Dafür wird beim Body die Methode createJsonBody aufgerufen, die die zu erwartendete Antwort im Body definiert. Diese Methode ist abgebildet in \ref{lst:createJsonBody}.
 
 \lstset{language = Java}
 \begin{lstlisting}[caption=Test,label={lst:createJsonBody}]
@@ -411,6 +411,10 @@ private PactDslJsonBody createJsonBody() {
     return body;
 }
 \end{lstlisting}
+
+Wie man aus \ref{lst:createJsonBody} gut ableiten kann, ist das Metadata-Objekt recht umfangreich. Da bei der Anfrage definiert wurde, dass nur JSON akzeptiert wird, muss die Antwort selbstverständlich im JSON-Format vorliegen. Um komplexere Antworten in JSON zu definieren, bietet PACT unter anderem die Klasse PactDslJsonBody an. Damit kann ein Objekt erstellt werden, welches unterschiedliche Eigenschaften haben kann. Die einzelnen Eigenschaften werden per Methode hinzugefügt. 
+
+
 
 Erster Implementierung ausführlich, Probleme beim Definieren des Body, und dann eine Methode nach der anderen
 
