@@ -480,7 +480,38 @@ Der Aufruf in runTest-Methode unterscheidet sich einmal in der Methode, die vom 
 
 Hiermit ist die Implementierung auf der Seite des Consumers abgeschlossen und es können die PACT-Tests auf der Seite des Consumers ausgeführt werden und das PACT-File erstellt werden. Im Anschluss kann PACT auf Seite des Providers eingebunden werden.
 \subsubsection{Implementierung Provider}
-Einbinden des Maven Plugins, Einzelnen Werte kurz erläutern
+Die Einbindung von PACT auf Seiten des Providers deutlich übersichtlicher als auf der Seite des Consumers. Beim Provider muss, wie oben in der allgemeinen Beschreibung schon vorgestellt, nur das Plugin eingebunden. Da MARS Maven verwendet, wird das Maven-Plugin eingebunden. In der \ref{lst:MARSPACTFile} auf Seite \pageref{lst:MARSPACTFile} ist der Abschnitt der pom.xml vom Metadata-Service abgebildet, die für das PACT-Plugin benötigt wird. 
+
+\lstset{language = Java}
+\begin{lstlisting}[caption=Test,label={lst:MARSPACTFile}]
+<plugin>
+    <groupId>au.com.dius</groupId>
+    <artifactId>pact-jvm-provider-maven_2.11</artifactId>
+    <version>3.3.3</version>
+    <configuration>
+        <serviceProviders>
+            <serviceProvider>
+                <name>metadata-service</name>
+                <protocol>http</protocol>
+                <host>localhost</host>
+                <port>80</port>
+                <path>/metadata</path>
+                <consumers>
+                    <consumer>
+                        <name>metadata-client</name>
+                        <pactFile>
+                        ../metadata-client-metadata-service.json
+                        </pactFile>
+                    </consumer>
+                </consumers>
+            </serviceProvider>
+        </serviceProviders>
+    </configuration>
+</plugin>
+\end{lstlisting}
+
+In dem Auschnitt aus der pom.xml findet sich unter anderem die Namen vom Provider und Consumer wieder. Zudem muss die Adresse angeben werden unter denen der gestartete Service gefunden werden kann. Wie schon in der allgeimenen Beschreibung von PACT erwähnt, kann PACT den Provider nur testen, wenn er ausgeführt wird. Dazu befindet sich der Pfad zum PACT-File in diesem Ausschnit, welcher aus Gründen der Übersicht nur verkürzt dargestellt ist.
+Mit der Einbindung das Plugins kann der Verify-Job vom  PACT-JVM-Provider-Plugin ausgeführt. Mit der Ausführung dieses Jobs werden die Tests auf der Seite des Providers ausgeführt.
 
 \subsection{Untersuchung}
 
