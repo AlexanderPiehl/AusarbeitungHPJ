@@ -514,7 +514,153 @@ In dem Auschnitt aus der pom.xml findet sich unter anderem die Namen vom Provide
 Mit der Einbindung das Plugins kann der Verify-Job vom  PACT-JVM-Provider-Plugin ausgeführt. Mit der Ausführung dieses Jobs werden die Tests auf der Seite des Providers ausgeführt.
 
 \subsection{Untersuchung}
+Bei get a Metadata Entry den Rückgabewert von getDataId manuell auf String 0 angepasst, Assert schlägt fehl. Weitere Daten können nur überprüft werden, wenn man die Testdaten kennt. Header und ähnliches übernimmt Spring mit dem RestTemplate
 
+\lstset{language = Java}
+\begin{lstlisting}[caption=Test,label={lst:MARSPACTFile}]
+Verifying a pact between metadata-client and metadata-service
+  [Using file /home/alex/Mars/mars-import/metadata-client/target/pacts/metadata-client-metadata-service.json]
+  Get a metadata entry
+    returns a response which
+      has status code 200 (OK)
+      includes headers
+        "Content-Type" with value "application/json; charset=UTF-8" (OK)
+      has a matching body (FAILED)
+
+Failures:
+
+0) Verifying a pact between metadata-client and metadata-service - Get a metadata entry returns a response which has a matching body
+      $.body.additionalTypeSpecificData -> Type mismatch: Expected Map Map(bottomRightBound -> Map(lat -> 1954648900, lng -> 1613291745), topLeftBound -> Map(lat -> 4134225878, lng -> 3873370324)) but received Null null
+
+      Diff:
+
+      @1
+      -    "additionalTypeSpecificData": {
+      -        "bottomRightBound": {
+      -            "lat": 1954648900,
+      -            "lng": 1613291745
+      -        },
+      -        "topLeftBound": {
+      -            "lat": 4134225878,
+      -            "lng": 3873370324
+      -        }
+      -    },
+      +    "additionalTypeSpecificData": null,
+          "dataId": "86fc448c-7cac-48cf-88e1-e3bbdfc2452e",
+      
+      @12
+          "dataId": "86fc448c-7cac-48cf-88e1-e3bbdfc2452e",
+      -    "description": "CdWPkGgzoyOIPJJbjZah",
+      +    "description": "GIS Import via Postman",
+          "errorMessage": null,
+      
+      @16
+          "privacy": "PRIVATE",
+      -    "projectId": 376674471,
+      +    "projectId": 1,
+          "records": null,
+      
+      @19
+          "state": "UPLOADED",
+      -    "title": "NPQsfuCfIeUsNkKmnczm",
+      +    "tags": null,
+      +    "title": "Postman Import",
+          "type": "GIS",
+      
+      @21
+          "type": "GIS",
+      -    "userId": 994762534
+      +    "userId": 1
+      }
+\end{lstlisting}
+
+Bei der Put-Methode mit Absicht falschen Header gestzt:
+au.com.dius.pact.consumer.PactMismatchException: Pact verification failed for the following reasons:
+Set a new state for a metadata entry:
+    HeaderMismatch - Expected header 'Accept' to have value 'text/plain' but was 'text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2'
+
+The following requests were not received:
+Interaction: Set a new state for a metadata entry
+	in state None
+request:
+	method: PUT
+	path: /metadata/86fc448c-7cac-48cf-88e1-e3bbdfc2452e/state
+	query: [state:[PROCESSING]]
+	headers: [Accept:text/plain]
+	matchers: [:]
+	body: au.com.dius.pact.model.OptionalBody(EMPTY, )
+
+response:
+	status: 200 
+	headers: [:] 
+	matchers: [:] 
+	body: au.com.dius.pact.model.OptionalBody(EMPTY, )
+
+
+Im Response Header content-Length auf 1 gesetzt
+Verifying a pact between metadata-client and metadata-service
+  [Using file /home/alex/Mars/mars-import/metadata-client/target/pacts/metadata-client-metadata-service.json]
+  Set a new state for a metadata entry
+    returns a response which
+      has status code 200 (OK)
+      includes headers
+        "Content-Length" with value "1" (FAILED)
+      has a matching body (OK)
+
+Failures:
+
+0) Verifying a pact between metadata-client and metadata-service - Set a new state for a metadata entry returns a response which Verifying a pact between metadata-client and metadata-service
+  [Using file /home/alex/Mars/mars-import/metadata-client/target/pacts/metadata-client-metadata-service.json]
+  Set a new state for a metadata entry
+    returns a response which
+      has status code 200 (OK)
+      includes headers
+        "Content-Length" with value "1" (FAILED)
+      has a matching body (OK)
+
+Failures:
+
+0) Verifying a pact between metadata-client and metadata-service - Set a new state for a metadata entry returns a response which includes headers "Content-Length" with value "1"
+      Expected header 'Content-Length' to have value '1' but was '0'
+      
+Consumer nichts getestet, da uninteressant. Post auf Provider Seite funktioniert nicht:
+Verifying a pact between metadata-client and metadata-service
+  [Using file /home/alex/Mars/mars-import/metadata-client/target/pacts/metadata-client-metadata-service.json]
+  createMetadata
+    returns a response which
+      has status code 201 (OK)
+      includes headers
+        "Content-Type" with value "text/plain" (OK)
+      has a matching body (FAILED)
+
+Failures:
+
+0) Verifying a pact between metadata-client and metadata-service - createMetadata returns a response which has a matching body
+      / -> mismatch
+
+      Diff:
+
+      @0
+      -d08f46fd-95e9-432c-95c2-7b1a0a078162
+      +326e27d7-6285-45de-8343-36b3ab3798f8
+Daher keine weiteren Tests
+
+Ojekt vorher gelöscht, daher falscher Statuscode
+
+Verifying a pact between metadata-client and metadata-service
+  [Using file /home/alex/Mars/mars-import/metadata-client/target/pacts/metadata-client-metadata-service.json]
+  Delete a metadata entry
+    returns a response which
+      has status code 201 (FAILED)
+      has a matching body (OK)
+
+Failures:
+
+0) Verifying a pact between metadata-client and metadata-service - Delete a metadata entry returns a response which has status code 201
+      assert expectedStatus == actualStatus
+             |              |  |
+             201            |  404
+                            false
 
 \begin{itemize}
 \item Beschreibung der Testumgebung
