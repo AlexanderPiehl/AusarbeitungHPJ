@@ -715,7 +715,20 @@ Damit sind alle Testfalle beschrieben wurden, welche ausgeführten wurden, um PA
 \item Implementierung des Consumers
 \end{itemize}
 
-\subsection{Fazit}
+\subsection{Bewertung der Ergebnisse}
+Das Fazit und die damit verbundene Bewertung für PACT soll in zwei grobe Bereiche unterteilt werden. Einmal die Einbindung von PACT in ein bestehendes System und zum anderen die Bewertung der ausgeführten Testfälle.
+
+Im Gegensatz zu dem am Anfang beschriebenen Ansatz, bei dem PACT bei der Implementierung des Consumers mit eingebunden wird, musste bei MARS PACT in ein bestehendes System eingebunden werden. Ergänzend dazu kam, dass man selber weder den Metadata-Client noch den Metadata-Service implementiert hatte. Im generellen Ablauf von PACT wird jedoch davon ausgegangen, dass man Consumer sowie den Provider selber implmentiert. Dieser Umstand führte zu einigen Schwierigkeiten.
+Denn es waren nicht immer alle notwendigen Informationen vorhanden. Zwar lieferten die Swagger-Dateien sehr wichtige Informationen, jedoch waren diese nicht immer korrekt oder waren veraltet. Zudem fehlten auch einige Informationen. Auch wenn man diese Informationen teilweise über die Analyse der Aufrufe via Chrome herausarbeiten konnte, war dies jedoch mit deutlichem mehraufwand verbunden. Dieser Mehraufwand wäre vermutlich nict vorhanden, wenn man das System genau kennen würde.
+
+Aufgrund der fehlenden Informationen konnte man auch nicht immer entscheiden, ob das aktuelle Verhalten korrekt ist. Deswegen gab es teilweise auch keine andere Möglichkeit als das aktuelle Verhalten als das Soll-Verhalten zu definieren, um sich auch nicht selber aufzuhalten.
+
+Um die einzelnen Interaktionen besser zu verstehen, war es unumgänglich die Interaktion zuerst in Postman umzusetzen. Denn damit bekamm eine bessere Übersicht wie genau die Anfragen auszusehen haben und wie die Antworten aufgebaut sind. Erst mit diesen Informationen konnte die Implementierung von PACT beginnen.
+
+Jedoch war die Implementierung von PACT auch nicht ganz ohne Schwierigkeiten. Schaut man sich zuerst beschriebene generelle Beispiel und die danch erfolgte Implementierung in MARS an, sieht es auf den ersten Blick sehr kopmakt und vor allem simpel aus. Im Prinzip ist es auch simpel und kompakt, wenn man es verstanden hat. 
+
+
+
 \begin{itemize}
 \item Erklärung
 \item Erläuterung zu der Verbindung mit Microservice
