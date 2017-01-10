@@ -15,6 +15,7 @@
 \begin{document}
 \maketitle
 \section{Einleitung}
+klar heraustellen, dass der Fokus auf PACT liegt. eher ein technikstudie
 \nocite{*}
 \section{REST}
 REST ist ein Architekturstil für verteilte Systeme. Die Abkürzung REST steht für Representational State Transfer \cite{chakrabarti2009test}.
@@ -704,17 +705,6 @@ Failures:
 
 Damit sind alle Testfalle beschrieben wurden, welche ausgeführten wurden, um PACT bewerten zu können.
 
-\begin{itemize}
-\item Beschreibung der Testumgebung
-\item Ziel beschrieben
-\item Aussuchen eines Services und Consumers
-\item Aufrufen herausfinden via Browser und Postman + Swagger
-\item Testen der Aufrufe via Postman, um festzustellen das sie funktionieren und koirrekt sind
-\item Aktueller Stand als korrekt anzusehen und Soll-Zustand
-\item Branch
-\item Implementierung des Consumers
-\end{itemize}
-
 \subsection{Bewertung der Ergebnisse}
 Das Fazit und die damit verbundene Bewertung für PACT soll in zwei grobe Bereiche unterteilt werden. Einmal die Einbindung von PACT in ein bestehendes System und zum anderen die Bewertung der ausgeführten Testfälle.
 
@@ -733,17 +723,13 @@ Zu der ausbaufähigen Dokumentation kam leider noch hinzu, dass PACT noch nicht 
 
 Zusammenfassend für den Abschnitt der Einbindung von PACT in MARS kann man jedoch sagen, dass es durchaus simpel und schnell umsetzbar ist. Dies setzt aber voraus, dass man sowhl weiß, wie der Consumer und Provider im Deatil interagieren und wie man mit PACT die Testfälle implementiert.
 
+Im nächsten bereich werden die einzelnen Untersuchungen bewertet. Zum Beginn kann man gleich festhalten, dass die Ausführung der Tests, egal ob es auf der Seite des Consumers oder Providers ist, sehr schnell ausgeführt werden. Dadurch bekommt man sehr schnell ein Feedback, ob die Tests erfolgreich waren. 
+
+Wie man gut aus manchen Listings ableiten kann, sind die Meldungen teilweise sehr lang. Besonders bei einigen Fehlern wiederholen sich die Fehlerbeschreibungen und sorgen für eine lange Meldung in der Konsole. Unter anderem dadurch werden die Meldung unübersichtlich und man muss genau lesen, woran der Test gescheitert ist. Besonders bei der Meldung, die in \ref{lst:ErrorProvider_GET} auf Seite \pageref{lst:ErrorProvider_GET}, ist die Fehler Beschreibung verwirrend und teilweise auch einfach falsch. Wie die Fehlerbeschreibung korrekt wiedergibt, fehlt einfach die Map mit den GEO-Daten. Jedoch werden im Diff-Abschnitt auch andere Body-Abschnitte angezeigt, die sich unterscheiden. Dabei ist für diese Abschnitte definiert wurden, dass nur der Typ bzw. Format geprüft werden soll und keine Überprüfung des Wertes. Die komplette Meldung suggeriert aber, dass auch diese Abschnitte fehlerhaft sind. Dies führte durchaus zu Verwirrungen und lenkte von der eigentlichen Unterscheidung durchaus ab. 
  
-
-\begin{itemize}
-\item Erklärung
-\item Erläuterung zu der Verbindung mit Microservice
-\item Normale Implementierung
-\item Einbinden in Mars
-\item Fazit
-\end{itemize}
 \section{Ausblick Masterarbeit}
-
+Fortsetzen Goolge, Fowler
+Autoamtsierung der Testfall Erstellung
 
 
 \bibliography{literatur}
