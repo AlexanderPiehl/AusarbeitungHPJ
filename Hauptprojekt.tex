@@ -16,26 +16,26 @@
 \begin{document}
 \maketitle
 \section{Einleitung}
-In der vorliegenden Ausarbeitung wird die erfolgte Arbeit im Hautprojekt vorgestellt. Der Schwerpunkt im Hauptprojekt lag dabei zu prüfen, inwieweit das Framework PACT für eine Microservice Architektur bzw. für das Framework MARS nützlich ist. Mit dem Programm PACT können sogenannte Consumer Driven Contract Tests ausgeführt werden. Bei diesen Tests werden die Schnittstellen zwischen zwei Services getestet, die miteinander interagieren. Der Testansatz Consumer Driven Contract Tests basiert auf de Ansatz Consumer Driven Contract, welcher für die Implementierung von Schnittstellen verwendet werden kann. Bei diesem Ansatz werden die Schnittstellen aus der Sicht des Consumers entwickelt. Dabei ist der Consumer, der Service, der den anderen Service anfragt, also den Request erstellt. Der angefragte Service wird in dieser Ausarbeitung Provider genannt.
+In der vorliegenden Ausarbeitung wird die erfolgte Arbeit im Hautprojekt vorgestellt. Der Schwerpunkt im Hauptprojekt lag dabei zu prüfen, inwieweit das Framework PACT für eine Microservice Architektur bzw. für das Framework MARS nützlich ist. Mit dem Programm PACT können sogenannte Consumer Driven Contract Tests ausgeführt werden. Bei diesen Tests werden die Schnittstellen zwischen zwei Services getestet, die miteinander interagieren. Der Testansatz Consumer Driven Contract Tests basiert auf dem Ansatz Consumer Driven Contract, welcher für die Implementierung von Schnittstellen verwendet werden kann. Bei diesem Ansatz werden die Schnittstellen aus der Sicht des Consumers entwickelt. Dabei ist der Consumer der Service, der den anderen Service anfragt, also den Request erstellt. Der angefragte Service wird in dieser Ausarbeitung Provider genannt.
 
-Innerhalb dieser Ausarbeitung soll erarbeitet werden, ob PACT, die im Grundprojekt erarbeiteten Anforderungen für das Testen von Microservice Anwendungen erfüllen kann. Die größten Anforderungen waren dabei, ein schnelles und aussagekräftiges Feedback aus den Tests zu bekommen. Dabei dient weiterhin das Framework MARS als Testobjekt.
+Innerhalb dieser Ausarbeitung soll erarbeitet werden, ob PACT die im Grundprojekt erarbeiteten Anforderungen für das Testen von Microservice Anwendungen erfüllen kann. Die größten Anforderungen waren ein schnelles und aussagekräftiges Feedback aus den Tests zu bekommen. Dabei dient weiterhin, wie im Grundprojekt, das Framework MARS als Testobjekt.
 
-Da PACT Schnittstellen testet, wird am Anfang der Ausarbeitung der Architekturstil erläutert, in dem die Schnittstelle von MARS implementiert wurden sind. In MARS sind alle Schnittstellen mit dem Architekturstil REST entworfen worden. Nach der grundsätzlichen Erklärung von REST, werden noch Besonderheiten beim Testen definiert, welche sich aus der Schnittstelle und der Verwendung von REST ergeben. Diese neu ausgearbeiteten Herausforderungen sollen die im Grundprojekt ausgearbeiteten Herausforderungen ergänzen. 
-Im nächsten Kapitel wird anschließend Consumer Driven Contract Test detaillierter vorgestellt und erläutert. In diesem Zuge wird die Erläuterung mithilfe einer Beispiel Implementierung von PACT gemacht. Im Anschluss wird im nächsten Kapitel die Implementierung von PACT innerhalb von MARS beschrieben, da sie sich durchaus vom generellen Ablauf unterscheidet. Für die Implementierung von PACT innerhalb von MARS wurden zwei Service ausgesucht, an denen beispielhaft die Implementierung ausgeführt wurden ist. Nach der Implementierung von PACT wurden verschiedene Untersuchungen durchgeführt, die dazu dienten PACT zu bewerten. In dieser Bewertung wird auch eine Aussage getroffen, ob PACT sinnvoll für MARS bzw. generell für eine Microservice Architektur ist. Zum Abschluss dieser Ausarbeitung gibt es noch einen Ausblick auf die Master Arbeit.
+Da PACT Schnittstellen testet, wird am Anfang der Ausarbeitung der Architekturstil erläutert, mit dem die Schnittstellen von MARS implementiert wurden sind. In MARS sind alle Schnittstellen mit dem Architekturstil REST entworfen worden. Nach der grundsätzlichen Erklärung von REST, werden noch Besonderheiten beim Testen definiert, welche sich aus der Schnittstelle und der Verwendung von REST ergeben. Diese neu ausgearbeiteten Herausforderungen sollen die im Grundprojekt ausgearbeiteten Herausforderungen ergänzen. 
+Im nächsten Kapitel wird anschließend Consumer Driven Contract Test detaillierter vorgestellt und erläutert. Die Erläuterung wird mit einer Beispiel Implementierung von PACT unterstützt. Im Anschluss wird die Implementierung von PACT innerhalb von MARS beschrieben, da sich diese vom generellen Ablauf unterscheidet. Für die Einführung von PACT innerhalb von MARS wurden zwei Service ausgesucht, an denen beispielhaft die Implementierung ausgeführt wurden ist. Nach der Implementierung von PACT wurden verschiedene Untersuchungen durchgeführt, die dazu dienten PACT zu bewerten. In dieser Bewertung wird auch eine Aussage getroffen, ob PACT sinnvoll für MARS bzw. generell für eine Microservice Architektur ist. Im letzten Kapitel wird ein Ausblick auf die Masterarbeit gegeben.
 \nocite{*}
 \section{REST}
 REST ist ein Architekturstil für verteilte Systeme. Die Abkürzung REST steht für Representational State Transfer \cite{chakrabarti2009test}.
 Erstmals wurde REST im Jahr 2000 von Roy Fielding vorgestellt \citep{kao2013performance}.
 Die REST-Architektur wird häufig für Client-Server Anwendungen verwendet, ist jedoch nicht darauf beschränkt.
-Zurzeit ist REST sehr beliebt bei der Entwicklung von Webservices, da aufgrund von REST, Webservices wohl nicht nur leichter zu implementieren sind, sondern auch einfacher zu skalieren sind. \cite{chakrabarti2009test}. 
-Unter Anderem aus diesen Gründen stellten Google, Facebook und Yahoo ihre Services von SOAP auf REST um \cite{rodriguez2008restful, navas2014rest}.
+Zurzeit ist REST sehr beliebt bei der Entwicklung von Webservices. Mit REST soll die Implementierung von Webservices leichter sein. Dazu sollen sie auch einfacher zu skalieren sein \cite{chakrabarti2009test}. 
+Auch aus diesen Gründen stellten Google, Facebook und Yahoo ihre Services von SOAP auf REST um \cite{rodriguez2008restful, navas2014rest}.
 
 REST basiert dabei auf Resource Oriented Architecture, kurz ROA \citep{chakrabarti2009test}. Dies bedeutet, dass jede wichtige Information als Ressource zur Verfügung stehen muss \cite{porres2011modeling}.
-Die Zugänglichkeit zu der Ressource muss über eine eindeutige URI gegeben sein. Die Ressourcen sollen zusätzlich über verschiedene Methoden manipuliert werden können. Es müssen mindestens die sogenannten CRUD-Operatoren zur Verfügung stehen. CRUD steht für Create, Read, Update und Delete und beschreibt die grundsätzlichen Datenoperationen. Bei REST werden dafür die standardisierten HTTP-Methoden verwendet, welche im Standard RFC 2616 definiert wurden sind \citep{kao2013performance}. In der Tabelle \ref{tab:CRUD_HTTP_Methods} auf Seite \pageref{tab:CRUD_HTTP_Methods} werden die Beziehung zwischen den CRUD Operatoren und den HTTP Operatoren dargestellt.
+Die Zugänglichkeit zu den Ressourcen muss über eine Uniform Resource Identifier, kurz URI gegeben sein. Zudem sollen die Ressourcen über verschiedene Methoden manipuliert werden können. Es müssen mindestens die sogenannten CRUD-Operatoren zur Verfügung stehen. CRUD steht für Create, Read, Update und Delete, damit werden die grundsätzlichen Datenoperationen beschrieben. Bei REST werden dafür die im Standard RFC 2616 standardisierten HTTP-Methoden verwendet \citep{kao2013performance}. In der Tabelle \ref{tab:CRUD_HTTP_Methods} auf Seite \pageref{tab:CRUD_HTTP_Methods} werden die Beziehung zwischen den CRUD-Operatoren und den HTTP-Operatoren dargestellt.
 
 \begin{table}[htbp]
 \centering
-\begin{tabular}{|c|l|p{4cm}|p{4cm}|}
+\begin{tabular}{|c|c|p{4cm}|p{4cm}|}
 \hline
 \multicolumn{1}{|l|}{CRUD-Operation} & HTTP-Methode \\ \hline
 Create & POST  \\ \hline
@@ -47,9 +47,9 @@ Delete & DELETE \\ \hline
 \label{tab:CRUD_HTTP_Methods}
 \end{table}
 
-Neben den CRUD-Operatoren können noch weitere HTTP-Methoden zur Verfügung stehen, wie z.B. HEAD und OPTIONS \cite{porres2011modeling}.
+Neben den CRUD-Operatoren können noch weitere HTTP-Methoden zur Verfügung stehen. Beispiele hierfür sind HEAD und OPTIONS \cite{porres2011modeling}.
 
-Bei REST müssen die jeweiligen Aufrufe Zustandslos erfolgen \cite{reza2010framework, porres2011modeling, kao2013performance}. Im Detail heißt dies, dass der Webservices keine Informationen über den Zustand seiner einzelnen Clients speichert. Sollten Informationen über den Zustand notwendig sein, müssen die Clients die Informationen mitgeben. Dahingehend ist es auch mit REST möglich kompliziertere Programmzustände abzubilden \cite{porres2011modeling}.
+Bei REST müssen die jeweiligen Aufrufe Zustandslos erfolgen \cite{reza2010framework, porres2011modeling, kao2013performance}. Im Detail heißt dies, dass der Webservices keine Informationen über den Zustand seiner einzelnen Clients speichert. Sollten Informationen über deren Zustand notwendig sein, müssen die Clients die Informationen mit übertragen. Dadurch können auch komplexerer Programmzustände abgebildet werden \cite{porres2011modeling}.
 
 Die jeweiligen Nachrichten können in verschiedenen Formate vorliegen
 \cite{reza2010framework}. Sehr häufig werden XML oder JSON oder beide Formate für die Nachrichten verwendet. 
@@ -79,21 +79,28 @@ Besonders bei gewünschten Änderungen eines Kontraktes kann es unübersichtlich
 
 Eine andere Problematik, die durch der Verlagerung der Kommunikation in das Netzwerk, entsteht ist, dass sehr viel Traffic im Netzwerk herrschen kann. Dadurch kann es vermehrt auftreten, dass Nachrichten beschädigt werden oder auch verloren gehen. Mit dieser Problematik müssen die Provider und Consumer umgehen können.
 
-\section{Consumer Driven Contract Test - Quellen??}
-Bei dem Ansatz Consumer Driven Contract werden die Schnittstellen bzw. die Kontrakte aus der Sicht des Clients/Consumers definiert \cite{Robinson2006}. Dabei spielt es keine Rolle, ob es nur einen Consumer oder mehrere existieren. Die jeweiligen Anfragen und gewünschten Antworten werden notiert und auf Grundlage dieser Informationen wird der Provider implementiert. Dabei baut der Ansatz auf der Grundnahme auf, dass der Consumer am besten wüsste, was er nutzen möchte.
+\section{Consumer Driven Contract Test}
+Bei dem Ansatz Consumer Driven Contract werden die Schnittstellen bzw. die Kontrakte aus der Sicht des Clients/Consumers definiert \cite{Robinson2006, bayer2015jaxcenter, vitz2016inno}. Dabei spielt es keine Rolle, ob es nur einen Consumer oder mehrere existieren. Die jeweiligen Anfragen und gewünschten Antworten werden notiert und auf Grundlage dieser Informationen wird der Provider implementiert. Dabei baut der Ansatz auf der Grundnahme auf, dass der Consumer am besten wüsste, was er nutzen möchte.
 
 Wie sich aus der generellen Beschreibung dieses Ansatzes ableiten lässt, eignet sich dieser Ansatz am Besten, wenn sowohl die Consumer wie der Provider neu implementiert werden. Bei bestehenden Anwendungen könnte dieses Verfahren unter anderem dafür genutzt werden, um zu überprüfen, ob der Provider unnötige Schnittstellen bzw. Methoden anbietet.
 
-Der Ansatz Consumer Driven Contract hat den Vorteil, dass sehr klar definiert ist, welche Anforderungen der Consumer bzw. die Consumer an den Provider haben. Andernfalls könnte der Service nur erahnen, wie er die jeweiligen Anforderungen umsetzen muss. Durch die eindeutige Definition der Anforderungen, kann der Service so schlank wie möglich implementiert werden.   
+Der Ansatz Consumer Driven Contract hat den Vorteil, dass sehr klar definiert ist, welche Anforderungen der Consumer bzw. die Consumer an den Provider haben \cite{vitz2016inno}. Andernfalls könnte der Service nur erahnen, wie er die jeweiligen Anforderungen umsetzen muss. Durch die eindeutige Definition der Anforderungen, kann der Service so schlank wie möglich implementiert werden. Der Ansatz eignet sich jedoch nur für Umgebungen, bei denen Kontrolle über Consumer sowie Provider besteht \cite{bayer2015jaxcenter}.
 
-Auf der Basis dieses Konzeptes setzen die Consumer Driven Contract Tests auf. Ein Tool, welches Consumer Driven Contract Tests unterstützt ist PACT. PACT ist ein Open-Source Tool, welches auf Github verwaltet wird.
+Auf der Basis dieses Konzeptes setzen die Consumer Driven Contract Tests auf \cite{bayer2015jaxcenter, vitz2016inno, Robinson2006}. Ein Framework, welches Consumer Driven Contract Tests unterstützt ist PACT. PACT ist ein Open-Source Tool, welches auf Github verwaltet wird \cite{pact}.
 
-In der Ausführung von Martin Fowler über das Testen von Microservices wird dieses Verfahren explizit empfohlen. Dabei benennt er neben PACT noch zwei weitere Tools, welche Consumer Driven Contract Tests anbieten. Diese Tools sind PACTO und Janus. Für das Hauptprojekt wurde sich für PACT entschieden, da nach der ersten Recherche PACT den größten Umfang bietete und zudem PACT besser dokumentiert ist, als die anderen Tools.
+In der Ausführung von Toby Clemson über das Testen von Microservices wird dieses Verfahren explizit empfohlen \cite{Clemson2014}. Dabei benennt er neben PACT noch zwei weitere Tools, welche Consumer Driven Contract Tests anbieten. Diese Tools sind PACTO und Janus. Für das Hauptprojekt wurde sich für PACT entschieden, da nach der ersten Recherche PACT den größten Umfang bietete und zudem PACT besser dokumentiert ist, als die anderen Tools.
 
 Mit dem Tool PACT können die Consumer Driven Contract Tests in verschiedenen Programmiersprachen geschrieben werden. Zur Auswahl stehen dabei Ruby, C\#, JavaScript und Java. Im nächsten Kapitel wird der generelle Ablauf von PACT anhand eines Beispiels erläutert, bevor im darauffolgenden Kapitel die Vorteile beschrieben, die durch die Verwendung von Consumer Driven Contract Tests entstehen sollen. Denn einige vermeintliche Vorteile leiten sich direkt aus dem Ablauf von Consumer Driven Contract Test ab.
 
 \subsection{Ablauf Consumer Driven Contract Test}
-In diesem Kapitel wird der generelle Ablauf von Consumer Driven Contract Tests beschrieben. Der Ablauf wird anhand mehrerer Beispiele erläutert, welche von verschiedenen Webseiten stammen, die Consumer Driven Contract Tests erläutern \cite{bayer2015jaxcenter, vitz2016inno, Vincent2015}.
+In diesem Kapitel wird der generelle Ablauf von Consumer Driven Contract Tests beschrieben. Der Ablauf wird anhand eines Beispiele erläutert, welche von verschiedenen Webseiten stammen, die Consumer Driven Contract Tests erläutern \cite{bayer2015jaxcenter, vitz2016inno, Vincent2015}.
+
+\begin{figure}[htbp]
+  \centering
+      \includegraphics[width=0.5\textwidth]{./Images/pact}
+    \caption{Ablauf Pact}
+    \label{fig:Pact}
+\end{figure}
 
 Wie bereits erwähnt, basiert Consumer Driven Contract Test auf Consumer Driven Contract. Daher wird auch bei Consumer Driven Contract Test zunächst der Consumer bzw. die Consumer implementiert. In diesem, Beispiel fragt der Consumer Produktdetails über ein bestimmtes Produkt beim Provider an.
 
@@ -232,19 +239,17 @@ pact {
 \end{lstlisting}
 
 Damit der Test ausgeführt werden kann, muss der Provider gestartet werden. Sobald dies geschehen ist, kann das Plugin für den Provider ausgeführt werden. Die Ergebnisse des Tests werden in der Konsole angezeigt.
-\subsection{Vorteile Consumer Driven Contract Test - Quellen?}
+\subsection{Vorteile Consumer Driven Contract Test}
 Neben dem generellen Vorteilen, welche man sich von dem Ansatz Consumer Driven Contract Test verspricht und schon im vorherigen Kapitel kurz skizziert wurden sind, gibt es noch weitere Vorteile, die sich explizit auf das Testen beziehen. Aus Gründen der Übersichtlichkeit wird der Begriff Service wieder verwendet, wenn sich ein Vorteil gleichermaßen auf Consumer und Provider bezieht.
 
-In der vorherigen Ausarbeitung zum Grundprojekt wurden die Anforderungen beschrieben, welche beim Testen einer Microserive Anwendung vorliegen. 
+In der vorherigen Ausarbeitung zum Grundprojekt wurden die Anforderungen beschrieben, welche beim Testen einer Microservice Anwendung vorliegen. 
 Eine dieser Anforderung war, dass es beim Testen ein schnelles Feedback gibt. 
 Genau diese Anforderung soll Consumer Driven Contract Test erfüllen. 
-Jede noch so große Änderung am Consumer oder Provider soll ohne großen Aufwand getestet werden können. Dadurch soll man ein schnelles Feedback bekommen, ob der jeweilige Service den Vertrag noch einhält.
+Jede noch so große Änderung am Consumer oder Provider soll ohne großen Aufwand getestet werden können. Dadurch soll man ein schnelles Feedback bekommen, ob der jeweilige Service den Vertrag noch einhält \cite{Vincent2015}.
 
-Ergänzend dazu verspricht Consumer Driven Contract Test einen feinkörnigen Einblick darin, was für Auswirkungen die Änderung auf den Service hat.
+Dazu soll man schnell einen Überblick bekommen, ob die Änderung am Service zu unerwarteten Fehlern führt. Aufgrund des zügigen Feedbacks könnte das Fehlverhalten schnell korrigiert werden \cite {Vincent2015, vitz2016inno, bayer2015jaxcenter}.
 
-Dazu soll man schnell einen Überblick bekommen, ob die Änderung am Service zu unerwarteten Fehlern führt. Aufgrund des zügigen Feedbacks könnte das Fehlverhalten schnell korrigiert werden.
-
-Bei gewünschten oder notwendigen Änderungen am Provider, weil ein neuer Consumer hinzugefügt wurden ist oder bei einem Consumer die Anforderungen an den Provider sich geändert haben, soll man aufgrund von Consumer Driven Contract Test schnell erkennen, ob aufgrund der Änderung andere Consumer angepasst werden müssen. 
+Bei gewünschten oder notwendigen Änderungen am Provider, weil ein neuer Consumer hinzugefügt wurden ist oder bei einem Consumer die Anforderungen an den Provider sich geändert haben, soll man aufgrund von Consumer Driven Contract Test schnell erkennen, ob aufgrund der Änderung andere Consumer angepasst werden müssen \cite{vitz2016inno}. 
 
 Zusammenfassend betrachtet lassen sich die vermeintliche Vorteile von Consumer Driven Contract Test dahingehend vereinen, dass es ein schnelles Feedback geben soll. Dieses Feedback soll Auskunft darüber geben, welche Auswirkungen die Änderungen auf die Einhaltung des Kontraktes haben. Dadurch können ungewollte Fehler schnell identifiziert werden oder notwendige Aktualisierungen von Consumer bzw. Provider festgestellt werden.
 
