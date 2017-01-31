@@ -93,7 +93,7 @@ In der Ausführung von Toby Clemson über das Testen von Microservices wird dies
 Mit dem Tool PACT können die Consumer Driven Contract Tests in verschiedenen Programmiersprachen geschrieben werden. Zur Auswahl stehen dabei Ruby, C\#, JavaScript und Java. Im nächsten Kapitel wird der generelle Ablauf von PACT anhand eines Beispiels erläutert, bevor im darauffolgenden Kapitel die Vorteile beschrieben, die durch die Verwendung von Consumer Driven Contract Tests entstehen sollen. Denn einige vermeintliche Vorteile leiten sich direkt aus dem Ablauf von Consumer Driven Contract Test ab.
 
 \subsection{Ablauf Consumer Driven Contract Test}
-In diesem Kapitel wird der generelle Ablauf von Consumer Driven Contract Tests beschrieben. Der Ablauf wird anhand eines Beispiele erläutert, welche von verschiedenen Webseiten stammen, die Consumer Driven Contract Tests erläutern \cite{bayer2015jaxcenter, vitz2016inno, Vincent2015}.
+In diesem Kapitel wird der generelle Ablauf von Consumer Driven Contract Tests beschrieben. Der Ablauf wird anhand eines Beispiele erläutert \cite{bayer2015jaxcenter, vitz2016inno, Vincent2015}.
 
 \begin{figure}[htbp]
   \centering
@@ -102,9 +102,7 @@ In diesem Kapitel wird der generelle Ablauf von Consumer Driven Contract Tests b
     \label{fig:Pact}
 \end{figure}
 
-Wie bereits erwähnt, basiert Consumer Driven Contract Test auf Consumer Driven Contract. Daher wird auch bei Consumer Driven Contract Test zunächst der Consumer bzw. die Consumer implementiert. In diesem, Beispiel fragt der Consumer Produktdetails über ein bestimmtes Produkt beim Provider an.
-
-Nach dem die Implementierung des Consumers soweit erfolgt ist, dass er Anfragen stellen und verarbeiten kann, kann PACT für den Consumer implementiert werden. Der größte Aufwand bei PACT ist die Implementierung der Testfälle auf der Seite des Consumers.
+Der Abbildung \ref{fig:Pact} auf Seite \pageref{fig:Pact} kann der generelle Ablauf von PACT entnommen werden. Zuerst werden auf der Seite des Consumers die Interaktionen definiert. Dies beinhaltet sowohl die Anfrage wie auch die zu erwarteten Antworten. PACT erstellt auf Grundlage dieser Informationen einen Stub vom Provider, der auf die Anfrage genauso antwortet wie es vorher definiert wurde. Sobald diese Tests erfolgreich abgelaufen sind, erfolgt das Testen des Providers. Dafür werden sozusagen die Seiten gewechselt. Es wird nicht mehr der Provider simuliert sondern die einzelnen Consumer. PACT erstellt die Anfrage und überprüft, ob der Provider korrekt antwortet. Damit der Provider getestet werden kann, muss der Provider gestartet sein. Beim generellen Ablauf von PACT erkennt sehr gut die Nähe zu Consumer Driven Contract. Begonnen wird mit den Consumern und abgeschlossen mit dem Provider.
 
 Für die Implementierung von PACT auf der Seite des Consumers wird eine neue Klasse angelegt. Diese Klasse erbt von der PACT Klasse ConsumerPactTest. Durch die Vererbung müssen vier abstrakte Methoden implementiert werden, welche in der folgenden Auflistung genannt werden:
 \begin{itemize}
