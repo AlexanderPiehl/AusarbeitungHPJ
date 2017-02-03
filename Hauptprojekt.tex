@@ -52,49 +52,51 @@ Neben den CRUD-Operatoren können noch weitere HTTP-Methoden zur Verfügung steh
 
 Bei REST müssen die jeweiligen Aufrufe Zustandslos erfolgen \cite{reza2010framework, porres2011modeling, kao2013performance}. Im Detail heißt dies, dass der Webservices keine Informationen über den Zustand seiner einzelnen Clients speichert. Sollten Informationen über deren Zustand notwendig sein, müssen die Clients die Informationen mit übertragen. Dadurch können auch komplexerer Programmzustände abgebildet werden \cite{porres2011modeling}.
 
-Die jeweiligen Nachrichten können in verschiedenen Formate vorliegen
-\cite{reza2010framework}. Sehr häufig werden XML oder JSON oder beide Formate für die Nachrichten verwendet. 
-Eine Vorschrift existiert nicht.
+Die jeweiligen Nachrichten können in verschiedene Formaten vorliegen
+\cite{reza2010framework}. Sehr häufig werden XML, JSON oder beide Formate für die Nachrichten verwendet. 
+Eine Vorschrift, welches Format verwendet werden muss, besteht nicht.
 
 Zusammenfassend lässt sich REST in vier Grundprinzipien zusammenfassen \citep{porres2011modeling}: 
 
 \begin{itemize}
 \item \textbf{Addressability: } Jede wichtige Informationen muss als Ressource vorliegen und über eine eindeutige URI erreichbar sein.
-\item \textbf{Connectedness: } Die Repräsentation der Ressourcen ist getrennt von den Ressourcen. Dies bedeutet Ressourcen können in verschiedenen Formate vorliegen, wie JSON und XML.
-\item \textbf{Uniform Interface: } Auf die Ressourcen wird nur über standardisierten HTTP-Methoden zugegriffen.
+\item \textbf{Connectedness: } Die Repräsentation ist getrennt von den Ressourcen. Dies bedeutet, Ressourcen können in verschiedenen Formate vorliegen, wie z.B. JSON und XML.
+\item \textbf{Uniform Interface: } Auf die Ressourcen wird nur über standardisierte HTTP-Methoden zugegriffen.
 \item \textbf{Statelessnes: } Jede Kommunikation erfolgt Zustandslos.
 \end{itemize}
 
-Webservices, welche die vier Grundprinzipien einhalten, bekommen häufig den Beinamen RESTful \citep{porres2011modeling}. Der Begriff RESTful ist jedoch nicht eindeutig definiert.  
+Webservices, welche die vier Grundprinzipien einhalten, bekommen häufig den Beinamen RESTful \citep{porres2011modeling}. Der Begriff RESTful ist nicht eindeutig definiert.  
 
 \subsection{Besonderheiten beim Testen}
-Die Kommunikation zwischen Consumer und Provider erfolgt nach einem festgelegten Kontrakt, welcher auch häufig Schnittstelle genannt wird. In dem Kontrakt ist festgelegt, wie die Kommunikation zwischen Consumer und Provider erfolgt. Das heißt, mit dem Kontrakt ist definiert welche Methoden der Provider seinen Consumern anbietet und wie die Consumer sie aufrufen können, also welche Parameter benötigt werden und in welchem Format der Consumer seine Antwort erhält. Dahingehend ist es enorm wichtig, dass der Kontrakt eingehalten wird. Andernfalls kann es zu Fehlern führen.
+Die Kommunikation zwischen Consumer und Provider erfolgt nach einem festgelegten Kontrakt, welcher auch Schnittstelle genannt wird. In dem Kontrakt ist festgelegt, wie die Kommunikation zwischen Consumer und Provider erfolgt. Das heißt, mit dem Kontrakt ist definiert welche Methoden der Provider seinen Consumern anbietet und wie die Consumer diese aufrufen können. Dazu beinhaltet er auch Informationen welche Parameter benötigt werden und in welchem Format der Consumer seine Antworten erhält. Dahingehend ist es enorm wichtig, dass der Kontrakt eingehalten wird. Andernfalls kann es zu Fehlern führen.
 
-Des Wegen muss ein Schwerpunkt beim Testen von Anwendungen, welche REST verwenden, darauf liegen, zu kontrollieren, dass der Kontrakt weiterhin gültig ist. Daher muss geprüft werden, dass Veränderung am Consumer bzw. Provider nicht zur einer Verletzung des Kontraktes führen.
+Deswegen muss ein Schwerpunkt beim Testen von Anwendungen, welche REST verwenden, darauf liegen zu kontrollieren, dass der Kontrakt weiterhin gültig ist. Daher muss geprüft werden das Veränderungen am Consumer bzw. Provider nicht zu einer Verletzung des Kontraktes führt.
 
-Besonders bei Anwendungen mit einer Microservice-Architektur, bei der die Kommunikation hauptsächlich über das Netzwerk geschieht, ist es von großer Bedeutung, dass die Kommunikation funktioniert und nicht auf Grund fehlerhaften Kontrakten zu Fehlern kommt.
+Besonders bei Anwendungen mit einer Microservice-Architektur, bei der die Kommunikation hauptsächlich über das Netzwerk abläuft, ist es von großer Bedeutung, dass die Kommunikation funktioniert und nicht aufgrund eines fehlerhaften Kontraktes zu Fehlern führt.
 
-Wegen der Verlagerung der Kommunikation in das Netzwerk, wird das überprüfen der Kontrakte umfangreicher, da schlicht und ergreifend sehr viele Kontrakte vorliegen. Ergänzend dazu sind die einzelnen Services gleichzeitig Consumer und Provider. Daher kann es schnell unübersichtlich werden, wer welchen Services anfragt und wie.
+Wegen der Verlagerung der Kommunikation in das Netzwerk, wird das Überprüfen der Kontrakte umfangreicher, da sehr viele Kontrakte vorliegen. Ergänzend dazu sind die einzelnen Services gleichzeitig Consumer und Provider. Daher kann es unübersichtlich werden, wer welche Services anfragt und wie.
 
-Besonders bei gewünschten Änderungen eines Kontraktes kann es unübersichtlich werden. Aufgrund der möglichen Vielzahl von Consumer, kann  sehr schnell der Überblick verloren gehen, welche Consumer aktualisiert werden müssen und welche nicht. Dies kann zur Folge haben, dass ein Provider Methoden oder Variante einer Methode bereitstellt, die nicht mehr benötigt werden.
+Besonders bei gewünschten Änderungen eines Kontraktes kann es unübersichtlich werden. Aufgrund der möglichen Vielzahl von Consumern, kann der Überblick verloren gehen, welche Consumer aktualisiert werden müssen und welche nicht. Dies kann zur Folge haben, dass ein Provider Methoden oder Varianten einer Methode bereitstellt, die nicht mehr benötigt werden.
 
-Eine andere Problematik, die durch der Verlagerung der Kommunikation in das Netzwerk, entsteht ist, dass sehr viel Traffic im Netzwerk herrschen kann. Dadurch kann es vermehrt auftreten, dass Nachrichten beschädigt werden oder auch verloren gehen. Mit dieser Problematik müssen die Provider und Consumer umgehen können.
+Eine andere Problematik, die durch die Verlagerung der Kommunikation in das Netzwerk entsteht ist, dass damit der Traffic im Netzwerk erhöht wird. Dadurch kann es vermehrt auftreten, dass Nachrichten beschädigt werden oder verloren gehen. Mit dieser Problematik müssen die Provider und Consumer umgehen können.
 
 \section{Consumer Driven Contract Test}
-Bei dem Ansatz Consumer Driven Contract werden die Schnittstellen bzw. die Kontrakte aus der Sicht des Clients/Consumers definiert \cite{Robinson2006, bayer2015jaxcenter, vitz2016inno}. Dabei spielt es keine Rolle, ob es nur einen Consumer oder mehrere existieren. Die jeweiligen Anfragen und gewünschten Antworten werden notiert und auf Grundlage dieser Informationen wird der Provider implementiert. Dabei baut der Ansatz auf der Grundnahme auf, dass der Consumer am besten wüsste, was er nutzen möchte.
+Bei dem Ansatz Consumer Driven Contract werden die Schnittstellen bzw. die Kontrakte aus der Sicht des Clients/Consumers definiert \cite{Robinson2006, bayer2015jaxcenter, vitz2016inno}. Dabei spielt es keine Rolle, ob nur einen Consumer oder mehrere existieren. Die jeweiligen Anfragen und gewünschten Antworten werden festgelegt und auf Grundlage dieser Informationen wird der Provider implementiert. Dabei baut der Ansatz auf der Annahme auf, dass der Consumer am besten wüsste, was er nutzen möchte.
 
-Wie sich aus der generellen Beschreibung dieses Ansatzes ableiten lässt, eignet sich dieser Ansatz am Besten, wenn sowohl die Consumer wie der Provider neu implementiert werden. Bei bestehenden Anwendungen könnte dieses Verfahren unter anderem dafür genutzt werden, um zu überprüfen, ob der Provider unnötige Schnittstellen bzw. Methoden anbietet.
+Wie sich aus der generellen Beschreibung dieses Ansatzes ableiten lässt, eignet er sich am Besten, wenn sowohl die Consumer wie der Provider neu implementiert werden. Bei bestehenden Anwendungen könnte dieses Verfahren unter anderem dafür genutzt werden, um zu prüfen, ob der Provider unnötige Schnittstellen bzw. Methoden anbietet.
 
-Der Ansatz Consumer Driven Contract hat den Vorteil, dass sehr klar definiert ist, welche Anforderungen der Consumer bzw. die Consumer an den Provider haben \cite{vitz2016inno}. Andernfalls könnte der Service nur erahnen, wie er die jeweiligen Anforderungen umsetzen muss. Durch die eindeutige Definition der Anforderungen, kann der Service so schlank wie möglich implementiert werden. Der Ansatz eignet sich jedoch nur für Umgebungen, bei denen Kontrolle über Consumer sowie Provider besteht \cite{bayer2015jaxcenter}.
+Der Ansatz Consumer Driven Contract hat den Vorteil, dass sehr klar definiert ist welche Anforderungen der Consumer bzw. die Consumer an den Provider haben \cite{vitz2016inno}. Andernfalls muss der Provider ohne Informationen zu den Consumern entscheiden, wie er die jeweiligen Anforderungen umsetzt. Durch die eindeutige Definition der Anforderungen der Consumer an den Provider, kann der Provider so \enquote{schlank} wie möglich implementiert werden. Der Ansatz eignet sich nur für Umgebungen, bei denen Kontrolle über Consumer und Provider besteht \cite{bayer2015jaxcenter}.
 
 Auf der Basis dieses Konzeptes setzen die Consumer Driven Contract Tests auf \cite{bayer2015jaxcenter, vitz2016inno, Robinson2006}. Ein Framework, welches Consumer Driven Contract Tests unterstützt ist PACT. PACT ist ein Open-Source Tool, welches auf Github verwaltet wird \cite{pact}.
 
-In der Ausführung von Toby Clemson über das Testen von Microservices wird dieses Verfahren explizit empfohlen \cite{Clemson2014}. Dabei benennt er neben PACT noch zwei weitere Tools, welche Consumer Driven Contract Tests anbieten. Diese Tools sind PACTO und Janus. Für das Hauptprojekt wurde sich für PACT entschieden, da nach der ersten Recherche PACT den größten Umfang bietete und zudem PACT besser dokumentiert ist, als die anderen Tools.
+In der Ausführung von Toby Clemson über das Testen von Microservices wird dieses Verfahren explizit empfohlen \cite{Clemson2014}. Dabei benennt er neben PACT zwei weitere Tools, welche Consumer Driven Contract Tests anbieten. Diese Tools sind PACTO und Janus. Für das Hauptprojekt wurde PACT gewählt, da es nach der ersten Recherche den größten Umfang bietete und zudem es besser dokumentiert ist, als die anderen genannten.
 
-Mit dem Tool PACT können die Consumer Driven Contract Tests in verschiedenen Programmiersprachen geschrieben werden. Zur Auswahl stehen dabei Ruby, C\#, JavaScript und Java. Im nächsten Kapitel wird der generelle Ablauf von PACT anhand eines Beispiels erläutert, bevor im darauffolgenden Kapitel die Vorteile beschrieben, die durch die Verwendung von Consumer Driven Contract Tests entstehen sollen. Denn einige vermeintliche Vorteile leiten sich direkt aus dem Ablauf von Consumer Driven Contract Test ab.
+Mit PACT können die Consumer Driven Contract Tests in verschiedenen Programmiersprachen geschrieben werden. Zur Auswahl stehen dabei Ruby, C\#, JavaScript und Java. 
+
+Im nächsten Abschnitt wird der generelle Ablauf von PACT anhand eines Beispiels erläutert, bevor im darauffolgenden Abschnitt die Vorteile beschrieben werden, die durch die Verwendung von Consumer Driven Contract Tests entstehen sollen. Denn einige vermeintliche Vorteile leiten sich direkt aus dem Ablauf von Consumer Driven Contract Test ab.
 
 \subsection{Ablauf Consumer Driven Contract Test}
-In diesem Kapitel wird der generelle Ablauf von Consumer Driven Contract Tests beschrieben. Der Ablauf wird anhand eines Beispiele erläutert \cite{bayer2015jaxcenter, vitz2016inno, Vincent2015}.
+In diesem Kapitel wird der generelle Ablauf von Consumer Driven Contract Tests beschrieben. Der Ablauf wird anhand eines Beispiele erläutert \cite{bayer2015jaxcenter, vitz2016inno, Vincent2015}. Dabei findet die Implementierung mit Java statt.
 
 \begin{figure}[htbp]
   \centering
@@ -103,7 +105,7 @@ In diesem Kapitel wird der generelle Ablauf von Consumer Driven Contract Tests b
     \label{fig:Pact}
 \end{figure}
 
-Der Abbildung \ref{fig:Pact} auf Seite \pageref{fig:Pact} kann der generelle Ablauf von PACT entnommen werden. Zuerst werden auf der Seite des Consumers die Interaktionen definiert. Dies beinhaltet sowohl die Anfrage wie auch die zu erwarteten Antworten. PACT erstellt auf Grundlage dieser Informationen einen Stub vom Provider, der auf die Anfrage genauso antwortet wie es vorher definiert wurde. Sobald diese Tests erfolgreich abgelaufen sind, erfolgt das Testen des Providers. Dafür werden sozusagen die Seiten gewechselt. Es wird nicht mehr der Provider simuliert sondern die einzelnen Consumer. PACT erstellt die Anfrage und überprüft, ob der Provider korrekt antwortet. Damit der Provider getestet werden kann, muss der Provider gestartet sein. Beim generellen Ablauf von PACT erkennt sehr gut die Nähe zu Consumer Driven Contract. Begonnen wird mit den Consumern und abgeschlossen mit dem Provider.
+Der Abbildung \ref{fig:Pact} auf Seite \pageref{fig:Pact} kann der generelle Ablauf von PACT entnommen werden. Zuerst werden auf der Seite des Consumers die Interaktionen definiert. Dies beinhaltet sowohl die Anfrage wie auch die zu erwarteten Antworten. PACT erstellt auf Grundlage dieser Informationen einen Stub vom Provider, der auf die Anfrage genauso antwortet wie es vorher definiert wurde. Sobald diese Tests erfolgreich abgelaufen sind, erfolgt das Testen des Providers. Dafür werden sozusagen die Seiten gewechselt. Es wird nicht mehr der Provider simuliert, sondern die einzelnen Consumer. PACT erstellt die Anfrage und überprüft, ob der Provider korrekt antwortet. Damit der Provider getestet werden kann, muss dieser vorher gestartet werden. Beim generellen Ablauf von PACT erkennt man sehr gut die Nähe zu Consumer Driven Contract. Begonnen wird mit den Consumern und abgeschlossen mit dem Provider.
 
 Für die Implementierung von PACT auf der Seite des Consumers wird eine neue Klasse angelegt. Diese Klasse erbt von der PACT Klasse ConsumerPactTest. Durch die Vererbung müssen vier abstrakte Methoden implementiert werden, welche in der folgenden Auflistung genannt werden:
 \begin{itemize}
@@ -114,7 +116,7 @@ Für die Implementierung von PACT auf der Seite des Consumers wird eine neue Kla
 \end{itemize}
 
 
-Mit den Methoden providerName() und consumerName() werden die jeweiligen Bezeichnungen als String zurückgegeben. Sollte man mehrere Test mit unterschiedlichen Consumern und Providern haben, können sie damit besser unterschieden werden und PACT kann die Tests besser zuordnen. Die Implementierung der Methoden für das Beispiel ist in Listing \ref{lst:providerConsumerName} auf Seite  \pageref{lst:providerConsumerName} dargestellt.
+Mit den Methoden providerName() und consumerName() werden die jeweiligen Bezeichnungen als String zurückgegeben. Sollte man mehrere Test mit unterschiedlichen Consumern und Providern haben, können diese damit besser unterschieden werden und PACT kann die Tests besser zuordnen. Ein Beispiel Implementierung der Methoden ist in Listing \ref{lst:providerConsumerName} auf Seite  \pageref{lst:providerConsumerName} dargestellt.
 \lstset{language = Java}
 \begin{lstlisting}[caption=Implementierung von providerName() und consumerName(),label=lst:providerConsumerName]
 @Override
@@ -128,7 +130,7 @@ protected String consumerName() {
 }
 \end{lstlisting}
 
-Über die Methode createFragment() werden die Aufrufe des Consumers mit den zu erwartenden Antworten definiert. Dies geschieht mit einer von PACT definierten DSL.
+Über die Methode createFragment() werden die Aufrufe des Consumers mit den zu erwartenden Antworten definiert. Dies geschieht mit einer von PACT definierten Domain Specific Language (DSL).
 \lstset{language = Java}
 \begin{lstlisting}[caption=Implementierung createFragment(),label=lst:createFragment]
 @Override
@@ -137,13 +139,14 @@ protected PactFragment createFragment(PactDslWithProvider builder) {
     headers.put("Content-Type", "application/json;charset=UTF-8");
         
     return builder
-      		.uponReceiving("a request for product details")
+            .uponReceiving("a request for product details")
             .path("/productdetails/1")
             .method("GET")
             .willRespondWith()
             .headers(headers)
             .status(200)
-            .body("{\"id\":1,\"description\":\"This is the description for product 1\"}")
+            .body("{\"id\":1,\"description\":\
+            "This is the description for product 1\"}")
             .toFragment();
 }
 \end{lstlisting}
@@ -155,30 +158,35 @@ Die für das Beispiel implementierte createFragment-Methode ist im Listing \ref{
 \item \textbf{method: } Über die Methode method wird festgelegt mit welcher HTTP-Methode der Aufruf erfolgt.
 \item \textbf{willRespondWith: } Die Methode gibt an, dass ab hier die zu erwartende Antwort definiert wird.
 \item \textbf{headers: } Über dieser Methode kann definiert werden, dass entsprechende Werte im Header vorhanden sein müssen.
-\item \textbf{status: } Soll der Statuscode überprüft werden, kann mit dieser Methode der zu erwartende Statuscode definiert werden.
+\item \textbf{status: } Hiermit wird der zu erwartende Statuscode definiert.
 \item \textbf{body: } Mit der body Methode wird definiert, welcher Body in der Response erwartet wird.
 \item \textbf{toFragment: } Zum Abschluss wird die Methode toFragment aufgerufen, mit der das Fragment abgeschlossen wird.
 \end{itemize}
 
-Es können auch mehrere Interaktionen mithilfe des builders erstellt werden. Jeder Interaktion beginnt mit der Methode uponReciving(). Um eine weitere Interaktion hinzufügen, wird einfach nach der Definition der zu erwartenden Antwort mit der Methode uponReciving() eine neue Interaktion hinzugefügt. Danach erfolgt die Definition der neuen Interaktion nach dem gleichem Schema. In diesem Beispiel wäre dies nach der Methode body().
+Es können auch mehrere Interaktionen mithilfe des builders erstellt werden. Jeder Interaktion beginnt mit der Methode uponReciving(). Um eine weitere Interaktion hinzuzufügen, wird einfach nach der Definition der zu erwartenden Antwort mit der Methode uponReciving() eine neue Interaktion hinzugefügt. Danach erfolgt die Definition der neuen Interaktion nach dem vorher aufgezeigten Schema. In Listing \ref{lst:createFragment} wäre dies nach der Methode body().
 
-Sobald das PactFragment, welches die Interaktionen enthält, implementiert ist, kann getestet werden. Dafür wird die Methode runTest() umgesetzt, welche auf Seite \pageref{lst:runTest} im Listing \ref{lst:runTest} dargestellt ist.
+Sobald das PactFragment, welches die Interaktionen enthält, implementiert ist, kann der Consumergetestet werden. Dafür wird die Methode runTest() umgesetzt, welche auf Seite \pageref{lst:runTest} im Listing \ref{lst:runTest} dargestellt wird.
 
 \lstset{language = Java}
 \begin{lstlisting}[caption=Implementierung runTest(),label=lst:runTest]
 @Override
 protected void runTest(String url) {
-    URI productDetailsUri = URI.create(String.format("%s/%s/%s", url, "productdetails", 1));
+    URI productDetailsUri = URI.create
+    (String.format("%s/%s/%s", url, "productdetails", 1));
 
-    ProductDetailsFetcher productDetailsFetcher = new ProductDetailsFetcher();
-    ProductDetails productDetails =  productDetailsFetcher.fetchDetails(productDetailsUri);
+    ProductDetailsFetcher productDetailsFetcher = 
+    new ProductDetailsFetcher();
+    
+    ProductDetails productDetails =  
+    productDetailsFetcher.fetchDetails(productDetailsUri);
+    
     assertEquals(productDetails.getId(), 1);
 }
 \end{lstlisting}
 
-PACT erstellt auf Grundlage des PactFragments einen Stub vom Provider. Die passende URL zum Provider Stub wird der Methode runTest() via Parameter übergeben. Einerseits wird getestet, ob der Consumer eine korrekte Anfrage erstellt und anderseits , ob der Consumer mit der Antwort vom Stub des Providers zurecht kommt. Der Stub vom Provider antwortet auf die Anfrage, wie es im PactFragment definiert wurden ist. Auf die GET-Anfrage antwortet der Provider Stub mit dem Statuscode 200, den definierten Header und Body. Damit wird überprüft, ob der Consumer eine korrekte Antwort vom Provider korrekt abarbeiten kann. Dies kann wie in diesem Beispiel mit Asserts gelöst werden.
+PACT erstellt auf Grundlage des PactFragments einen Stub vom Provider. Die passende URL zum Provider Stub wird der Methode runTest() via Parameter übergeben. Zum einem wird getestet, ob der Consumer eine korrekte Anfrage erstellt hat und zum Anderen ob der Consumer mit der Antwort vom Stub des Providers zurecht kommt. Der Stub vom Provider antwortet auf die Anfrage, wie es im PactFragment definiert wurden ist. Auf die GET-Anfrage antwortet der Provider Stub mit dem Statuscode 200, den definierten Header und Body. Damit wird überprüft, ob der Consumer eine korrekte Antwort vom Provider  abarbeiten kann. Dies kann wie in diesem Beispiel mit Asserts gelöst werden.
 
-Das Starten der Tests kann entweder über ein Plugin zu Maven gestartet werden oder die Klasse kann direkt ausgeführt werden. Ist der PACT Test auf Grün, wird automatisch das sogenannte PACT-File erstellt. Die für dieses Beispiel erstellte PACT-File ist im Listing \ref{lst:pactFile} auf Seite \pageref{lst:pactFile} wiedergegeben.
+Die Tests können entweder über ein Plugin zu einem Build Management Tool wie z.B. Maven gestartet werden oder die Klasse kann direkt ausgeführt werden. Ist der PACT Test erfolgreich, wird automatisch das sogenannte PACT-File erstellt. Die für dieses Beispiel erstellte PACT-File ist im Listing \ref{lst:pactFile} auf Seite \pageref{lst:pactFile} wiedergegeben.
 \lstset{language = Java}
 \begin{lstlisting}[caption=PACT-File,label=lst:pactFile]
 {
@@ -216,9 +224,9 @@ Das Starten der Tests kann entweder über ein Plugin zu Maven gestartet werden o
 }
 \end{lstlisting}
 
-Das PACT-File ist im Prinzip eine Zusammenfassung der zuvor definierten Klasse. Es enthält die jeweiligen definierten Provider und Consumer Namen drin die Interaktionen und die zu erwartenden Antworten. Ergänzend dazu ist im PACT-File noch angegeben mit welchen Versionen von PACT, die Datei erstellt worden ist.
+Das PACT-File ist im Prinzip eine Zusammenfassung der zuvor definierten Klasse. Es enthält die jeweiligen definierten Provider und Consumer Namen, die Interaktionen und die zu erwartenden Antworten. Dazu wird noch angegeben mit welchen Versionen von PACT, die Datei erstellt wurden ist.
 
-Mit dem eben nun erstellten PACT-File kann der Provider getestet werden. Dafür muss der Provider entweder das Gradle oder Maven Plugin von PACT für den Provider verwenden. Um das Plugin verwenden zu können, muss der Pfad zum PACT-File angegeben werden. Das PACT-File kann sowohl lokal vorliegen oder via einer URL aufgerufen werden. Zusätzlich muss der Pfad des Providers angegeben werden. Die entsprechenden Einstellungen am Beispiel der Verwendung von Gradle ist im Listing \ref{lst:pluginProvider} auf Seite \pageref{lst:pluginProvider} dargestellt.
+Mit dem erstellten PACT-File kann der Provider getestet werden. Dafür muss der Provider entweder das Gradle oder das Maven Plugin von PACT für den Provider verwenden. Um das Plugin verwenden zu können, muss der Pfad zum PACT-File angegeben werden. Die Datei kann sowohl lokal vorliegen oder via einer URL aufgerufen werden. Zusätzlich muss der Pfad des Providers angegeben werden. Die entsprechenden Einstellungen am Beispiel der Verwendung von Gradle sind im Listing \ref{lst:pluginProvider} auf Seite \pageref{lst:pluginProvider} dargestellt.
 
 \lstset{language = Java}
 \begin{lstlisting}[caption=Einstellungen für das Testen vom Provider,label=lst:pluginProvider]
@@ -230,24 +238,25 @@ pact {
         port = 10100
         path = '/'
         hasPactWith('productServiceConsumer') {
-            pactFile = file("../product-service/target/pacts/Product_Service-Product_Details_Service.json")
-			}
-		}
-	}
+            pactFile = 
+            file("../Product_Service-Product_Details_Service.json")
+            }
+        }
+    }
 }
 \end{lstlisting}
 
-Damit der Test ausgeführt werden kann, muss der Provider gestartet werden. Sobald dies geschehen ist, kann das Plugin für den Provider ausgeführt werden. Die Ergebnisse des Tests werden in der Konsole angezeigt.
+Sobald der Provider gestartet ist, kann das Plugin für den Provider ausgeführt werden. Die Ergebnisse des Tests werden in der Konsole angezeigt.
 \subsection{Vorteile Consumer Driven Contract Test}
-Neben dem generellen Vorteilen, welche man sich von dem Ansatz Consumer Driven Contract Test verspricht und schon im vorherigen Kapitel kurz skizziert wurden sind, gibt es noch weitere Vorteile, die sich explizit auf das Testen beziehen. Aus Gründen der Übersichtlichkeit wird der Begriff Service wieder verwendet, wenn sich ein Vorteil gleichermaßen auf Consumer und Provider bezieht.
+Neben dem generellen Vorteilen, welche man sich von dem Ansatz Consumer Driven Contract Test verspricht und schon im vorherigen Kapitel kurz skizziert wurden, gibt es noch weitere Vorteile, die sich explizit auf das Testen beziehen. Aus Gründen der Übersichtlichkeit wird der Begriff Service wieder verwendet, wenn sich ein Vorteil gleichermaßen auf Consumer und Provider bezieht.
 
-Einer der Gedanken der Microservice-Architektur ist die unabhängige Entwicklung der einzelnen Services. Dementsprechend macht es Sinn auch ein unabhängiges Testen voneinander zu ermöglichen. Beim üblichen Verfahren zum Testen der Zusammenarbeit der verschiedenen Services, also Integrationstests, müssen die einzelnen Services gestartet werden. Dies kann mit ziemlichen Aufwand verbunden sein. Consumer Driven Contract Test verspricht ein unabhängiges Testen der Services dahingehend, ob die Zusammenarbeit mit den anderen Services funktioniert \cite{Vincent2015, bayer2015jaxcenter}. 
+Einer der Gedanken hinter der Microservice-Architektur ist die unabhängige Entwicklung der einzelnen Services. Dementsprechend macht es Sinn auch ein unabhängiges Testen voneinander zu ermöglichen. Beim üblichen Verfahren zum Testen der Zusammenarbeit der verschiedenen Services, also Integrationstests, müssen die einzelnen Services gestartet werden. Dies kann mit ziemlichen Aufwand verbunden sein. Consumer Driven Contract Test verspricht ein unabhängiges Testen der Services dahingehend, ob die Zusammenarbeit mit den anderen Services funktioniert \cite{Vincent2015, bayer2015jaxcenter}. 
 
-Ein weiterer Vorteil von Consumer Driven Contract Test soll sein, dass jede Änderung am Service darauf getestet werden kann, ob sie die definierte Schnittstelle verändert. Damit können die Entwicklern überprüfen, ob ihre Änderungen zu ungewollten Veränderung der Schnittstellen führen \cite{bayer2015jaxcenter}.
+Ein weiterer Vorteil von Consumer Driven Contract Test soll sein, dass jede Änderung am Service dahin gehend getestet werden kann, ob sie die definierte Schnittstelle verändert. Damit können Entwickler überprüfen, ob ihre Änderungen zu ungewollten Veränderung der Schnittstellen führen \cite{bayer2015jaxcenter}.
 
-Dieser Vorteil ist jedoch am Interessantesten bei gewollten Änderungen am Provider. Mit Consumer Driven Contract Test besteht die Möglichkeit zu evaluieren, ob und welche Consumer angepasst werden müssen, wenn die Schnittstelle des Providers geändert wurde. Besonders bei Anwendungen mit einer Microservice-Architektur kann es schnell unübersichtlich werden, welche Services alle den Provider anfragen und welche davon überhaupt aktualisiert werden müssen. Mit Consumer Driven Contract Test soll diese Problematik leichter zu lösen sein \cite{vitz2016inno, Vincent2015}.
+Dieser Vorteil ist jedoch am Interessantesten bei erwünschten Änderungen am Provider. Mit Consumer Driven Contract Test besteht die Möglichkeit zu evaluieren, ob und welche Consumer angepasst werden müssen, wenn die Schnittstelle des Providers geändert wurde. Besonders bei Anwendungen mit einer Microservice-Architektur kann es unübersichtlich werden, welche Services den Provider anfragen und welche überhaupt aktualisiert werden müssen. Mit Consumer Driven Contract Test soll diese Problematik leichter zu lösen sein \cite{vitz2016inno, Vincent2015}.
 
-Für ein System wie MARS mit einer Microservice-Architektur bei der die Kommunikation via Netzwerk extrem relevant ist, sind Fehler aufgrund von falschen Schnittstellen und/oder falschen Anfragen sehr kritisch. Dazu ändern sich innerhalb von MARS immer wieder die Anforderungen, an die auch die jeweiligen Services angepasst werden müssen. Aufgrund der Architektur besteht die Möglichkeit Änderungen schnell umzusetzen und den Service neu zu deployen. Consumer Driven Contract Test ist dabei sehr vielversprechend diesen Prozess zu begleiten. Es gibt zu einem Überblick über Veränderungen der Schnittstellen, ob gewollt und ungewollt. Zum anderen unterstützt es die unabhängige Entwicklung der einzelnen Services. Ob Consumer Diven Contract Test die beschriebenen Vorteile einhält, wird im nächsten Kapitel behandelt, bei dem es um die Umsetzung von Consumer Driven Contract Test innerhalb von MARS geht.
+Für ein System wie MARS mit einer Microservice-Architektur bei der die Kommunikation via Netzwerk extrem relevant ist, sind Fehler aufgrund von falschen Schnittstellen und/oder falschen Anfragen sehr kritisch. Dazu ändern sich innerhalb von MARS immer wieder die Anforderungen, an die auch die jeweiligen Services angepasst werden müssen. Aufgrund der Architektur besteht die Möglichkeit Änderungen schnell umzusetzen und den Service neu zu deployen. Consumer Driven Contract Test ist dabei sehr vielversprechend diesen Prozess zu begleiten. Es gibt zum Eine Überblick über Veränderungen der Schnittstellen, ob gewollt oder ungewollt. Zum Anderen unterstützt es die unabhängige Entwicklung der einzelnen Services. Ob Consumer Driven Contract Test die beschriebenen Vorteile einhält, wird im nächsten Kapitel behandelt, bei dem es um die Umsetzung von Consumer Driven Contract Test innerhalb von MARS geht.
 
 \section{Consumer Driven Contract in MARS}
 Nach der grundlegenden Befassung mit PACT soll nun geprüft werden, ob sich PACT für MARS anbietet. Wie schon im Kapitel zu den vermeintlichen Vorteilen von PACT beschrieben, könnte PACT einige Anforderungen an die Tests für MARS erfüllen. Kurz zusammen gefasst geht es um ein schnelles Feedback der Tests, besonders bei Änderungen am Source Code sowie ein dementsprechendes aussagekräftiges Feedback.
