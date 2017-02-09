@@ -266,7 +266,7 @@ Im Gegensatz zum eigentlichen gedachten Ablauf von PACT ist MARS ein sehr fortge
 
 Ergänzend dazu ist MARS ein sehr umfangreiches System mit vielen verschiedenen Consumern und Providern. Daher wird PACT zunächst nur in einem übersichtlichen Teil von MARS verwendet, um eine Machbarkeitsstudie zu erstellen und im Folgenden zu analysieren ob die Verwendung sinnvoll ist.
 
-Für die Erstellung der Machbarkeitsstudie wurde der Bereich der Imports in MARS ausgewählt. Für diese Entscheidung sprechen mehrere Gründe. Zum Einem ist es für eine Microservice-Architektur ein relatives geschlossenes System und zum Anderem sind die einzelnen Komponenten überschaubar. Dazu ist man in der Lage diesen Bereich des Systems schnell mit Testdaten zu befüllen. Für die Einführung von PACT in MARS werden die Interaktionen zwischen dem Metadata-Client (Consumer) und dem Provider Metadata verwendet.
+Für die Erstellung der Machbarkeitsstudie wurde der Bereich der Imports in MARS ausgewählt. Diese Services haben die Aufgabe Daten und Modelle hochzuladen und damit für die Simulation bereitzustellen. Für diese Entscheidung sprechen mehrere Gründe. Zum Einem ist es für eine Microservice-Architektur ein relatives geschlossenes System und zum Anderem sind die einzelnen Komponenten überschaubar. Dazu ist man in der Lage diesen Bereich des Systems schnell mit Testdaten zu befüllen. Für die Einführung von PACT in MARS werden die Interaktionen zwischen dem Metadata-Client (Consumer) und dem Provider Metadata verwendet.
 
 \begin{figure}[htbp]
   \centering
@@ -411,7 +411,7 @@ Wie schon in der Testumgebung beschrieben, wird das Framework Mockito verwendet.
 
 Nachdem die URI zusammengebaut wurden ist, kann diese URI dem Client übergeben werden. Dafür wird die Methode fetchMetaData() aufgerufen, welche die Anfrage startet und den Metadata-Eintrag zurückliefert. Ist die Anfrage korrekt, wie sie im PactFragment definiert wurden ist, schickt der Stub vom Provider die im PactFragment definierte Antwort zurück. Zur Überprüfung der regelgerechten Verarbeitung wird der Wert der DataID überprüft, welche identisch mit dem Wert der DataID bei der Anfrage sein soll. Dies wird mit einem Assert überprüft.
 
-Damit ist die erste Interaktion implementiert. Die zweite Interaktion ist auch eine GET-Methode, bei der alle Metadata-Einträge abgefragt werden. Die Implementierung dieser Interaktion unterscheidet sich kaum von der eben gerade beschriebenen Interaktion. Nur der Body in der Response unterscheidet sich. Es wird nun Array von Metadata-Objekten erwartet. Die für die Erstellung dieses Array zuständige Methode ist verkürzt im Listing \ref{lst:ArrayBody} auf Seite \pageref{lst:ArrayBody} dargestellt.
+Damit ist die erste Interaktion implementiert. Die zweite Interaktion ist auch eine GET-Methode, bei der alle Metadata-Einträge abgefragt werden. Die Implementierung dieser Interaktion unterscheidet sich kaum von der eben gerade beschriebenen Interaktion. Nur der Body in der Response unterscheidet sich. Es wird nun ein Array von Metadata-Objekten erwartet. Die für die Erstellung dieses Array zuständige Methode ist verkürzt im Listing \ref{lst:ArrayBody} auf Seite \pageref{lst:ArrayBody} dargestellt.
 
 \lstset{language = Java}
 \begin{lstlisting}[caption=Erstellung eines Array,label={lst:ArrayBody}]
@@ -421,25 +421,25 @@ return PactDslJsonArray
     .closeObject();
 \end{lstlisting}
 
-Mit der Methode arrayEachLike() wird sichergestellt, dass jedes Objekt in der Liste dem hier definierten Beispiel gleichen soll. Ab dem Aufruf der Methode arrayEachLike wird das Objekt definiert. Auch diese Methode muss mit einem closeObject() abgeschlossen werden. Das hier definierte Objekte ist das gleiche wie im Listing \ref{lst:createJsonBody} auf Seite \pageref{lst:createJsonBody} dargstellt.
+Mit der Methode arrayEachLike() wird sichergestellt, dass jedes Objekt in der Liste dem hier definierten Beispiel gleichen soll. Ab dem Aufruf der Methode arrayEachLike wird das Objekt definiert. Auch diese Methode muss mit einem closeObject() abgeschlossen werden. Es wird das selbe Objekt definiert, wie es im Listing \ref{lst:createJsonBody} auf Seite \pageref{lst:createJsonBody} dargstellt ist.
 
-Auch in der runTest-Methode gibt es keine großen Unterschiede. Es wird selbstverständlich eine andere Methode vom Metadata-Client aufgerufen, die eine Liste von Metadata-Objekten zurückgibt. Ergänzend dazu ist die assert-Methode passend angepasst.
+Auch in der runTest-Methode gibt es keine großen Unterschiede. Es wird eine andere Methode vom Metadata-Client aufgerufen, als die im Listing \ref{lst:runTestGetOne} dargestellte Methode, da eine Liste mit Metadata-Objekten erwartet wird. Ergänzend hierzu ist die assert-Methode angepasst.
 
-Als nächstes wird die PUT Interaktion implementiert. Diese unterscheidet sich durchaus von den bisherigen Implementierungen. Neben den Unterscheidungen im Header der Anfrage, muss für diese Interaktion eine Query definiert werden. Denn die Änderung des Upload-Zustandes erfolgt über eine Query in der URI. 
-Dazu muss für diese Interaktion kein Body definiert werden , der in der Antwort stehen soll, da die Antwort kein Body liefert. Es wird ausschließlich über den Statuscode abgebildet, ob die Anfrage erfolgreich war.
-Die Implementierung in der runTest-Methode unterscheidet sich auch nur im Aufruf einer anderen Methode, die die PUT-Anfrage stellt und in der Überprüfung des Ergebnisses.
+Als nächstes wird die PUT-Interaktion implementiert. Diese unterscheidet sich von den bisherigen Implementierungen. Neben den Unterscheidungen im Header der Anfrage, muss für diese Interaktion eine Query definiert werden. Denn die Änderung des Upload-Zustandes erfolgt über eine Query in der URI. 
+Dazu muss für diese Interaktion kein Body definiert werden , da die Antwort kein Body liefert. Es wird ausschließlich über den Statuscode abgebildet, ob die Anfrage erfolgreich war.
+Die Implementierung in der runTest-Methode unterscheidet sich nur im Aufruf einer anderen Methode, die die PUT-Anfrage stellt und in der Überprüfung des Ergebnisses.
 
-Als nächstes wurde die Interaktion mit der POST-Methode umgesetzt. Mit dieser Interaktion soll ein neuer Metadata-Eintrag erzeugt werden. Das Erstellen des Fragements unterscheidet sich daher durchaus mehr von den bisherigen Interaktionen. Dieses Mal muss der Body für die Anfrage definiert werden. Denn mit der Anfrage müssen die einzelnen Informationen für den Eintrag mitgeschickt werden. Bei der Antwort wird außerdem der Statuscode 201 erwartet und nicht wie bisher 200. Der Statuscode 201 gibt wieder, dass ein neuer Eintrag erfolgreich erstellt wurde. Im Body der Antwort wird eine UUID als Plain-Text erwartet. Diese UUID wird als DataID verwendet.
+Als nächstes wurde die Interaktion mit der POST-Methode umgesetzt. Mit dieser Interaktion soll ein neuer Metadata-Eintrag erzeugt werden. Das Erstellen des Fragements unterscheidet sich daher stärker von den bisherigen Interaktionen. Dieses Mal muss der Body für die Anfrage definiert werden. Denn mit der Anfrage müssen die einzelnen Informationen für den Eintrag mitgeschickt werden. Bei der Antwort wird außerdem der Statuscode 201 erwartet und nicht wie bisher der Statuscode 200. Der Statuscode 201 bedeutet, dass ein neuer Eintrag erfolgreich erstellt wurden ist. Im Body der Antwort wird eine UUID als Plain-Text erwartet. Diese UUID wird als DataID verwendet.
 
-Der Aufruf in der runTest-Methode unterscheidet sich dahingehend, dass der Methode im Metadata-Client die einzelnen Informationen zum MetadataEintrag mit übergeben werden. Da der genaue Wert der UUID nicht vorher gesagt werden kann, wird kein Assert auf die UUID übernommen. Es wird nur geprüft, dass eine UUID zurück geliefert wird. Diese Überprüfung übernimmt PACT.
+Zum Ausführen der POST-Interaktionen wird in der runTest-Methode die Methode für die POST-Methode aufgerufen, welche die einzelnen Informationen zum Metadata-Eintrag als Parameter übergeben bekommt. Da der genaue Wert der UUID nicht vorhergesagt werden kann, wird kein Assert auf die UUID übernommen. Es wird nur geprüft, ob eine UUID zurück geliefert wird. Diese Überprüfung übernimmt PACT.
 
-Die DELETE-Interaktion ist sehr ähnlich wie die erste Interaktion, die implementiert wurden ist. Anstatt der GET-Methode wird die DELETE-Methode verwendet und es wird kein Body in der Antwort erwartet.
+Die Implementierung der DELETE-Interaktion ist ähnlich wie die erste GET-Interaktion. Im Gegensatz zu dieser wird die DELETE-Methode verwendet. Zusätzlich kein Body in der Antwort erwartet.
 
-Der Aufruf in der runTest-Methode unterscheidet sich einmal in der Methode, die vom Metadata-Client aufgerufen wird. Da kein Body zurück geliefert wird, findet nur eine Überprüfung auf den Wert des Statuscodes statt. Auch diese Aufgabe übernimmt PACT.
+Der Aufruf in der runTest-Methode unterscheidet sich in der Methode, die vom Metadata-Client aufgerufen wird. Da kein Body zurück geliefert wird, findet nur eine Überprüfung auf den Wert des Statuscodes statt. Auch diese Aufgabe übernimmt PACT.
 
-Hiermit ist die Implementierung auf der Seite des Consumers abgeschlossen und es können die PACT-Tests auf der Seite des Consumers ausgeführt werden und das PACT-File erstellt werden. Im Anschluss kann PACT auf Seite des Providers eingebunden werden.
+Hiermit ist die Implementierung auf der Seite des Consumers abgeschlossen und es können die PACT-Tests auf dieser Seite ausgeführt und das PACT-File erstellt werden. Im Anschluss kann PACT auf Seite des Providers eingebunden werden.
 \subsubsection{Implementierung Provider}
-Die Einbindung von PACT auf Seiten des Providers ist deutlich übersichtlicher als auf der Seite des Consumers. Beim Provider muss, wie oben in der allgemeinen Beschreibung schon vorgestellt, nur das Plugin eingebunden werden. Da MARS Maven verwendet, wurde das Maven-Plugin verwendet. Im Listing \ref{lst:MARSPACTFile} auf Seite \pageref{lst:MARSPACTFile} ist der Abschnitt der pom.xml vom Metadata-Service abgebildet, die für das PACT-Plugin benötigt wurde. 
+Die Einbindung von PACT auf Seiten des Providers ist deutlich übersichtlicher als auf der Seite des Consumers. Beim Provider muss, wie oben in der allgemeinen Beschreibung schon vorgestellt, nur das Plugin eingebunden werden. Da MARS Maven verwendet, wurde das Maven-Plugin verwendet. Im Listing \ref{lst:MARSPACTFile} auf Seite \pageref{lst:MARSPACTFile} ist der Abschnitt der pom.xml vom Metadata-Service abgebildet, die für das PACT-Plugin benötigt wird. 
 
 \lstset{language = Java}
 \begin{lstlisting}[caption=Eintrag in der pom.xml,label={lst:MARSPACTFile}]
@@ -469,15 +469,15 @@ Die Einbindung von PACT auf Seiten des Providers ist deutlich übersichtlicher a
 </plugin>
 \end{lstlisting}
 
-In dem Ausschnitt aus der pom.xml findet sich unter anderem die Namen vom Provider und Consumer wieder. Zudem muss die Adresse angeben werden, unter denen der gestartete Service gefunden werden kann. Wie schon in der allgemeinen Beschreibung von PACT erwähnt, kann PACT den Provider nur testen, wenn er ausgeführt wird. Dazu befindet sich der Pfad zum PACT-File in diesem Ausschnitt, welcher aus Gründen der Übersicht nur verkürzt dargestellt ist.
-Mit der Einbindung das Plugins kann der Verify-Job vom  PACT-JVM-Provider-Plugin ausgeführt werden. Mit der Ausführung dieses Jobs werden die Tests auf der Seite des Providers ausgeführt.
+In diesem Ausschnitt aus der pom.xml findet sich unter anderem die Namen vom Provider und Consumer wieder. Zudem muss die Adresse angeben werden, unter der der gestartete Service gefunden werden kann. Wie schon in der allgemeinen Beschreibung von PACT erwähnt, kann PACT den Provider nur testen, wenn er ausgeführt wird. Dazu befindet sich der Pfad zum PACT-File in diesem Ausschnitt, welcher aus Gründen der Übersicht nur verkürzt dargestellt ist.
+Mit der Einbindung des Plugins kann der Verify-Job vom  PACT-JVM-Provider-Plugin ausgeführt werden. Mit der Ausführung dieses Jobs werden die Tests auf der Seite des Providers ausgeführt.
 
 \subsection{Untersuchung}
-Mit der fertigen Einbindung von PACT konnten mehrere verschiedene Untersuchungen durchgeführt werden, um zu prüfen, ob die Verwendung von PACT innerhalb von MARS bzw. einer Microservice Architektur sinnvoll ist. Dafür mussten einzelne Testfälle definiert werden, welche alltägliche Situationen widerspiegeln. Dabei werden in diesem Kapitel nur die Testfälle beschrieben und die jeweiligen Ergebnisse skizziert. Die Einordnung und Bewertung der Ergebnisse finden jedoch erst im nächsten Kapitel statt.
+Mit der Einbindung von PACT konnten verschiedene Untersuchungen durchgeführt werden, um zu prüfen ob die Verwendung von PACT innerhalb von MARS bzw. einer Microservice Architektur sinnvoll ist. Dafür mussten einzelne Testfälle definiert werden, welche alltägliche Situationen widerspiegeln. Dabei werden in diesem Kapitel die Testfälle beschrieben und die jeweiligen Ergebnisse skizziert. Die Einordnung und Bewertung der Ergebnisse findet im nächsten Kapitel statt. Auf der Seite des Consumers wurden zwei Testfälle und beim Provider vier Testfälle definiert.
 
-Beim ersten Testfall gibt der Consumer das Ergebnis vom PACT erstellten Provider nicht korrekt wieder. Über die GET-Anfrage mit der Angabe einer spezifischen DataID gibt PACT den vorher definierten Metadata-Eintrag zurück. Für Testzwecke wurde auf Seiten des Consumers das Metadata-Objekt dahingehend angepasst, dass es immer die DataID "0" zurück gibt. Damit sollte geprüft werden, wie PACT mit der Rückgabe einer falschen DataID um geht.
+Beim ersten Testfall verarbeitet der Consumer das Ergebnis vom PACT erstellten Provider nicht korrekt. Über die GET-Anfrage, mit Angabe einer spezifischen DataID, gibt PACT den vorher definierten Metadata-Eintrag zurück. Für Testzwecke wurde auf Seiten des Consumers das Metadata-Objekt dahingehend angepasst, dass es immer die DataID \enquote{0} zurück gibt. Damit konnte geprüft werden, wie PACT mit der Rückgabe einer falschen DataID umgeht.
 
-Da in der runTest-Methode ein Assert auf die DataID implementiert wurden ist, schlägt dieser fehl. Die dazugehörige Meldung ist in der Abbildung \ref{fig:ErrorConsumerGet} auf Seite \pageref{fig:ErrorConsumerGet} abgebildet. Dieser Fehler wurde jedoch nur aufgrund des vorher definierten Asserts gefunden. Sollte weitere Fehler im Metadata-Objekt vorhanden sein, werden diese nicht gefunden.
+Da in der runTest-Methode ein Assert auf die DataID implementiert wurden ist, schlägt dieser fehl. Die dazugehörige Meldung ist in Abbildung \ref{fig:ErrorConsumerGet} auf Seite \pageref{fig:ErrorConsumerGet} abgebildet. Dieser Fehler wurde jedoch nur aufgrund des vorher definierten Asserts gefunden. Sollten weitere Fehler im Metadata-Objekt vorhanden sein, werden diese nicht gefunden.
 
 \begin{figure}[htbp]
   \centering
@@ -486,15 +486,18 @@ Da in der runTest-Methode ein Assert auf die DataID implementiert wurden ist, sc
     \label{fig:ErrorConsumerGet}
 \end{figure}
 
-Bei einem weiteren Testfall auf der Seite des Consumers wurde mit Absicht eine Eigenschaft des Headers im Request falsch gesetzt. Diese Art von Fehler kann auftreten, wenn bei der Implementierung des Aufrufes der Header falsch gesetzt wird, aber bei der Implementierung des PACT-Fragments korrekt. Beim POST-Aufruf soll der Content-Type "application/json" sein. Dies ist auch so im PACT-Fragment definiert. Hier wurde jedoch der Aufruf angepasst, so dass der Content-Type auf "text/plain" festgelegt wurde. In der Konsole erschien darauf die im Listing \ref{lst:ErrorHeaderConsumer} auf \pageref{lst:ErrorHeaderConsumer} dargestellte Meldung, wobei der Stacktrace gekürzt wurde.
+Bei zweitem Testfall auf der Seite des Consumers wurde mit Absicht eine Eigenschaft des Headers im Request falsch gesetzt. Diese Art von Fehler kann auftreten, wenn bei der Implementierung des Aufrufes der Header falsch gesetzt wird, aber bei der Implementierung des PACT-Fragments korrekt. Beim POST-Aufruf soll der Content-Type \enquote{application/json} sein. Dies ist auch so im PACT-Fragment definiert. Hier wurde jedoch der Aufruf angepasst, so dass der Content-Type auf \enquote{text/plain} festgelegt wurde. In der Konsole erschien darauf die im Listing \ref{lst:ErrorHeaderConsumer} auf \pageref{lst:ErrorHeaderConsumer} dargestellte Meldung, wobei der Stacktrace gekürzt wurde.
 
 \begin{lstlisting}[caption=Fehler im Header,label={lst:ErrorHeaderConsumer}]
-org.springframework.web.client.HttpServerErrorException: 500 Internal Server Error
+org.springframework.web.client.HttpServerErrorException: 
+500 Internal Server Error
 ..
 
-au.com.dius.pact.consumer.PactMismatchException: Pact verification failed for the following reasons:
+au.com.dius.pact.consumer.PactMismatchException: 
+Pact verification failed for the following reasons:
 createMetadata:
-    HeaderMismatch - Expected header 'Content-Type' to have value 'application/json' but was 'text/plain'
+    HeaderMismatch - Expected header 'Content-Type' 
+    to have value 'application/json' but was 'text/plain'
     BodyTypeMismatch(application/json,text/plain)
 
 The following requests were not received:
@@ -520,8 +523,9 @@ response:
 	.OptionalBody(PRESENT, ba501910-5b3c-4bae-ac68-a56bafc793f2)
 \end{lstlisting}
 
-Für das Testen des Provider wurden mehrere verschiedene Testfälle erstellt. Beim ersten Test sollte der Provider einen fehlerhaften Body zurückgeben. Dafür wurde die GET-Interaktion verwendet, welche einen spezifischen Metadata-Eintrag zurück gibt. Da zum Zeitpunkt des Testens der Geoserver, welcher bei der Erstellung von Metadata-Einträgen aufgerufen wird,  ausgefallen war, waren alle erstellten Testdaten defekt. Dies kam bei diesem Testfall sehr entgegen, da keine Daten manuell manipuliert werden mussten. Der Testfall ist dahingehend besonders interessant, dass dies wahrscheinlich ein sehr häufiger Fehler ist, der beim Schnittstellen Test auftauchen kann. Selbst kleine Änderung an der Schnittstelle oder an dem Objekt, welches angefragt wird, kann dazu führen, dass das angefragte Objekt bei der Antwort anders aussieht. 
-Durch den Ausfall des Geoservers enthielten alle Metadata-Einträge keine Geo-Informationen, welcher in der MAP "additionalTypeSpecificData" gespeichert werden. Diese Map fehlte also alle Metadata-Einträgen. Dieses Fehlen produzierte die auf Seite \pageref{lst:ErrorProvider_GET} im Listing \ref{lst:ErrorProvider_GET} dargestellte Fehlermeldung.
+Beim ersten Test für den Provider sollte dieser einen fehlerhaften Body zurückgeben. Dafür wurde die GET-Interaktion verwendet, welche einen spezifischen Metadata-Eintrag zurück gibt. Da zum Zeitpunkt des Testens der Geoserver, welcher bei der Erstellung von Metadata-Einträgen aufgerufen wird ausgefallen war, waren alle erstellten Testdaten defekt. Dies kam bei diesem Testfall sehr entgegen, da keine Daten manuell manipuliert werden mussten. Der Testfall ist dahingehend besonders interessant, da dies wahrscheinlich ein häufiger Fehler ist, der beim Testen von Schnittstellen auftauchen kann. Wie in vorherigen Kapiteln beschrieben, können Änderungen am Provider die Schnittstelle verändern. Dadurch kann ein Objekt anders zurückgeben werden als es erwartet wurden ist. 
+
+Durch den Ausfall des Geoservers enthielten alle Metadata-Einträge keine Geo-Informationen, welche in der MAP \enquote{additionalTypeSpecificData} gespeichert werden. Dieser Map fehlten also alle Metadata-Einträge. Das Fehlen produzierte die auf Seite \pageref{lst:ErrorProvider_GET} im Listing \ref{lst:ErrorProvider_GET} dargestellte Fehlermeldung.
 
 \lstset{language = Java}
 \begin{lstlisting}[caption=Test,label={lst:ErrorProvider_GET}]
@@ -587,11 +591,11 @@ Get a metadata entry returns a response which has a matching body
       }
 \end{lstlisting}
 
-Im nächsten Testfall für den Provider wurde wieder der Header manipuliert, aber dieses mal jedoch auf der Seite des Response. Für diesen Testfall wurde die PUT-Interaktion ausgewählt, die den Wert aktualisiert, welcher den aktuellen Zustand des Uploads beschreibt. Dafür wurde der Fehler im PACT-Fragment gesetzt und nicht der Metadata-Service angepasst, da dies deutlich aufwendiger gewesen wäre. Für den Response-Header wurde die Eigenschaft auf "Content-Length" auf "1" gesetzt, da der Response Body auf die PUT-Abfrage leer ist, ist die Content-Length auch null. Dies führte zu der auf Seite \pageref{lst:ErrorProvider_PUT} im Listing \ref{lst:ErrorProvider_PUT} aufgeführte Meldung.
+Im zweiten Testfall für den Provider wurde erneut der Header manipuliert. Dieses mal auf der Seite der Response. Für diesen Testfall wurde die PUT-Interaktion ausgewählt, die den Wert aktualisiert, welcher den aktuellen Zustand des Uploads einer Datei beschreibt. Dafür wurde der Fehler im PACT-Fragment gesetzt, anstatt den Metadata-Service anzupassen, da dies deutlich weniger Aufwand erforderte. In dem erwarteten Response-Header wurde die Eigenschaft \enquote{Content-Length} auf \enquote{1} gesetzt. In der Antwort vom Povider ist der Wert im Header \enquote{0}, da der Response Body auf die PUT-Abfrage leer ist. Dies führte zu der auf Seite \pageref{lst:ErrorProvider_PUT} im Listing \ref{lst:ErrorProvider_PUT} aufgeführten Meldung.
 
 \begin{lstlisting}[caption=Test,label={lst:ErrorProvider_PUT}]
 Verifying a pact between metadata-client and metadata-service
-  [Using file /home/alex/Mars/mars-import/metadata-client/target/pacts/metadata-client-metadata-service.json]
+  [Using file ../metadata-client-metadata-service.json]
   Set a new state for a metadata entry
     returns a response which
       has status code 200 (OK)
@@ -601,8 +605,10 @@ Verifying a pact between metadata-client and metadata-service
 
 Failures:
 
-0) Verifying a pact between metadata-client and metadata-service - Set a new state for a metadata entry returns a response which Verifying a pact between metadata-client and metadata-service
-  [Using file /home/alex/Mars/mars-import/metadata-client/target/pacts/metadata-client-metadata-service.json]
+0) Verifying a pact between metadata-client and metadata-service 
+- Set a new state for a metadata entry returns 
+a response which Verifying a pact between metadata-client and metadata-service
+  [Using file ../metadata-client-metadata-service.json]
   Set a new state for a metadata entry
     returns a response which
       has status code 200 (OK)
@@ -612,15 +618,19 @@ Failures:
 
 Failures:
 
-0) Verifying a pact between metadata-client and metadata-service - Set a new state for a metadata entry returns a response which includes headers "Content-Length" with value "1"
+0) Verifying a pact between metadata-client and metadata-service 
+- Set a new state for a metadata entry returns 
+a response which includes headers "Content-Length" with value "1"
       Expected header 'Content-Length' to have value '1' but was '0'
 \end{lstlisting}
       
-Beim nächsten Testfall sollte der Statuscode nicht mit dem vorher definierten Statuscode übereinstimmen. Dieser Fehler kann schnell auf der Seite des Providers auftauchen, wenn der Provider mit der Anfrage nicht umgehen kann oder einfach aufgrund von "Copy and Paste" ein falscher Statuscode für die Rückgabe definiert wurde. Der Testfall konnte leicht umgesetzt werden, indem mit der DELETE-Interaktion ein Metadata-Eintrag gelöscht werden sollte, welcher gar nicht vorhanden ist. Daher gibt der Provider den Statuscode 404 zurück und nicht wie im PACT-Fragment definiert 200. Dadurch kommt die im Listing \ref{lst:ErrorProvider_DELETE} auf Seite \pageref{lst:ErrorProvider_DELETE} abgebildete Meldung.  
+Beim dritten Testfall soll der Statuscode nicht mit dem vorher definierten Statuscode übereinstimmen. Dieser Fehler kann leicht auf der Seite des Providers auftauchen, wenn der Provider mit einer Anfrage nicht umgehen kann oder aufgrund von \enquote{Copy and Paste} ein falscher Statuscode für die Rückgabe definiert wurde. 
+
+Der Testfall konnte leicht umgesetzt werden, indem mit der DELETE-Interaktion ein Metadata-Eintrag gelöscht werden soll, welcher nicht vorhanden ist. Daher gibt der Provider den Statuscode 404 zurück und nicht wie im PACT-Fragment definiert 200. Dies führte zu der im Listing \ref{lst:ErrorProvider_DELETE} auf Seite \pageref{lst:ErrorProvider_DELETE} abgebildeten Meldung.  
 
 \begin{lstlisting}[caption=Test,label={lst:ErrorProvider_DELETE}]
 Verifying a pact between metadata-client and metadata-service
-  [Using file /home/alex/Mars/mars-import/metadata-client/target/pacts/metadata-client-metadata-service.json]
+  [Using file ../metadata-client-metadata-service.json]
   Delete a metadata entry
     returns a response which
       has status code 200 (FAILED)
@@ -628,18 +638,19 @@ Verifying a pact between metadata-client and metadata-service
 
 Failures:
 
-0) Verifying a pact between metadata-client and metadata-service - Delete a metadata entry returns a response which has status code 200
+0) Verifying a pact between metadata-client and metadata-service 
+- Delete a metadata entry returns a response which has status code 200
       assert expectedStatus == actualStatus
              |              |  |
              200            |  404
                             false
 \end{lstlisting}
 
-Der letzte Testfall war in dem Sinne gar nicht vorgesehen wie die anderen beschriebenen Testfälle. Beim Erstellen eines neuen Metadata-Eintrags mithilfe der POST-Interaktion, soll eine DataID, welche im UUID-Format vorliegen soll, als einfacher Text zurück gegeben werden. Dafür wurde auch im PACT-Fragment definiert, dass die Antwort eine UUID ist und der Content-Type "plain/text" ist. Die DataID wird für jeden neuen Metadata-Eintrag neu erstellt und der Wert wird zufällig bestimmt. Deswegen ist im PACT-Fragment die Übeprüfung für den Response Body so definiert wurden, dass keine exkate Überprüfung des Wertes stattfindet, sondern eine Überprüfung über reguläre Ausdrücke.  Mit der Überprüfung via reguläre Ausdrücke wird nur getestet, ob der zurück gegebene Wert im UUID-Format vorliegt. Obwohl das Fragment  für diese Überprüfung so erstellt wurde, wie es in der PACT Dokumentation beschrieben wurden ist, erschien die auf Seite \pageref{lst:ErrorProvider_POST} in Listing \ref{lst:ErrorProvider_POST} abgebildete Fehlermeldung. Wie man der Meldung entnehmen kann, schlug die Überprüfung fehl, da die DataIDs unterschiedlich sind. In der Dokumentation gab es keine weitergehende Informationen zu diesem Verhalten.
+Der letzte Testfall war im Gegensatz zu den vorherigen Fällen nicht von Anfang an geplant. Beim Erstellen eines neuen Metadata-Eintrags mithilfe der POST-Interaktion, soll eine DataID, welche im UUID-Format vorliegen soll, als einfacher Text zurückgegeben werden. Dafür wurde im PACT-Fragment definiert, dass die Antwort eine UUID ist und der Content-Type \enquote{plain/text} ist. Die DataID wird für jeden neuen Metadata-Eintrag neu erstellt und der Wert wird zufällig bestimmt. Deswegen ist im PACT-Fragment die Überprüfung auf den Response Body so definiert wurden, dass keine exkate Überprüfung des Wertes stattfindet, sondern eine Überprüfung über reguläre Ausdrücke.  Mit der Überprüfung via reguläre Ausdrücke wird getestet, ob der zurückgegebene Wert im UUID-Format vorliegt. Obwohl das Fragment für diese Überprüfung so erstellt wurde, wie es in der PACT Dokumentation beschrieben wurden ist, erschien die auf Seite \pageref{lst:ErrorProvider_POST} in Listing \ref{lst:ErrorProvider_POST} abgebildete Fehlermeldung. Wie man der Meldung entnehmen kann, schlug die Überprüfung fehl, da die DataIDs unterschiedlich sind. In der Dokumentation gab es keine weitergehenden Informationen zu diesem Verhalten.
 
-\begin{lstlisting}[caption=Test,label={lst:ErrorProvider_POST}]
+\begin{lstlisting}[caption=Fehler in PACT,label={lst:ErrorProvider_POST}]
 Verifying a pact between metadata-client and metadata-service
-  [Using file /home/alex/Mars/mars-import/metadata-client/target/pacts/metadata-client-metadata-service.json]
+  [Using file ../metadata-client-metadata-service.json]
   createMetadata
     returns a response which
       has status code 201 (OK)
@@ -649,7 +660,8 @@ Verifying a pact between metadata-client and metadata-service
 
 Failures:
 
-0) Verifying a pact between metadata-client and metadata-service - createMetadata returns a response which has a matching body
+0) Verifying a pact between metadata-client and metadata-service 
+- createMetadata returns a response which has a matching body
       / -> mismatch
 
       Diff:
@@ -659,44 +671,44 @@ Failures:
       +326e27d7-6285-45de-8343-36b3ab3798f8
 \end{lstlisting}
 
-Damit sind alle Testfalle beschrieben wurden, welche ausgeführten wurden, um PACT bewerten zu können.
+Damit sind alle Testfälle beschrieben, welche ausgeführten wurden, um PACT bewerten zu können.
 
 \subsection{Bewertung der Ergebnisse}
-Das Fazit und die damit verbundene Bewertung für PACT soll in zwei grobe Bereiche unterteilt werden. Einmal die Einbindung von PACT in ein bestehendes System und zum anderen die Bewertung der ausgeführten Testfälle.
+Das Fazit und die damit verbundene Bewertung für PACT soll in zwei grobe Bereiche unterteilt werden. Zum Einen die Einbindung von PACT in ein bestehendes System und zum Anderen die Bewertung der ausgeführten Testfälle.
 
-Im Gegensatz zu dem am Anfang beschriebenen Ansatz, bei dem PACT bei der Implementierung des Consumers mit eingebunden wird, musste bei MARS PACT in ein bestehendes System eingebunden werden. Ergänzend dazu kam, dass man selber weder den Metadata-Client noch den Metadata-Service implementiert hatte. Im generellen Ablauf von PACT wird jedoch davon ausgegangen, dass man Consumer sowie den Provider selber implementiert hat oder zu mindestens sehr genaue Kenntnisse darüber hat. Dieser Umstand führte zu einigen Schwierigkeiten.
-Denn es waren nicht immer alle notwendigen Informationen vorhanden. Zwar lieferten die Swagger-Dateien sehr wichtige Informationen, jedoch waren diese nicht immer korrekt oder waren veraltet. Zudem fehlten auch einige Informationen. Auch wenn man diese Informationen teilweise über die Analyse der Aufrufe via Chrome herausarbeiten konnte, war dies jedoch mit deutlichem Mehraufwand verbunden. Dieser Mehraufwand wäre vermutlich nicht vorhanden, wenn man das System genau kennen würde.
+Im Gegensatz zu dem am Anfang beschriebenen Ansatz, bei dem PACT bei der Implementierung des Consumers mit eingebunden wird, musste bei MARS PACT in ein bestehendes System eingebunden werden. Ergänzend hierzu kam, dass sowohl der Metadata-Client als auch der Metadata-Service von Anderen implementiert wurde. Im generellen Ablauf von PACT wird jedoch davon ausgegangen, dass Consumer und Provider von den selben Personen implementiert wurde, die auch PACT implementieren (wollen). Zumindest werden sehr genaue Kenntnisse vorausgesetzt. Dieser Umstand führte bei dieser Arbeit zu einigen Schwierigkeiten.
+Denn es waren nicht immer alle notwendigen Informationen über die Interaktionen vorhanden. Zwar lieferten die Swagger-Dateien wichtige Informationen, jedoch waren diese nicht immer korrekt oder veraltet. Zudem fehlten auch einige Informationen in der Swagger-Dateien. Auch wenn man diese Informationen teilweise über Analyse der Aufrufe via Chrome herausarbeiten konnte, war dies jedoch mit hohem Aufwand verbunden. Dieser Mehraufwand wäre vermutlich nicht vorhanden, wenn man das System genau kennen würde.
 
-Aufgrund der fehlenden Informationen konnte man auch nicht immer entscheiden, ob das aktuelle Verhalten korrekt ist. Deswegen gab es teilweise auch keine andere Möglichkeit als das aktuelle Verhalten als das Soll-Verhalten zu definieren. Zudem konnte wegen den fehlenden Informationen keine Priorisierung vorgenommen werden. Es war nicht klar, welche Aspekte unbedingt getestet werden müssen und welche nicht. Ein einfaches Beispiel dafür kann man nennen, dass man teilweise nicht wusste, ob eine bestimmte Eigenschaft des Headers getestet werden muss oder nicht.
+Aufgrund der fehlenden Informationen konnte auch nicht immer entschieden werden, ob das aktuelle Verhalten korrekt ist. Deswegen gab es teilweise auch keine andere Möglichkeit als das aktuelle Verhalten als das Soll-Verhalten zu definieren. Zudem konnte wegen den fehlenden Informationen keine Priorisierung vorgenommen werden. Es war nicht klar, welche Aspekte unbedingt getestet werden müssen und welche nicht. Ein einfaches Beispiel hierfür ist, dass teilweise nicht festgestellt werden konnte, ob eine bestimmte Eigenschaft des Headers getestet werden muss oder nicht.
 
-Um die einzelnen Interaktionen besser zu verstehen, war es unumgänglich die Interaktion zuerst in Postman umzusetzen. Denn damit bekam man eine bessere Übersicht wie genau die Anfragen auszusehen haben und wie die Antworten aufgebaut sind. Erst mit diesen Informationen konnte die Implementierung von PACT beginnen.
+Um die einzelnen Interaktionen besser zu verstehen, war es unumgänglich die Interaktion zuerst in Postman umzusetzen. Denn hiermit ergab sich eine bessere Übersicht wie genau die Anfragen auszusehen haben und wie die Antworten aufgebaut sind. Erst mit diesen Informationen konnte die Implementierung von PACT beginnen.
 
-Jedoch war die Implementierung von PACT auch nicht ganz ohne Schwierigkeiten. Schaut man sich zuerst das beschriebene generelle Beispiel und die danach erfolgte Implementierung in MARS an, sieht es auf den ersten Blick sehr kompakt und vor allem simpel aus. Im Prinzip ist es auch simpel und kompakt, wenn man es verstanden hat. Jedoch ist leider die Dokumentation von PACT ausbaufähig. Dies erschwerte den Aufbau des Verständnis von PACT.
+Jedoch war die Implementierung von PACT auch nicht ganz ohne Schwierigkeiten. Schaut man sich zuerst das beschriebene generelle Beispiel und die danach erfolgte Implementierung in MARS an, sieht es auf den ersten Blick sehr kompakt und vor allem simpel aus. Im Prinzip ist es auch simpel und kompakt, sobald das Verständnis vorliegt. Jedoch ist leider die Dokumentation von PACT ausbaufähig. Dies erschwerte den Aufbau des Verständnis von PACT.
 
-In der PACT Dokumentation werden viele Aspekte nur kurz erläutert. Teilweise werden Aspekte nur mithilfe eines Beispieles ohne aussagekräftige Beschreibung vorgestellt. Problematisch wurde es dann, wenn die gezeigten Beispiele nicht für die aktuelle Situation übertragen werden konnte. Dann war man auf die teilweise sehr kurze Erklärung angewiesen. Dies führte manchmal dazu, dass man einige Abschnitte mit der Methode "try and error" implementierte, also so lange ausprobierte, bis es funktionierte. Besonders die erste Erstellung eines JSON-Body mit PACT war sehr aufwendig, bis man verstanden hatte, was die einzelnen Methoden genau machten. Erschwerend kam hinzu, dass es mehrere Beschreibungen für die gleiche Abschnitte gab, die jedoch für verschiedene Versionen gültig waren. Dadurch wurde es manchmal sehr unübersichtlich, da man immer wieder prüfen musste, ob die Erklärung für die verwendete Version passt.
+In der PACT Dokumentation werden viele Aspekte nur kurz erläutert. Teilweise werden Aspekte nur mithilfe eines Beispieles ohne aussagekräftige Beschreibung vorgestellt. Problematisch wurde es, wenn die gezeigten Beispiele nicht für die aktuelle Situation übertragen werden konnte. Dann war man auf die teilweise sehr kurze Erklärung angewiesen. Dies führte manchmal dazu, dass man einige Abschnitte mit der Methode "try and error" implementierte, also so lange ausprobierte, bis es funktionierte. Besonders die erste Erstellung eines JSON-Body mit PACT war sehr aufwendig, bis man verstanden hatte, was die einzelnen Methoden genau machten. Erschwerend kam hinzu, dass es mehrere Beschreibungen für die gleiche Abschnitte gab, die jedoch für verschiedene Versionen gültig waren. Dadurch wurde es manchmal sehr unübersichtlich, da man immer wieder prüfen musste, ob die Erklärung für die verwendete Version passt.
 
-Zu der ausbaufähigen Dokumentation kam leider noch hinzu, dass PACT noch nicht sehr verbreitet ist. Wegen der Dokumentation war man immer wieder in der Situation bestimmte Sachverhalte bzw. Fragestellungen im Internet zu suchen. Das Ergebnis war leider sehr oft enttäuschend. Wenn überhaupt gab es nur eine kurze Beschreibung in Form eines Git-Issues. Wobei diese meistens Fehler aus vorherigen Versionen beschrieben, die in der verwendeten Version schon behoben waren. Daher konnten nicht immer Antworten gefunden werden und man verließ sich wieder auf "try and error".
+Zu der ausbaufähigen Dokumentation kam leider noch hinzu, dass PACT noch nicht sehr verbreitet ist. Wegen der Dokumentation mussten immer wieder bestimmte Sachverhalte bzw. Fragestellungen im Internet nach geforscht werden. Das Ergebnis war oft enttäuschend. Wenn überhaupt gab es nur eine kurze Beschreibung in Form eines Git-Issues. Wobei diese meistens Fehler aus vorherigen Versionen beschrieben, die in der verwendeten Version schon behoben waren. Daher konnten nicht immer Antworten gefunden werden und man verließ sich wieder auf "try and error".
 
-Zusammenfassend für den Abschnitt der Einbindung von PACT in MARS kann man jedoch sagen, dass es durchaus simpel und schnell umsetzbar ist. Dies setzt aber voraus, dass man sowohl weiß, wie der Consumer und Provider im Detail interagieren und wie man mit PACT die Testfälle implementiert.
+Zusammenfassend für den Abschnitt der Einbindung von PACT in MARS kann gesagt werden, dass es durchaus simpel und schnell umsetzbar ist. Dies setzt aber voraus, dass sowohl Kenntnisse darüber bestehen, wie der Consumer und Provider im Detail interagieren und wie die Testfälle in PACT zu implementieren sind.
 
-Im nächsten Bereich werden die einzelnen Untersuchungen bewertet. Zum Beginn kann man gleich festhalten, dass die Ausführung der Tests, egal ob es auf der Seite des Consumers oder Providers war, sehr schnell ausgeführt wurden. Dadurch bekommt man sehr schnell ein Feedback, ob die Tests erfolgreich waren. 
+Im nächsten Bereich werden die einzelnen Untersuchungen bewertet. Zum Beginn kann gleich festgehalten werden, dass die Ausführung der Tests, egal ob es auf der Seite des Consumers oder Providers war, sehr schnell ausgeführt wurden. Dadurch gab es schnelles ein Feedback, ob die Tests erfolgreich waren. 
 
-Wie man gut aus manchen Listings ableiten kann, sind die Meldungen teilweise sehr lang. Besonders bei einigen Fehlern wiederholen sich die Fehlerbeschreibungen und sorgen für eine lange Meldung in der Konsole. Unter anderem dadurch werden die Meldung unübersichtlich und man muss genau lesen, woran der Test gescheitert ist. Besonders bei der Meldung, die im Listing \ref{lst:ErrorProvider_GET} auf Seite \pageref{lst:ErrorProvider_GET} dargestellt ist, ist die Beschreibung des Fehlers verwirrend und teilweise auch einfach falsch. Wie die Fehlerbeschreibung korrekt wiedergibt, fehlt einfach die Map mit den GEO-Daten. Jedoch werden im Diff-Abschnitt auch andere Body-Abschnitte angezeigt, die sich unterscheiden. Dabei ist für diese Abschnitte definiert wurden, dass nur der Typ bzw. Format geprüft werden soll und keine Überprüfung des Wertes. Die komplette Meldung suggeriert aber, dass auch diese Abschnitte fehlerhaft sind. Dies führte durchaus zu Verwirrungen und lenkt von der eigentlichen Unterscheidung ab. 
+Wie sich aus einzelnen Listings gut ableiten lässt, sind die Meldungen teilweise sehr lang. Besonders bei einigen Fehlern wiederholen sich die Fehlerbeschreibungen und sorgen für eine lange Meldung in der Konsole. Unter anderem dadurch werden die Meldung unübersichtlich und es erfordert ein genaues lesen, woran der Test gescheitert ist. Besonders bei der Meldung, die im Listing \ref{lst:ErrorProvider_GET} auf Seite \pageref{lst:ErrorProvider_GET} dargestellt ist, ist die Beschreibung des Fehlers verwirrend und teilweise falsch. Wie die Fehlerbeschreibung korrekt wiedergibt, fehlt einfach die Map mit den GEO-Daten. Jedoch werden im Diff-Abschnitt auch andere Body-Abschnitte angezeigt, die sich unterscheiden. Dabei ist für diese Abschnitte definiert wurden, dass nur der Typ bzw. Format geprüft werden soll und keine Überprüfung des Wertes. Die komplette Meldung suggeriert aber, dass auch diese Abschnitte fehlerhaft sind. Dies führte durchaus zu Verwirrungen und lenkt von der eigentlichen Unterscheidung ab. 
  
 Auch die im Listing \ref{lst:ErrorHeaderConsumer} auf Seite \pageref{lst:ErrorHeaderConsumer} abgebildete Meldung ist unübersichtlich. Zwar gibt die Fehlermeldung exakt wieder, dass der Wert von der Eigenschaft \enquote{Accept} im Header nicht stimmt. Jedoch gibt es keinen Verweis darauf, dass es sich um den Request-Header handelt. Dazu wird nur angegeben, welcher Request nicht empfangen wurde. Eine Ansicht, in der die Unterschiede gegenüber gestellt werden, wäre sinnvoller.
 Das Ähnliche gilt auch für das Listing \ref{lst:ErrorProvider_PUT} auf Seite \pageref{lst:ErrorProvider_PUT}. Die Fehlermeldung wird eindeutig beschrieben. Jedoch ist auch hier die Ausgabe sehr umfangreich und wiederholt sich zum Teil auch einfach. Besonders die Länge der Meldungen und das teilweise unnötige Anzeigen von Unterschieden macht die Rückmeldungen von PACT sehr unübersichtlich. Dies trifft verstärkt auf, wenn die Tests nicht einzeln ausgeführt werden, sondern zusammen. Sollten dann mehrere Tests fehlschlagen, kann die Meldung sehr lang werden und damit auch sehr unübersichtlich. Dies kann dazu führen, dass Fehler zunächst übersehen werden oder falsch interpretiert werden.
 
-Als gutes Beispeil für eine gelungene Fehler Ausgabe, kann man das Listing \ref{lst:ErrorProvider_DELETE} auf Seite \pageref{lst:ErrorProvider_DELETE} nehmen. Es ist kurz und knapp beschrieben, wo der Fehler liegt. Daher ist es klar erkennbar, dass der Statuscode in der Response nicht stimmt. Zudem ist die Gegenüberstellung der Statuscodes sehr hilfreich.
+Als gutes Beispeil für eine gelungene Fehler Ausgabe, kann das Listing \ref{lst:ErrorProvider_DELETE} auf Seite \pageref{lst:ErrorProvider_DELETE} genommen werden. Es ist kurz und knapp beschrieben, wo der Fehler liegt. Daher ist es klar erkennbar, dass der Statuscode in der Response nicht stimmt. Zudem ist die Gegenüberstellung der Statuscodes sehr hilfreich.
 
 Eine Bewertung der Ausgabe bei erfolgreichen Tests wird hier nicht speziell betrachtet, da nur die Meldung erscheint, dass die Tests erfolgreich waren. Dies betrifft sowohl die Tests auf Seite des Consumers sowie auf der Seite des Providers.
 
 Ein weiterer negativer Punkt ist die in Listing \ref{lst:ErrorProvider_POST} auf Seite \pageref{lst:ErrorProvider_POST} abgebildete Meldung. Der Test sollte erfolgreich sein, da nur überprüft werden soll, ob der String im Body der Reponse im Format einer UUID vorliegt. Der zurück gebene String liegt auch im UUID-Format vor. Daher scheint dies ein Fehler von PACT zu sein. 
 
-Abschließend kann man über PACT sagen, dass sich die Verwendung von PACT durchaus lohnt. Der Vorteil, des schnellen Feedbacks und der durchaus schnellen Implementierung der Tests, überwiegt die Nachteile zu den teilweise uneindeutigen und/oder zu langen Fehlermeldungen. Auch der zuletzt beschriebene Fehler ändert daran nichts. Mit PACT bekommen die Entwickler eine schnelle Rückmeldung, ob ihre Änderungen zu ungewollten Veränderungen der Schnittstellen führen oder sie können schnell überblicken bei gewollten Veränderungen der Schnittstelle, welche Anpassungen sie vornehmen müssen.
+Abschließend kann über PACT gesagt werden, dass sich die Verwendung von PACT durchaus lohnt. Der Vorteil, des schnellen Feedbacks und der durchaus schnellen Implementierung der Tests, überwiegt die Nachteile zu den teilweise uneindeutigen und/oder zu langen Fehlermeldungen. Auch der zuletzt beschriebene Fehler ändert daran nichts. Mit PACT bekommen die Entwickler eine schnelle Rückmeldung, ob ihre Änderungen zu ungewollten Veränderungen der Schnittstellen führen oder sie können schnell überblicken bei gewollten Veränderungen der Schnittstelle, welche Anpassungen sie vornehmen müssen.
 
-Eine Voraussetzung für die Verwendung von PACT sollte jedoch sein, dass sie ähnlich wie Unit-Tests bei den Entwicklern angesiedelt werden sollten. Das heißt die Implementierung sollte von den Entwicklern vorgenommen werden, welche auch die Consumer und Provider entwickeln. Es ist sehr hilfreich bei der Implementierung von PACT zu wissen, was genau getestet werden soll und wo die Schwerpunkte liegen. Als Beispiel kann man dafür die Header nehmen. Als Außenstehender ist es schwer zu wissen, ob Eigenschaften überprüft werden sollen und wenn ja, welche genau. Diese Entscheidungen können die Entwickler besser treffen, da sie die Testobjekte detaillierter kennen. Als Alternative ginge auch, dass die Entwickler genau spezifizieren, was getestet werden soll und eine dritte Person, die Implementierung von PACT übernimmt. Dabei muss aber die Spezifizierung sehr genau sein, damit die Person, die PACT implementiert, auch genau weiß, was getestet werden muss und wo die Schwerpunkte liegen. 
+Eine Voraussetzung für die Verwendung von PACT sollte jedoch sein, dass sie ähnlich wie Unit-Tests bei den Entwicklern angesiedelt werden sollten. Das heißt die Implementierung sollte von den Entwicklern vorgenommen werden, welche auch die Consumer und Provider entwickeln. Es ist sehr hilfreich bei der Implementierung von PACT zu wissen, was genau getestet werden soll und wo die Schwerpunkte liegen. Als Beispiel kann dafür die Header genommen werden. Als Außenstehender ist es schwer zu wissen, ob Eigenschaften überprüft werden sollen und wenn ja, welche genau. Diese Entscheidungen können die Entwickler besser treffen, da sie die Testobjekte detaillierter kennen. Als Alternative ginge auch, dass die Entwickler genau spezifizieren, was getestet werden soll und eine dritte Person, die Implementierung von PACT übernimmt. Dabei muss aber die Spezifizierung sehr genau sein, damit die Person, die PACT implementiert, auch genau weiß, was getestet werden muss und wo die Schwerpunkte liegen. 
 
-PACT ist durchaus geeignet für MARS bzw. für Microservice-Architekturen. Jedoch müssen die oben genannten Voraussetzungen stimmen. Zwar ist die Implementierung in ein bestehendes System umfangreicher als, wenn man PACT von Anfang mit implementiert. Jedoch sind die Vorteile, wie das schnelle Feedback, sehr sinnvoll für ein System, das sich ständig ändert. Denn mit PACT kann man sehr gut prüfen, ob Änderungen zu ungewollten Veränderungen der Schnittstelle führen oder welche Services noch aktualisiert werden müssen.
+PACT ist durchaus geeignet für MARS bzw. für Microservice-Architekturen. Jedoch müssen die oben genannten Voraussetzungen stimmen. Zwar ist die Implementierung in ein bestehendes System umfangreicher als, wenn man PACT von Anfang mit implementiert. Jedoch sind die Vorteile, wie das schnelle Feedback, sehr sinnvoll für ein System, das sich ständig ändert. Denn mit PACT kann sehr gut geprüft werden, ob Änderungen zu ungewollten Veränderungen der Schnittstelle führen oder welche Services noch aktualisiert werden müssen.
 
 \section{Ausblick Masterarbeit}
 In der Masterarbeit sollen die begonnen Arbeiten aus den bisherigen Projekten und den Seminaren fortgesetzt werden. Ein Schwerpunkt wird dabei die Im Hauptseminar begonne Ausarbeitung zu dem Testkonzept von Google und das von Martin Fowler erstellte Testkonzept für Programme, die eine Microservice-Architektur verwenden. Ergänzend zu diesen beiden Konzepte sollen weitere aktuelle Testkonzepte gesammelt und verglichen werden. Interessant wird dabei sein herauszufinden, wie andere große Software Hersteller wie z.B. Microsoft, zurzeit ihre Software testen. Dies wird unter der Fragestellung stehen: Mit welchem Konzepten wird Software heutzutage getestet?
