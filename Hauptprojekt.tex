@@ -5,8 +5,11 @@
 \usepackage{graphicx}
 
 \usepackage{url}
+\usepackage{breakurl}
+\usepackage[breaklinks]{hyperref}
 \usepackage{natbib}
 \usepackage[autostyle=true,german=quotes]{csquotes}
+\def\UrlBreaks{\do\/\do-}
 
 
 \title{Consumer Driven Contract Tests}
@@ -607,7 +610,8 @@ Failures:
 
 0) Verifying a pact between metadata-client and metadata-service 
 - Set a new state for a metadata entry returns 
-a response which Verifying a pact between metadata-client and metadata-service
+a response which Verifying a pact between metadata-client 
+and metadata-service
   [Using file ../metadata-client-metadata-service.json]
   Set a new state for a metadata entry
     returns a response which
