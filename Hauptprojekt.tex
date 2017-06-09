@@ -25,7 +25,7 @@ In der vorliegenden Ausarbeitung werden die Ergebnisse der im Hauptprojekt statt
 Innerhalb dieser Ausarbeitung soll erarbeitet werden, ob PACT die im Grundprojekt erarbeiteten Anforderungen für das Testen von Microservice Anwendungen erfüllen kann \cite{Piehl2017}. Die größten Anforderungen waren ein schnelles und aussagekräftiges Feedback aus den Tests zu bekommen, welches ein mehrmaliges Veröffentlichen einer neuen Version pro Tag unterstützt. Dabei dient weiterhin, wie im Grundprojekt, das Framework MARS als Testobjekt.
 
 Da PACT Schnittstellen testet, wird am Anfang der Ausarbeitung der Architekturstil erläutert, mit dem die Schnittstellen von MARS implementiert wurden sind. In MARS sind alle Schnittstellen mit dem Architekturstil REST entworfen worden \cite{chakrabarti2009test}. Nach der grundsätzlichen Erklärung von REST, werden noch Besonderheiten beim Testen definiert, welche sich aus der Schnittstelle und der Verwendung von REST ergeben. Diese neu ausgearbeiteten Herausforderungen sollen die im Grundprojekt ausgearbeiteten Herausforderungen ergänzen. Der Aspekt der Schnittstellen wurde im Grundprojekt zunächst ausgeblendet, da sonst der Umfang zu groß geworden wäre.
-Im nächsten Kapitel wird anschließend Consumer Driven Contract Test detaillierter vorgestellt und erläutert. Die Erläuterung wird mit einer Beispielimplementierung von PACT unterstützt. Im Anschluss wird die Implementierung von PACT innerhalb von MARS beschrieben, da sich diese vom generellen Ablauf von PACT unterscheidet. Für das Ausprobieren von PACT innerhalb von MARS wurden zwei Service ausgesucht, an denen beispielhaft die Implementierung ausgeführt wurden ist. Nach der Implementierung von PACT wurden verschiedene Untersuchungen durchgeführt, die dazu dienten PACT zu bewerten. In dieser Bewertung wird auch eine Aussage getroffen, ob PACT sinnvoll für MARS bzw. generell für eine Microservice Architektur ist. Im letzten Kapitel wird ein Ausblick auf die Masterarbeit gegeben.
+Im nächsten Kapitel wird anschließend Consumer Driven Contract Test detaillierter vorgestellt und erläutert. Die Erläuterung wird mit einer Beispielimplementierung von PACT unterstützt. Im Anschluss wird die Implementierung von PACT innerhalb von MARS beschrieben, da sich diese vom generellen Ablauf von PACT unterscheidet. Für das Ausprobieren von PACT innerhalb von MARS wurden zwei Service ausgesucht, an denen beispielhaft die Implementierung ausgeführt wurden ist. Nach der Implementierung der Schnittstellentests mit PACT wurden verschiedene Untersuchungen durchgeführt, die dazu dienten PACT zu bewerten. In dieser Bewertung wird auch eine Aussage getroffen, ob PACT sinnvoll für MARS bzw. generell für eine Microservice Architektur ist. Im letzten Kapitel wird ein Ausblick auf die Masterarbeit gegeben.
 \nocite{*}
 \section{REST}
 REST ist ein Architekturstil für verteilte Systeme. Die Abkürzung REST steht für Representational State Transfer \cite{chakrabarti2009test}.
@@ -53,7 +53,7 @@ Delete & DELETE \\ \hline
 
 Neben den CRUD-Operatoren können noch weitere HTTP-Methoden zur Verfügung stehen. Beispiele hierfür sind HEAD und OPTIONS \cite{porres2011modeling}.
 
-Bei REST müssen die jeweiligen Aufrufe Zustandslos erfolgen \cite{reza2010framework, porres2011modeling, kao2013performance}. Im Detail heißt dies, dass der Webservices keine Informationen über den Zustand seiner einzelnen Clients speichert. Sollten Informationen über deren Zustand notwendig sein, müssen die Clients die Informationen mit übertragen. Dadurch können auch komplexerer Programmzustände abgebildet werden \cite{porres2011modeling}.
+Bei REST müssen die jeweiligen Aufrufe zustandslos erfolgen \cite{reza2010framework, porres2011modeling, kao2013performance}. Im Detail heißt dies, dass der Webservices keine Informationen über den Zustand seiner einzelnen Clients speichert. Sollten Informationen über deren Zustand notwendig sein, müssen die Clients die Informationen mit übertragen. Dadurch können auch komplexerer Programmzustände abgebildet werden \cite{porres2011modeling}.
 
 Die jeweiligen Nachrichten können in verschiedene Formaten vorliegen
 \cite{reza2010framework}. Sehr häufig werden XML, JSON oder beide Formate für die Nachrichten verwendet. 
@@ -65,26 +65,77 @@ Zusammenfassend lässt sich REST in vier Grundprinzipien zusammenfassen \citep{p
 \item \textbf{Addressability: } Jede wichtige Informationen muss als Ressource vorliegen und über eine eindeutige URI erreichbar sein.
 \item \textbf{Connectedness: } Die Repräsentation ist getrennt von den Ressourcen. Dies bedeutet, Ressourcen können in verschiedenen Formate vorliegen, wie z.B. JSON und XML.
 \item \textbf{Uniform Interface: } Auf die Ressourcen wird nur über standardisierte HTTP-Methoden zugegriffen.
-\item \textbf{Statelessnes: } Jede Kommunikation erfolgt Zustandslos.
+\item \textbf{Statelessnes: } Jede Kommunikation erfolgt zustandslos.
 \end{itemize}
 
 Webservices, welche die vier Grundprinzipien einhalten, bekommen häufig den Beinamen RESTful \citep{porres2011modeling}. Der Begriff RESTful ist nicht eindeutig definiert.  
 
-\subsection{Besonderheiten beim Testen}
-Die Kommunikation zwischen Consumer und Provider erfolgt nach einem festgelegten Kontrakt, welcher auch Schnittstelle genannt wird. In dem Kontrakt ist festgelegt, wie die Kommunikation zwischen Consumer und Provider erfolgt. Das heißt, mit dem Kontrakt ist definiert welche Methoden der Provider seinen Consumern anbietet und wie die Consumer diese aufrufen können. Dazu beinhaltet er auch Informationen welche Parameter benötigt werden und in welchem Format der Consumer seine Antworten erhält. Dahingehend ist es enorm wichtig, dass der Kontrakt eingehalten wird. Andernfalls kann es zu Fehlern führen.
+\subsection{Kontrakte}
+In der allgemeinen Definition bedeutet Kontrakt eine Vereinbarung zwischen zwei unterschiedlichen Parteien. Diese Definition kann sehr gut auf diesen Kontext übertragen werden. Der Kontrakt enthält die Vereinbarungen über die möglichen Interaktionen zwischen dem Service, der anfragt und dem Service, der antwortet \cite{pact, bayer2015jaxcenter}.
 
-Deswegen muss ein Schwerpunkt beim Testen von Anwendungen, welche REST verwenden, darauf liegen zu kontrollieren, dass der Kontrakt weiterhin gültig ist. Daher muss geprüft werden das Veränderungen am Consumer bzw. Provider nicht zu einer Verletzung des Kontraktes führt.
+Verwaltet wird der Kontrakt vom Service, der angefragt werden soll. In dem Sinne ist der Kontrakt eine Beschreibung, welche Funktionen er anderen Services anbietet und wie diese verwendet werden können.
 
-Besonders bei Anwendungen mit einer Microservice-Architektur, bei der die Kommunikation hauptsächlich über das Netzwerk abläuft, ist es von großer Bedeutung, dass die Kommunikation funktioniert und nicht aufgrund eines fehlerhaften Kontraktes zu Fehlern führt.
+Der Kontrakt ist dabei nichts REST spezielles, sondern wird auch bei anderen Arten von Schnittstellen wie SOAP verwendet. Dabei gibt es kein definiertes Format, in dem der Kontrakt vorliegen soll. Im SOAP-Bereich wird meist eine Datei im WSDL-Format verwendet, während im REST-Bereich viele verschiedene Formate existieren wie z.B. Swagger, RAML und WADL.
 
-Wegen der Verlagerung der Kommunikation in das Netzwerk, wird das Überprüfen der Kontrakte umfangreicher, da sehr viele Kontrakte vorliegen. Ergänzend dazu sind die einzelnen Services gleichzeitig Consumer und Provider. Daher kann es unübersichtlich werden, wer welche Services anfragt und wie.
+\lstset{language = Java}
+\begin{lstlisting}[caption=Beispiel Kontrakt als Swagger-Datei,label=lst:kontraktSwagger]
+swagger: '2.0'
+info:
+  description: Service to process uploaded table based imports
+  version: '2.0'
+  title: Table based importer
+host: localhost:5555
+basePath: "/"
+tags:
+- name: tablebased-import-controller
+  description: Tablebased Import Controller
+paths:
+  "/tablebased/{dataId}":
+    delete:
+      tags:
+      - tablebased-import-controller
+      summary: Deletes all persisted data for the given data id.
+      operationId: deleteTablebasedFIleUsingDELETE
+      consumes:
+      - application/json
+      produces:
+      - "*/*"
+      parameters:
+      - name: dataId
+        in: path
+        description: dataId
+        required: true
+        type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+\end{lstlisting}
 
-Besonders bei gewünschten Änderungen eines Kontraktes kann es unübersichtlich werden. Aufgrund der möglichen Vielzahl von Consumern, kann der Überblick verloren gehen, welche Consumer aktualisiert werden müssen und welche nicht. Dies kann zur Folge haben, dass ein Provider Methoden oder Varianten einer Methode bereitstellt, die nicht mehr benötigt werden.
+Das Listing \ref{lst:kontraktSwagger} enthält einen Beispielkontrakt im Swagger-Format. Wie diesem Beispiel entnommen werden kann, enthält der Kontrakt allgemeine Informationen wie dem Titel des Services und die Adresse, unter dem der Service erreichbar ist. 
+
+Dazu enthält der Kontrakt Informationen darüber über welche Pfade die Ressourcen angesprochen werden können und zusätzlich welche HTTP-Methoden zur Verfügung stehen. Ergänzend dazu enthält er auch Informationen, wie die Anfrage aufgebaut werden soll und welche Antworten zu erwarten sind.
+
+Welche und wie die Informationen im Kontrakt abgelegt werden sollen, ist abhängig von dem verwendeten Schnittstellen-Format.
+
+\subsection{Besonderheiten beim Testen einer REST-Schnittstelle}
+Die Kommunikation zwischen Consumer und Provider erfolgt nach einem festgelegten Kontrakt, welcher auch Schnittstelle genannt wird. Wie im vorherigen Abschnitt bereits erläutert, beschreibt der Kontrakt die Kommunikation zwischen zwei Services. Dahingehend ist es enorm wichtig, dass der Kontrakt eingehalten wird. Andernfalls kann es zu Fehlern führen.
+
+Deswegen muss ein Schwerpunkt beim Testen von Anwendungen, welche REST verwenden, darauf liegen zu kontrollieren, dass der Kontrakt weiterhin gültig ist. Genau heißt das, dass die angeboten Funktionen so angefragt werden, wie es im Kontrakt definiert ist und dass auch die Antworten im Kontrakt definierten Format vorliegen. Es ist zu vergleichen mit dem Testen eines Methodenaufrufes. Fehlen notwendige Parameter beim Aufrufen oder Werte beim zurückgeben, kann dies zu Fehlern führen. Ähnlich verhält es sich auch beim Testen einer Schnittstelle. Daher muss geprüft werden das Veränderungen am Consumer bzw. Provider nicht zu einer Verletzung des Kontraktes führt.
+
+Besonders bei Anwendungen mit einer Microservice-Architektur, bei der die Kommunikation hauptsächlich über das Netzwerk abläuft, ist es von großer Bedeutung, dass die Kommunikation funktioniert und nicht aufgrund eines fehlerhaften Kontraktes zu Fehlern führt. Wegen der Verlagerung der Kommunikation in das Netzwerk, wird das Überprüfen der Kontrakte umfangreicher, da sehr viele Kontrakte vorliegen. Ergänzend dazu sind die einzelnen Services gleichzeitig Consumer und Provider. Daher kann es unübersichtlich werden, wer welche Services anfragt und wie.
+
+Besonders bei gewünschten Änderungen eines Kontraktes kann es unübersichtlich werden. Aufgrund der möglichen Vielzahl von Consumern, kann der Überblick verloren gehen, welche Consumer aktualisiert werden müssen und welche nicht. Als Beispiel wird das Löschen einer Ressourcen ein weiterer Wert benötigt. In diesem Fall müssen die Consumer ihre Anfrage aktualisieren, damit sie weiterhin die Ressourcen löschen können. Jedoch kann es sein, dass nur ein Teil der Consumer dieser Funktion überhaupt nutzen wollen. Bei einem fehlenden Überblick darüber, welche Consumer welche Anfragen verwenden,kann es zur Folge haben, dass ein Provider Methoden oder Varianten einer Methode bereitstellt, die nicht mehr benötigt werden. Dies kann zu einem unnötig großen Kontrakt führen, der unübersichtlich wird.
 
 Eine andere Problematik, die durch die Verlagerung der Kommunikation in das Netzwerk entsteht ist, dass damit der Traffic im Netzwerk erhöht wird. Dadurch kann es vermehrt auftreten, dass Nachrichten beschädigt werden oder verloren gehen. Mit dieser Problematik müssen die Provider und Consumer umgehen können.
 
 \section{Consumer Driven Contract Test}
-Bei dem Ansatz Consumer Driven Contract werden die Schnittstellen bzw. die Kontrakte aus der Sicht des Clients/Consumers definiert \cite{Robinson2006, bayer2015jaxcenter, vitz2016inno}. Dabei spielt es keine Rolle, ob nur einen Consumer oder mehrere existieren. Die jeweiligen Anfragen und gewünschten Antworten werden festgelegt und auf Grundlage dieser Informationen wird der Provider implementiert. Dabei baut der Ansatz auf der Annahme auf, dass der Consumer am besten wüsste, was er nutzen möchte.
+Bei dem Ansatz Consumer Driven Contract werden die Schnittstellen bzw. die Kontrakte aus der Sicht des Clients/Consumers definiert \cite{Robinson2006, bayer2015jaxcenter, vitz2016inno}. Dabei spielt es keine Rolle, ob nur einen Consumer oder mehrere existieren. Die jeweiligen Anfragen und gewünschten Antworten werden gesammelt und auf Grundlage dieser Informationen wird der Provider implementiert. Dabei baut der Ansatz auf der Annahme auf, dass der Consumer am besten wüsste, was er nutzen möchte. Dies bedeutet auch, dass zu erst der Kontrakt existiert und erst dann der Provider entwickelt wird.
 
 Wie sich aus der generellen Beschreibung dieses Ansatzes ableiten lässt, eignet er sich am Besten, wenn sowohl die Consumer wie der Provider neu implementiert werden. Bei bestehenden Anwendungen könnte dieses Verfahren unter anderem dafür genutzt werden, um zu prüfen, ob der Provider unnötige Schnittstellen bzw. Methoden anbietet.
 
@@ -92,9 +143,11 @@ Der Ansatz Consumer Driven Contract hat den Vorteil, dass sehr klar definiert is
 
 Auf der Basis dieses Konzeptes setzen die Consumer Driven Contract Tests auf \cite{bayer2015jaxcenter, vitz2016inno, Robinson2006}. Ein Framework, welches Consumer Driven Contract Tests unterstützt ist PACT. PACT ist ein Open-Source Tool, welches auf Github verwaltet wird \cite{pact}.
 
-In der Ausführung von Toby Clemson über das Testen von Microservices wird dieses Verfahren explizit empfohlen \cite{Clemson2014}. Dabei benennt er neben PACT zwei weitere Tools, welche Consumer Driven Contract Tests anbieten. Diese Tools sind PACTO und Janus. Für das Hauptprojekt wurde PACT gewählt, da es nach der ersten Recherche den größten Umfang bietete und zudem es besser dokumentiert ist, als die anderen genannten.
+In der Ausführung von Toby Clemson über das Testen von Microservices wird dieses Verfahren explizit empfohlen \cite{Clemson2014}. Dabei benennt er neben PACT zwei weitere Tools, welche Consumer Driven Contract Tests anbieten. Diese Tools sind PACTO und Janus. Für das Hauptprojekt wurde PACT gewählt, da es nach der ersten Recherche den größten Umfang bietet und zudem besser dokumentiert ist, als die anderen genannten.
 
 Mit PACT können die Consumer Driven Contract Tests in verschiedenen Programmiersprachen geschrieben werden. Zur Auswahl stehen dabei Ruby, C\#, JavaScript und Java. 
+
+Mit Consumer Driven Contract Tests wird die Einhaltung des Kontraktes getestet und zwar von beiden Seiten. Es wird zu einem getestet, ob der Consumer den Provider korrekt anfragt und zum anderen wird getestet, ob der Provider korrekt antwortet. Das Ziel hierbei ist zu prüfen, dass der Consumer sowie der Provider den Kontrakt einhalten.
 
 Im nächsten Abschnitt wird der generelle Ablauf von PACT anhand eines Beispiels erläutert, bevor im darauffolgenden Abschnitt die Vorteile beschrieben werden, die durch die Verwendung von Consumer Driven Contract Tests entstehen sollen. Denn einige vermeintliche Vorteile leiten sich direkt aus dem Ablauf von Consumer Driven Contract Test ab.
 
@@ -103,12 +156,12 @@ In diesem Kapitel wird der generelle Ablauf von Consumer Driven Contract Tests b
 
 \begin{figure}[htbp]
   \centering
-      \includegraphics[width=0.5\textwidth]{./Images/pact}
+      \includegraphics[width=0.8\textwidth]{./Images/pact}
     \caption{Ablauf Pact}
     \label{fig:Pact}
 \end{figure}
 
-Der Abbildung \ref{fig:Pact} auf Seite \pageref{fig:Pact} kann der generelle Ablauf von PACT entnommen werden. Zuerst werden auf der Seite des Consumers die Interaktionen definiert. Dies beinhaltet sowohl die Anfrage wie auch die zu erwarteten Antworten. PACT erstellt auf Grundlage dieser Informationen einen Stub vom Provider, der auf die Anfrage genauso antwortet wie es vorher definiert wurde. Sobald diese Tests erfolgreich abgelaufen sind, erfolgt das Testen des Providers. Dafür werden sozusagen die Seiten gewechselt. Es wird nicht mehr der Provider simuliert, sondern die einzelnen Consumer. PACT erstellt die Anfrage und überprüft, ob der Provider korrekt antwortet. Damit der Provider getestet werden kann, muss dieser vorher gestartet werden. Beim generellen Ablauf von PACT erkennt man sehr gut die Nähe zu Consumer Driven Contract. Begonnen wird mit den Consumern und abgeschlossen mit dem Provider.
+Der Abbildung \ref{fig:Pact} kann der generelle Ablauf von PACT entnommen werden. Zuerst werden auf der Seite des Consumers die Interaktionen definiert. Dies beinhaltet sowohl die Anfragen wie auch die zu erwarteten Antworten. PACT erstellt auf Grundlage dieser Informationen einen Stub vom Provider, der auf die Anfrage genauso antwortet wie es vorher definiert wurde. Sobald diese Tests erfolgreich abgelaufen sind, erfolgt das Testen des Providers. Dafür werden sozusagen die Seiten gewechselt. Es wird nicht mehr der Provider simuliert, sondern die einzelnen Consumer. PACT erstellt die Anfrage und überprüft, ob der Provider korrekt antwortet. Damit der Provider getestet werden kann, muss dieser vorher gestartet werden. Beim generellen Ablauf von PACT erkennt man sehr gut die Nähe zu Consumer Driven Contract. Begonnen wird mit den Consumern und abgeschlossen mit dem Provider.
 
 Für die Implementierung von PACT auf der Seite des Consumers wird eine neue Klasse angelegt. Diese Klasse erbt von der PACT Klasse ConsumerPactTest. Durch die Vererbung müssen vier abstrakte Methoden implementiert werden, welche in der folgenden Auflistung genannt werden:
 \begin{itemize}
@@ -153,20 +206,20 @@ protected PactFragment createFragment(PactDslWithProvider builder) {
             .toFragment();
 }
 \end{lstlisting}
-Die für das Beispiel implementierte createFragment-Methode ist im Listing \ref{lst:createFragment} auf Seite \pageref{lst:createFragment} abgebildet. In dieser Methode wird zunächst eine Map erstellt, in der verschiedene Optionen für den Header definiert werden. In diesem Fall wird nur der Content-Type auf JSON mit dem Zeichensatz UTF-8 festgelegt. Als Rückgabewerttyp gibt die Methode ein sogenanntes PactFragment zurück. Dieses PactFragment wird vom PactDslWithProvider erstellt, welches der Methode als Parameter übergeben wird. Daher bekommt es den passenden Namen builder. Mit dem builder können die verschiedenen Interaktionen definiert werden. Die einzelne Eigenschaften einer Interaktionen werden mithilfe von Methoden bestimmt. Die auf Seite \pageref{lst:createFragment} im Listing \ref{lst:createFragment} verwendeten Methoden, werden in der nachfolgenden Auflistung näher erläutert. 
+Die für das Beispiel implementierte createFragment-Methode ist im Listing \ref{lst:createFragment} auf Seite \pageref{lst:createFragment} abgebildet. In dieser Methode wird zunächst eine Map erstellt, in der verschiedene Optionen für den Header definiert werden. In diesem Fall wird nur der Content-Type auf JSON mit dem Zeichensatz UTF-8 festgelegt. Als Rückgabewerttyp gibt die Methode ein sogenanntes PactFragment zurück. Dieses PactFragment wird vom PactDslWithProvider erstellt, welches der Methode als Parameter übergeben wird. Daher bekommt es den passenden Namen builder. Mit dem builder können die verschiedenen Interaktionen definiert werden. Die einzelne Eigenschaften einer Interaktionen werden mithilfe von Methoden bestimmt. Die auf Seite \pageref{lst:createFragment} im Listing \ref{lst:createFragment} verwendeten Methoden werden in der nachfolgenden Auflistung näher erläutert. 
 
 \begin{itemize}
-\item \textbf{uponReciving: } Mit dieser Methode wird eine neue Interaktion erstellt. Als Parameter bekommt sie eine Beschreibung der Interaktion.
+\item \textbf{uponReceiving: } Mit dieser Methode wird eine neue Interaktion erstellt. Als Parameter bekommt sie eine Beschreibung der Interaktion.
 \item \textbf{path: } Der Methode path wird der aufzurufende Pfad als Parameter übergeben.
 \item \textbf{method: } Über die Methode method wird festgelegt mit welcher HTTP-Methode der Aufruf erfolgt.
 \item \textbf{willRespondWith: } Die Methode gibt an, dass ab hier die zu erwartende Antwort definiert wird.
-\item \textbf{headers: } Über dieser Methode kann definiert werden, dass entsprechende Werte im Header vorhanden sein müssen.
+\item \textbf{headers: } Über dieser Methode kann definiert werden, dass entsprechende Werte im Header vorhanden sein müssen. Es können für Request und Response unterschiedliche Header definiert werden.
 \item \textbf{status: } Hiermit wird der zu erwartende Statuscode definiert.
 \item \textbf{body: } Mit der body Methode wird definiert, welcher Body in der Response erwartet wird.
 \item \textbf{toFragment: } Zum Abschluss wird die Methode toFragment aufgerufen, mit der das Fragment abgeschlossen wird.
 \end{itemize}
 
-Es können auch mehrere Interaktionen mithilfe des builders erstellt werden. Jeder Interaktion beginnt mit der Methode uponReciving(). Um eine weitere Interaktion hinzuzufügen, wird einfach nach der Definition der zu erwartenden Antwort mit der Methode uponReciving() eine neue Interaktion hinzugefügt. Danach erfolgt die Definition der neuen Interaktion nach dem vorher aufgezeigten Schema. In Listing \ref{lst:createFragment} wäre dies nach der Methode body().
+Es können auch mehrere Interaktionen mit Hilfe des builders erstellt werden. Jeder Interaktion beginnt mit der Methode uponReciving(). Um eine weitere Interaktion hinzuzufügen, wird einfach nach der Definition der zu erwartenden Antwort mit der Methode uponReceiving() eine neue Interaktion hinzugefügt. Danach erfolgt die Definition der neuen Interaktion nach dem vorher aufgezeigten Schema. In Listing \ref{lst:createFragment} wäre dies nach der Methode body().
 
 Sobald das PactFragment, welches die Interaktionen enthält, implementiert ist, kann der Consumergetestet werden. Dafür wird die Methode runTest() umgesetzt, welche auf Seite \pageref{lst:runTest} im Listing \ref{lst:runTest} dargestellt wird.
 
@@ -229,7 +282,7 @@ Die Tests können entweder über ein Plugin zu einem Build Management Tool wie z
 
 Das PACT-File ist im Prinzip eine Zusammenfassung der zuvor definierten Klasse. Es enthält die jeweiligen definierten Provider und Consumer Namen, die Interaktionen und die zu erwartenden Antworten. Dazu wird noch angegeben mit welchen Versionen von PACT, die Datei erstellt wurden ist.
 
-Mit dem erstellten PACT-File kann der Provider getestet werden. Dafür muss der Provider entweder das Gradle oder das Maven Plugin von PACT für den Provider verwenden. Um das Plugin verwenden zu können, muss der Pfad zum PACT-File angegeben werden. Die Datei kann sowohl lokal vorliegen oder via einer URL aufgerufen werden. Zusätzlich muss der Pfad des Providers angegeben werden. Die entsprechenden Einstellungen am Beispiel der Verwendung von Gradle sind im Listing \ref{lst:pluginProvider} auf Seite \pageref{lst:pluginProvider} dargestellt.
+Mit dem erstellten PACT-File kann der Provider getestet werden. Hierbei wird getestet, ob der Provider Anfragen, wie sie im Kontrakt definiert sind, verarbeiten kann und vor allem so Antwort, wie es im Kontrakt definiert ist. Dafür muss der Provider entweder das Gradle oder das Maven Plugin von PACT für den Provider verwenden. Um das Plugin verwenden zu können, muss der Pfad zum PACT-File angegeben werden. Die Datei kann sowohl lokal vorliegen oder via einer URL aufgerufen werden. Zusätzlich muss der Pfad des Providers angegeben werden. Die entsprechenden Einstellungen am Beispiel der Verwendung von Gradle sind im Listing \ref{lst:pluginProvider} auf Seite \pageref{lst:pluginProvider} dargestellt.
 
 \lstset{language = Java}
 \begin{lstlisting}[caption=Einstellungen für das Testen vom Provider,label=lst:pluginProvider]
@@ -255,14 +308,14 @@ Neben dem generellen Vorteilen, welche man sich von dem Ansatz Consumer Driven C
 
 Einer der Gedanken hinter der Microservice-Architektur ist die unabhängige Entwicklung der einzelnen Services. Dementsprechend macht es Sinn auch ein unabhängiges Testen voneinander zu ermöglichen. Beim üblichen Verfahren zum Testen der Zusammenarbeit der verschiedenen Services, also Integrationstests, müssen die einzelnen Services gestartet werden. Dies kann mit ziemlichen Aufwand verbunden sein. Consumer Driven Contract Test verspricht ein unabhängiges Testen der Services dahingehend, ob die Zusammenarbeit mit den anderen Services funktioniert \cite{Vincent2015, bayer2015jaxcenter}. 
 
-Ein weiterer Vorteil von Consumer Driven Contract Test soll sein, dass jede Änderung am Service dahin gehend getestet werden kann, ob sie die definierte Schnittstelle verändert. Damit können Entwickler überprüfen, ob ihre Änderungen zu ungewollten Veränderung der Schnittstellen führen \cite{bayer2015jaxcenter}.
+Ein weiterer Vorteil von Consumer Driven Contract Test soll sein, dass jede Änderung am Service dahingehend getestet werden kann, ob sie die definierte Schnittstelle verändert. Damit können Entwickler überprüfen, ob ihre Änderungen zu ungewollten Veränderung der Schnittstellen führen \cite{bayer2015jaxcenter}.
 
 Dieser Vorteil ist jedoch am Interessantesten bei erwünschten Änderungen am Provider. Mit Consumer Driven Contract Test besteht die Möglichkeit zu evaluieren, ob und welche Consumer angepasst werden müssen, wenn die Schnittstelle des Providers geändert wurde. Besonders bei Anwendungen mit einer Microservice-Architektur kann es unübersichtlich werden, welche Services den Provider anfragen und welche überhaupt aktualisiert werden müssen. Mit Consumer Driven Contract Test soll diese Problematik leichter zu lösen sein \cite{vitz2016inno, Vincent2015}.
 
-Für ein System wie MARS mit einer Microservice-Architektur bei der die Kommunikation via Netzwerk extrem relevant ist, sind Fehler aufgrund von falschen Schnittstellen und/oder falschen Anfragen sehr kritisch. Dazu ändern sich innerhalb von MARS immer wieder die Anforderungen, an die auch die jeweiligen Services angepasst werden müssen. Aufgrund der Architektur besteht die Möglichkeit Änderungen schnell umzusetzen und den Service neu zu deployen. Consumer Driven Contract Test ist dabei sehr vielversprechend diesen Prozess zu begleiten. Es gibt zum Eine Überblick über Veränderungen der Schnittstellen, ob gewollt oder ungewollt. Zum Anderen unterstützt es die unabhängige Entwicklung der einzelnen Services. Ob Consumer Driven Contract Test die beschriebenen Vorteile einhält, wird im nächsten Kapitel behandelt, bei dem es um die Umsetzung von Consumer Driven Contract Test innerhalb von MARS geht.
+Für ein System wie MARS mit einer Microservice-Architektur bei der die Kommunikation via Netzwerk extrem relevant ist, sind Fehler aufgrund von falschen Schnittstellen und/oder falschen Anfragen sehr kritisch. Dazu ändern sich innerhalb von MARS immer wieder die Anforderungen, an die auch die jeweiligen Services angepasst werden müssen. Aufgrund der Architektur besteht die Möglichkeit Änderungen schnell umzusetzen und den Service neu zu deployen. Consumer Driven Contract Test ist dabei sehr vielversprechend diesen Prozess zu begleiten. Es gibt zum einen Überblick über Veränderungen der Schnittstellen, ob gewollt oder ungewollt. Zum Anderen unterstützt es die unabhängige Entwicklung der einzelnen Services. Ob Consumer Driven Contract Test die beschriebenen Vorteile einhält, wird im nächsten Kapitel untersucht, bei dem es um die Umsetzung von Consumer Driven Contract Test innerhalb von MARS geht.
 
 \section{Consumer Driven Contract Test in MARS}
-Nach der grundlegenden Befassung mit PACT soll nun geprüft werden, ob sich PACT für MARS anbietet. Wie schon im Kapitel 3.2 zu den vermeintlichen Vorteilen von PACT beschrieben, könnte PACT einige Anforderungen an die Tests für MARS erfüllen.
+Nach der grundlegenden Befassung mit PACT soll nun geprüft werden, ob sich PACT für MARS anbietet. Wie schon im Kapitel 3.2 zu den theoretischen Vorteilen von PACT beschrieben, könnte PACT einige Anforderungen an die Tests für MARS erfüllen.
 Kurz zusammengefasst geht es um ein schnelles Feedback von den Tests, besonders bei Änderungen am Source Code. Ergänzend dazu soll das Feedback aussagekräftig sein, um eine Fehlersuche zu erleichtern.
 
 Im Gegensatz zum eigentlichen gedachten Ablauf von PACT ist MARS ein sehr fortgeschrittenes Projekt, welches kurz vor dem Release steht. Dies hat zur Folge, dass PACT in ein bestehendes System eingebunden werden muss und nicht gleichzeitig mit der Implementierung des Consumers bzw. Providers eingeführt werden konnte.
@@ -278,12 +331,12 @@ Für die Erstellung der Machbarkeitsstudie wurde der Bereich der Imports in MARS
     \label{fig:ImportServices}
 \end{figure}
 
-Wie in Abbildung \ref{fig:ImportServices} zu den Services des Imports gut erkenntlich, interagieren alle Services, die für den Import zuständig sind, mit dem Service Metadata. Dieser Service hat die Aufgaben für die einzelne Dateien, die importiert werden, Metadaten zu erstellen, zu aktualisieren und ggf. zu löschen. Die erstellten Metadata werden dann in einer Datenbank abgelegt. Dazu kann das Frontend via des Services Metadata auf die einzelnen Metadata zugreifen. Damit nicht jeder Service, der mit dem Service Metadata interagiert die Aufrufe selber implementieren muss und damit ggf. Redundanzen erzeugt, ist die Kommunikation mit diesem Service im Objekt Metadata-Client gekapselt. Wenn eine Interaktion mit dem Service Metadata erforderlich ist, wird das Objekt Metadata-Client erzeugt, welches dann die Interaktionen übernimmt.
+Wie in Abbildung \ref{fig:ImportServices} zu den Services des Imports gut erkenntlich, interagieren alle Services, die für den Import zuständig sind, mit dem Service Metadata. Dieser Service hat die Aufgaben für die einzelne Dateien, die importiert werden, Metadaten zu erstellen, zu aktualisieren und ggf. zu löschen. Die erstellten Metadata werden dann in einer Datenbank abgelegt. Dazu kann das Frontend via des Services Metadata auf die einzelnen Metadata zugreifen. Damit nicht jeder Service, der mit dem Service Metadata interagiert die Aufrufe selber implementieren muss und damit ggf. Redundanzen erzeugt, ist die Kommunikation mit diesem Service im Objekt Metadata-Client gekapselt. Wenn eine Interaktion mit dem Service Metadata erforderlich ist, wird das Objekt Metadata-Client verwendet, welches dann die Interaktionen übernimmt.
 
 \subsection{Testumgebung}
 Die verwendete Testumgebung ist sehr ähnlich zu der im Grundprojekt. Jedoch wurde nicht mehr mit einer virtuellen Maschine gearbeitet, da der VM nicht genug Leistung zugeteilt werden konnte. Daher wurde Linux Ubuntu als Host-System verwendet. Dies bedeutet aber auch, dass kein geschlossenes System mehr für das Testen verwendet werden konnte. 
 
-Zudem wurde wieder Docker in Verbindung mit dem Tool Docker-Compose verwendet, da das Ausführen von MARS ohne Docker nicht möglich ist. Die Installation von MARS erfolgte nach der gleichen Vorgehensweise, wie im Grundprojekt. 
+Zudem wurde wieder Docker in Verbindung mit dem Tool Docker-Compose verwendet, da das Ausführen von MARS ohne Docker nicht möglich ist. Die Installation von MARS erfolgte nach der gleichen Vorgehensweise wie im Grundprojekt. 
 
 Ähnlich wie im Grundprojekt wurde auf einem GIT Branch gearbeitet. So wurde von den Import-Projekten ein Branch erstellt. Zum Zeitpunkt der Untersuchung von PACT innerhalb von MARS, gab es stetige Änderungen an den Services für den Import. Dies betraf teilweise auch die Schnittstelle. Um sich ausschließlich auf die Einbindung von PACT zu konzentrieren, wurde der Branch erstellt, damit die Änderungen diesen Prozess nicht beeinträchtigen können.
 
@@ -307,7 +360,7 @@ DELETE & Lösche einen Metadata-Eintrag via DataID\\ \hline
 \label{tab:Interaktionen_PACT}
 \end{table}
 
-Als Soll-Zusand für die Tests wurde der Zustand gewählt, der bei der Erstellung des Branches vorlag. Mithilfe dieses Soll-Zustandes wurden die Interaktionen in PACT implementiert. Als vorbereiteter Schritt davor, mussten die Interaktionen genau analysiert werden, damit klar definiert werden kann, wie die Anfrage und die dazugehörige Antwort auszusehen haben.
+Als Soll-Zustand für die Tests wurde der Zustand gewählt, der bei der Erstellung des Branches vorlag. Mithilfe dieses Soll-Zustandes wurden die Interaktionen in PACT implementiert. Als vorbereiteter Schritt davor, mussten die Interaktionen genau analysiert werden, damit klar definiert werden kann, wie die Anfrage und die dazugehörige Antwort auszusehen haben.
 
 Bei MARS werden die APIs mithilfe von Swagger\citep{swagger} dokumentiert. Swagger ist ein open source Framework, welches beim Entwerfen, der Erstellung und der Dokumentation unterstützen soll. Das Framework erstellt für jede API eine extra Datei, in welcher die Schnittstellen beschrieben werden. Der Name der Datei ist im Normalfall swagger.yaml. An der Endung der Datei kann man erkennen, dass sie im YAML-Format vorliegt. In ihr sind alle Methoden beschrieben, die vom Consumer angefragt werden können. Zu den einzelnen Methoden sind wesentliche Informationen angegeben. Unter Anderem der Pfad und die Parameter die erwartet werden. Zu den Parameter ist noch angegeben, welcher Typ vorliegen soll und wie sie versendet werden sollen, also ob sie z.B. im Body oder als Query im Pfad mitgeschickt werden sollen. Die Informationen aus der Swagger-Datei sind im folgenden wichtig für das Programm Postman.
 
@@ -315,10 +368,10 @@ Postman \cite{postman} ist ein Programm, welches ähnlich wie Swagger bei der En
 
 Die mit Swagger erstellte Datei kann importiert werden, welche dann auf Grundlage dieser Informationen automatisch Testfälle erstellt. Jedoch fehlt diesen Testfällen Bedingungen, wann sie erfolgreich sind. Diese Bedingungen können mit einer von Postman definierten DSL selbst implementiert werden. Dafür bietet es dafür Templates an, um standardmäßige Überprüfungen auf Status Code oder Ähnliches schnell umsetzen zu können.
 
-Da leider manche Informationen in den Swagger-Dateien von MARS fehlten oder veraltet waren, mussten die automatische Tests manuell aktualisiert werden. Dafür waren die Entwicklungswerkzeuge vom Browser Chromium bzw. Chrome sehr hilfreich. Denn die einzelnen Interaktionen konnten hiermit aufgezeichnet und analysiert werden. Dafür wurden die jeweiligen Interaktionen über das Frontend ausgeführt, aufgezeichnet und anschließend ausgewertet. Mit Hilfe dieser Informationen wurden die Testfälle innerhalb von Postman aktualisiert. Sobald alle Tests implementiert wurden sind und erfolgreich abliefen, wurde damit begonnen PACT auf der Seite des Consumers einzubinden. Der Schritt über Postman war notwendig, um die die Interaktionen besser verstehen zu können. Erst dadurch war es möglich die Interaktionen in PACT umzusetzen. Jedoch gab es ein Problem mit der DELETE-Methode. Beim Testen konnte der Aufruf nicht ausgeführt werden. Der Service antwortete mit dem Statuscode 405. Dies bedeutet, dass die gewählte Methode nicht erlaubt ist. Die Interaktion wurde jedoch in PACT implementiert, da es sich um einen Fehler in MARS handelte und der Service die Anfrage nicht korrekt verarbeitete. Dahingehend wurde die Implementierung der Interaktion mit der DELETE-Methode in PACT alleine auf Grundlage der Swagger-Datei ausgeführt.
+Da leider manche Informationen in den Swagger-Dateien von MARS fehlten oder veraltet waren, mussten die automatisch erstellten Tests manuell aktualisiert werden. Dafür waren die Entwicklungswerkzeuge vom Browser Chromium bzw. Chrome sehr hilfreich. Denn die einzelnen Interaktionen konnten hiermit aufgezeichnet und analysiert werden. Dafür wurden die jeweiligen Interaktionen über das Frontend ausgeführt, aufgezeichnet und anschließend ausgewertet. Mit Hilfe dieser Informationen wurden die Testfälle innerhalb von Postman aktualisiert. Sobald alle Tests implementiert waren und erfolgreich abliefen, wurde damit begonnen PACT auf der Seite des Consumers einzubinden. Der Schritt über Postman war notwendig, um die die Interaktionen besser verstehen zu können. Erst dadurch war es möglich die Interaktionen in PACT umzusetzen. Jedoch gab es ein Problem mit der DELETE-Methode. Beim Testen konnte der Aufruf nicht ausgeführt werden. Der Service antwortete mit dem Statuscode 405. Dies bedeutet, dass die gewählte Methode nicht erlaubt ist. Die Interaktion wurde jedoch in PACT implementiert, da es sich um einen Fehler in MARS handelte und der Service die Anfrage nicht korrekt verarbeitete. Dahingehend wurde die Implementierung der Interaktion mit der DELETE-Methode in PACT alleine auf Grundlage der Swagger-Datei ausgeführt.
 
 \subsubsection{Implementierung des Consumers}
-Bei der Implementierung von PACT beim Consumer wurde ähnlich vorgegangen, wie im allgemeinen Beispiel beschrieben. Auch hier wurde zunächst eine neue Klasse erstellt, die Klasse MetadataClientConsumerTest, welche von ConsumerPactTest erbt. Damit waren wieder die vier Methoden providerName(), consumerName(), createFragment() und runTest() vorgegeben. Der Consumer bekam den Namen metadata-client und der Provider den Namen metadata-service. 
+Bei der Implementierung von PACT beim Consumer wurde ähnlich vorgegangen, wie im allgemeinen Beispiel beschrieben. Hierbei wird getestet, ob der Consumer die Anfragen so stellt, wie es im Kontrakt definiert ist. Auch hier wurde zunächst eine neue Klasse erstellt, die Klasse MetadataClientConsumerTest, welche von ConsumerPactTest erbt. Damit waren wieder die vier Methoden providerName(), consumerName(), createFragment() und runTest() vorgegeben. Der Consumer bekam den Namen metadata-client und der Provider den Namen metadata-service. 
 
 In den Methoden createFragment und runTest sind jeweils alle fünf Interaktionen abgebildet. Aus Gründen der Übersichtlichkeit wird die Umsetzung einer Interaktionen nach der Anderen beschrieben.
 
@@ -340,9 +393,9 @@ Der für diese Interaktion spezifische Code-Abschnitt in der Methode createFragm
 \end{lstlisting}
 
 Wie in der Beschreibung von REST erwähnt, muss jede Ressource über eine eindeutige URI erreicht werden können. Bei den Metadata Einträgen erfolgt dies über die Eigenschaft DataID. Daher wird dem Pfad der Wert der DataID angehängt. Weitere Informationen sind in der Query und im Body nicht notwendig. Im Header ist definiert wurden, dass nur JSON akzeptiert wird.
-Der Provider soll auf diesen Aufruf mit dem Statuscode 200 antworten. Obwohl ein Header für die Antwort definiert ist, findet herauf keine Überprüfung statt, da der Header keine Werte enthält. 
+Der Provider soll auf diesen Aufruf mit dem Statuscode 200 antworten, wie es im Kontrakt definiert ist. Obwohl ein Header für die Antwort definiert ist, findet herauf keine Überprüfung statt, da der Header keine Werte enthält. 
 
-Bis auf die einzelnen Werte unterscheidet sich dieses PactFragment nicht vom generellen Beispiel. Nur der Body, welcher die Antwort enthalten soll, ist deutlich umfangreicher. Dafür wird beim Body die Methode createJsonBody() aufgerufen, die die zu erwartende Antwort definiert. Diese Methode ist abgebildet im Listing \ref{lst:createJsonBody} auf Seite \pageref{lst:createJsonBody}. Ähnlich wie bei der Erstellung des PactFragments wird auch für die Erstellung des Body eine von PACT definierte DSL genutzt.
+Bis auf die einzelnen Werte unterscheidet sich dieses PactFragment nicht vom generellen Beispiel. Nur der Body, welcher die Antwort enthalten soll, ist deutlich umfangreicher. Dafür wird beim Body die Methode createJsonBody() aufgerufen, die den in der Antwort enthaltenen Body erstellt. Die Daten im Body der Antwort sollen im JSON-Format vorliegen. Diese Methode ist abgebildet im Listing \ref{lst:createJsonBody} auf Seite \pageref{lst:createJsonBody}. Ähnlich wie bei der Erstellung des PactFragments wird auch für die Erstellung des Body eine von PACT definierte DSL genutzt.
 
 \lstset{language = Java}
 \begin{lstlisting}[caption=Erstellung eines JSON-Body,label={lst:createJsonBody}]
@@ -374,7 +427,9 @@ private PactDslJsonBody createJsonBody() {
 }
 \end{lstlisting}
 
-Wie man aus Listing \ref{lst:createJsonBody} gut ableiten kann, ist das Metadata-Objekt recht umfangreich. Da bei der Anfrage definiert wurde, dass nur JSON akzeptiert wird, muss die Antwort im JSON-Format vorliegen. Um komplexere Antworten in JSON zu definieren, bietet PACT unter anderem die Klasse PactDslJsonBody an. Damit kann ein Objekt erstellt werden, welches unterschiedliche Eigenschaften haben kann. Die einzelnen Methoden fügen nicht nur die Eigenschaften hinzu, sondern definieren auch die jeweiligen Matcher mit. Generell wird der Typ der jeweiligen Eigenschaften bestimmt. Wenn kein Wert angegeben wird, wird ein zufälliger Wert vom festgelegten Typ erstellt. Dazu muss immer der Name der jeweiligen Eigenschaft mit angegeben werden. Die bei der Erstellung des JSON-Body verwendeten Methoden sind in der Tabelle \ref{tab:Methoden_jsonBody} auf Seite \pageref{tab:Methoden_jsonBody} näher beschrieben.
+Wie man aus Listing \ref{lst:createJsonBody} gut ableiten kann, ist das Metadata-Objekt recht umfangreich. Da bei der Anfrage definiert wurde, dass nur JSON akzeptiert wird, muss die Antwort im JSON-Format vorliegen. Um komplexere Antworten in JSON zu definieren, bietet PACT unter anderem die Klasse PactDslJsonBody an. Damit kann ein Objekt erstellt werden, welches unterschiedliche Eigenschaften haben kann. 
+
+Generell wird der Typ der jeweiligen Eigenschaften bestimmt. Wenn kein Wert angegeben wird, wird ein zufälliger Wert vom festgelegten Typ erstellt. Dazu muss immer der Name der jeweiligen Eigenschaft mit angegeben werden. Die bei der Erstellung des JSON-Body verwendeten Methoden sind in der Tabelle \ref{tab:Methoden_jsonBody} auf Seite \pageref{tab:Methoden_jsonBody} näher beschrieben.
 
 \begin{table}[htbp]
 \centering
@@ -393,7 +448,7 @@ asBody & Abschließende Methode, um in den Typ PactDslJsonBody zu casten. \\ \hl
 \label{tab:Methoden_jsonBody}
 \end{table}
 
-Werte werden nur überprüft, wenn sie explizit mit einer der Methoden festgelegt wurden sind. In dieser Interaktion wird z.B. der Wert der DataID überprüft, da dieser identisch zu dem bei der Anfrage verschickten Wert sein muss. Soll darauf geprüft werden, dass eine Eigenschaft keinen oder den Null-Wert enthält, dann muss explizit der Null-Wert übergeben werden. Andernfalls wird immer ein Zufallswert für die Eigenschaft erstellt.
+Werte werden nur überprüft, wenn sie explizit mit einer der Methoden festgelegt wurden sind. In dieser Interaktion wird z.B. der Wert der DataID überprüft, da dieser identisch zu dem bei der Anfrage verschickten Wert sein muss. Soll darauf geprüft werden, dass eine Eigenschaft keinen oder den Null-Wert enthält, dann muss explizit der Null-Wert übergeben werden. Andernfalls wird immer ein Zufallswert für die Eigenschaft erstellt. Die Überprüfung erfolgt im Hintergrund automatisch über sogenannte Matcher. Die Matcher werden zeitgleich mit der Erstellung der Eigenschaften erstellt. Dabei prüfen die Machter entweder, ob der Typ korrekt ist oder ob Typ und Wert korrekt sind. Es kommt darauf an, wie die Eigenschaften angelegt wurde.
 
 Nun musste für diese Interaktion noch die Methode runTest() implementiert werden. Der dazu passende Code-Abschnitt ist im Listing \ref{lst:runTestGetOne} auf Seite \pageref{lst:runTestGetOne} abgebildet.
 
@@ -650,7 +705,7 @@ Failures:
                             false
 \end{lstlisting}
 
-Der letzte Testfall war im Gegensatz zu den vorherigen Fällen nicht von Anfang an geplant. Beim Erstellen eines neuen Metadata-Eintrags mithilfe der POST-Interaktion, soll eine DataID, welche im UUID-Format vorliegen soll, als einfacher Text zurückgegeben werden. Dafür wurde im PACT-Fragment definiert, dass die Antwort eine UUID ist und der Content-Type \enquote{plain/text} ist. Die DataID wird für jeden neuen Metadata-Eintrag neu erstellt und der Wert wird zufällig bestimmt. Deswegen ist im PACT-Fragment die Überprüfung auf den Response Body so definiert wurden, dass keine exkate Überprüfung des Wertes stattfindet, sondern eine Überprüfung über reguläre Ausdrücke.  Mit der Überprüfung via reguläre Ausdrücke wird getestet, ob der zurückgegebene Wert im UUID-Format vorliegt. Obwohl das Fragment für diese Überprüfung so erstellt wurde, wie es in der PACT Dokumentation beschrieben wurden ist, erschien die auf Seite \pageref{lst:ErrorProvider_POST} in Listing \ref{lst:ErrorProvider_POST} abgebildete Fehlermeldung. Wie man der Meldung entnehmen kann, schlug die Überprüfung fehl, da die DataIDs unterschiedlich sind. In der Dokumentation gab es keine weitergehenden Informationen zu diesem Verhalten.
+Der letzte Testfall war im Gegensatz zu den vorherigen Fällen nicht von Anfang an geplant. Beim Erstellen eines neuen Metadata-Eintrags mithilfe der POST-Interaktion soll eine DataID, welche im UUID-Format vorliegen soll, als einfacher Text zurückgegeben werden. Dafür wurde im PACT-Fragment definiert, dass die Antwort eine UUID ist und der Content-Type \enquote{plain/text} ist. Die DataID wird für jeden neuen Metadata-Eintrag neu erstellt und der Wert wird zufällig bestimmt. Deswegen ist im PACT-Fragment die Überprüfung auf den Response Body so definiert wurden, dass keine exakte Überprüfung des Wertes stattfindet, sondern eine Überprüfung über reguläre Ausdrücke.  Mit der Überprüfung via reguläre Ausdrücke wird getestet, ob der zurückgegebene Wert im UUID-Format vorliegt. Obwohl das Fragment für diese Überprüfung so erstellt wurde, wie es in der PACT Dokumentation beschrieben wurden ist, erschien die auf Seite \pageref{lst:ErrorProvider_POST} in Listing \ref{lst:ErrorProvider_POST} abgebildete Fehlermeldung. Wie man der Meldung entnehmen kann, schlug die Überprüfung fehl, da die DataIDs unterschiedlich sind. In der Dokumentation gab es keine weitergehenden Informationen zu diesem Verhalten.
 
 \begin{lstlisting}[caption=Fehler in PACT,label={lst:ErrorProvider_POST}]
 Verifying a pact between metadata-client and metadata-service
@@ -687,17 +742,17 @@ Aufgrund der fehlenden Informationen konnte auch nicht immer entschieden werden,
 
 Um die einzelnen Interaktionen besser zu verstehen, war es unumgänglich diese zuerst in Postman umzusetzen. Denn hiermit ergab sich eine bessere Übersicht, wie genau die Anfragen auszusehen haben und wie die Antworten aufgebaut sind. Erst mit diesen Informationen konnte die Implementierung von PACT beginnen.
 
-Jedoch erfolgte die Implementierung von PACT nicht ganz ohne Schwierigkeiten. Das generelle Beispiel und die danach erfolgte Implementierung in MARS sieht auf den ersten Blick sehr kompakt und vor allem simpel aus. Im Prinzip ist es das auch, sobald das Verständnis vorliegt. Jedoch ist die Dokumentation von PACT ausbaufähig. Was das Aufbauen eines benötigten Verständnisses von PACT erschwerte.
+Jedoch erfolgte die Implementierung von PACT nicht ganz ohne Schwierigkeiten. Das generelle Beispiel und die danach erfolgte Implementierung in MARS sieht auf den ersten Blick sehr kompakt und vor allem simpel aus. Im Prinzip ist es das auch, sobald das Verständnis vorliegt. Jedoch ist die Dokumentation von PACT ausbaufähig, was das Aufbauen eines benötigten Verständnisses von PACT erschwerte.
 
 In der PACT Dokumentation waren viele Aspekte nur kurz erläutert. Teilweise waren Aspekte nur mithilfe eines Beispieles ohne aussagekräftige Beschreibung vorgestellt. Problematisch wurde es, wenn die gezeigten Beispiele nicht für die aktuelle Situation übertragen werden konnten. Dann konnte nur die teilweise sehr kurze Erklärung zu Rate gezogen werden. Dies führte teilweise dazu, dass einige Abschnitte mit der Methode \enquote{trial and error} implementiert werden mussten, also so lange ausprobierte, bis es funktionierte. Besonders die erste Erstellung eines JSON-Body mit PACT war sehr aufwendig, bis das Verständnis für die einzelnen Methoden im ausreichenden Maße vorhanden war. Erschwerend kam hinzu, dass es mehrere Beschreibungen für die gleiche Abschnitte gab, die jedoch für verschiedene Versionen gültig waren. Dadurch wurde es manchmal sehr unübersichtlich, da man immer wieder prüfen musste, ob die Erklärung mit der verwendeten Version übereinstimmt.
 
-Zu der ausbaufähigen Dokumentation kam noch hinzu, dass PACT nicht sehr verbreitet war. Aufgrund der mangelden Dokumentation mussten immer wieder bestimmte Sachverhalte bzw. Fragestellungen im Internet nachgeforscht werden. Das Ergebnis war oft enttäuschend. Wenn überhaupt gab es nur eine kurze Beschreibung in Form eines Git-Issues. Wobei diese meistens Fehler aus vorherigen Versionen beschrieben, die in der verwendeten Version schon behoben waren. Daher konnten nicht immer Antworten gefunden werden, so dass \enquote{trial and error} erneut als Methode herangezogen werden musste.
+Zu der ausbaufähigen Dokumentation kam noch hinzu, dass PACT nicht sehr verbreitet war. Aufgrund der mangelnden Dokumentation mussten immer wieder bestimmte Sachverhalte bzw. Fragestellungen im Internet nachgeforscht werden. Das Ergebnis war oft enttäuschend. Wenn überhaupt gab es nur eine kurze Beschreibung in Form eines Git-Issues. Wobei diese meistens Fehler aus vorherigen Versionen beschrieben, die in der verwendeten Version schon behoben waren. Daher konnten nicht immer Antworten gefunden werden, so dass \enquote{trial and error} erneut als Methode herangezogen werden musste.
 
 Zusammenfassend für die Einbindung von PACT in MARS kann gesagt werden, dass es durchaus simpel und schnell umsetzbar sein kann. Dies setzt allerdings voraus, dass sowohl Kenntnisse darüber bestehen, wie der Consumer und Provider im Detail interagieren und wie die Testfälle in PACT zu implementieren sind.
 
 Im folgenden Bereich werden die einzelnen Untersuchungen bewertet. Zu Beginn kann festgehalten werden, dass die Ausführung der Tests, egal ob es auf der Seite des Consumers oder Providers war, sehr schnell ausgeführt wurden. Dadurch gab es ein schnelles Feedback, ob die Tests erfolgreich waren. 
 
-Wie sich aus einzelnen Listings gut ableiten lässt, waren die Meldungen teilweise sehr lang. Besonders bei einigen Fehlern wiederholten sich die Fehlerbeschreibungen und sorgten für eine lange Meldungen in der Konsole. Unter anderem aus diesem Grund wurden die Meldung unübersichtlich und es erforderte ein genaues lesen, woran der Test gescheitert war. Als gutes Beispiel dient die Meldung aus Listing \ref{lst:ErrorProvider_GET} auf Seite \pageref{lst:ErrorProvider_GET}, hier ist die Beschreibung des Fehlers verwirrend und teilweise falsch. Wie die Fehlerbeschreibung korrekt wiedergibt, fehlte die Map mit den GEO-Daten. Jedoch werden im Diff-Abschnitt auch andere Body-Abschnitte angezeigt, die sich unterscheiden. Dabei ist für diese Abschnitte definiert wurden, dass nur der Typ bzw. Format geprüft werden sollte und keine Überprüfung des Wertes stattfinden sollte. Die komplette Meldung suggeriert aber, dass auch diese Abschnitte fehlerhaft sind. Dies führte zu Verwirrungen und lenkte von dem eigentlichen Fehler ab. 
+Wie sich aus einzelnen Listings gut ableiten lässt, waren die Meldungen teilweise sehr lang und unübersichtlich. Besonders bei einigen Fehlern wiederholten sich die Fehlerbeschreibungen und sorgten für eine lange Meldungen in der Konsole. Dies erforderte ein genaues lesen, woran der Test gescheitert war. Als gutes Beispiel dient die Meldung aus Listing \ref{lst:ErrorProvider_GET} auf Seite \pageref{lst:ErrorProvider_GET}, hier ist die Beschreibung des Fehlers verwirrend und teilweise falsch. Wie die Fehlerbeschreibung korrekt wiedergibt, fehlte die Map mit den GEO-Daten. Jedoch werden im Diff-Abschnitt auch andere Body-Abschnitte angezeigt, die sich unterscheiden. Dabei ist für diese Abschnitte definiert wurden, dass nur der Typ bzw. Format geprüft werden sollte und keine Überprüfung des Wertes stattfinden sollte. Die komplette Meldung suggeriert aber, dass auch diese Abschnitte fehlerhaft sind. Dies führte zu Verwirrungen und lenkte von dem eigentlichen Fehler ab. 
  
 Auch die im Listing \ref{lst:ErrorHeaderConsumer} auf Seite \pageref{lst:ErrorHeaderConsumer} abgebildete Meldung ist unübersichtlich. Zwar gab die Fehlermeldung exakt wieder, dass der Wert von der Eigenschaft \enquote{Accept} im Header nicht stimmte. Jedoch gab es keinen Verweis darauf, dass es sich um den Request-Header handelte. Dazu war nur angegeben, welcher Request nicht empfangen wurde. Eine Ansicht, in der die Unterschiede gegenüber gestellt werden, wäre sinnvoller.
 Ähnliches gilt auch für das Listing \ref{lst:ErrorProvider_PUT} auf Seite \pageref{lst:ErrorProvider_PUT}. Die Fehlermeldung war eindeutig beschrieben. Jedoch war auch hier die Ausgabe sehr umfangreich und wiederholte sich zum Teil auch. Besonders die Länge der Meldungen und das teilweise unnötige Anzeigen von Unterschieden machte die Rückmeldungen von PACT sehr unübersichtlich. Dies tritt verstärkt auf, wenn die Tests nicht einzeln ausgeführt wurden, sondern zusammen. Sollten dann mehrere Tests fehlschlagen, kann die Meldung sehr lang werden und dadurch noch unübersichtlicher. Dies kann dazu führen, dass Fehler zunächst übersehen werden oder falsch interpretiert werden.
@@ -714,10 +769,10 @@ Eine Voraussetzung für die Verwendung von PACT sollte jedoch sein, dass die Imp
 
 PACT ist durchaus geeignet für MARS bzw. Microservice-Architekturen. Jedoch müssen die oben genannten Voraussetzungen stimmen. Zwar ist die Implementierung in ein bestehendes System umfangreicher als, wenn man PACT von Anfang mit implementiert. Jedoch sind die Vorteile, wie das schnelle Feedback, sehr sinnvoll für ein System, das sich ständig ändert. Denn mit PACT kann sehr gut geprüft werden, ob Änderungen zu ungewollten Veränderungen der Schnittstelle führen oder welche Services noch aktualisiert werden müssen.
 
-\section{Ausblick Masterarbeit}
-In der Masterarbeit sollen die begonnen Arbeiten aus den bisherigen Projekten und Seminaren fortgesetzt werden. Ein Schwerpunkt wird dabei die im Hauptseminar begonne Ausarbeitung zu dem Testkonzept von Google und das von Toby Clemson erstellte Testkonzept für Programme, die eine Microservice-Architektur verwenden. Ergänzend zu diesen beiden Konzepte sollen weitere aktuelle Testkonzepte gesammelt und verglichen werden. Interessant wird dabei sein, herauszufinden wie andere große Software Hersteller wie z.B. Microsoft zurzeit ihre Software testen. Dies wird unter der Fragestellung stehen: Mit welchen Konzepten wird Software heutzutage getestet?
+\section{Offene Aufgaben}
+In der Masterarbeit sollen die begonnen Arbeiten aus den bisherigen Projekten und Seminaren fortgesetzt werden. Ein Schwerpunkt wird dabei die im Hauptseminar \cite{Piehl2016} begonnen Ausarbeitung zu dem Testkonzept von Google \cite{whittaker2012google} und das von Toby Clemson erstellte Testkonzept für Programme, die eine Microservice-Architektur verwenden \cite{Clemson2014}. Ergänzend zu diesen beiden Konzepte sollen weitere aktuelle Testkonzepte gesammelt und verglichen werden. Interessant wird dabei sein, herauszufinden wie andere große Software Hersteller wie z.B. Microsoft zurzeit ihre Software testen. Dies wird unter der Fragestellung stehen: Mit welchen Konzepten wird Software heutzutage getestet?
 
-Diese Konzepte sollen nicht ausschließlich untereinander verglichen werden, sondern auch mit bisherigen Testkonzepten verglichen werden. Dabei soll herausgearbeitet werden, wie sich die Testkonzepte entwickelt haben und ob es einen allgemein gültigen Trend gibt. Weiterhin sollen die Testkonzepte noch unter dem Aspekt untersucht werden, wie gut sie sich für eine Microserive-Architektur eignen könnten.
+Diese Konzepte sollen nicht ausschließlich untereinander verglichen werden, sondern auch mit bisherigen Testkonzepten verglichen werden. Dabei soll herausgearbeitet werden, wie sich die Testkonzepte entwickelt haben und ob es einen allgemein gültigen Trend gibt. Weiterhin sollen die Testkonzepte noch unter dem Aspekt untersucht werden, wie gut sie sich für eine Microservice-Architektur eignen könnten.
 
 Ein weiterer Schwerpunkt soll auf der Automatisierung der Testfall-Erstellung liegen. Mit dem Programm Postman ist es schon möglich mithilfe einer Schnittstellen-Beschreibung, wie z.B. einer Swagger-Datei, automatisch Konstrukte für Testfälle zu erstellen. Jedoch müssen die Tests noch mit Daten gefüllt werden. Dazu erstellt Postman nur einen Testfall pro Interaktion. Jedoch wären mehrere Testfälle pro Interaktion sinnvoller, um verschiedene Möglichkeiten und Pfade abzudecken. Zudem fehlt den Testfällen ein definiertes Soll-Ergebnis gegen das geprüft werden kann. 
 
