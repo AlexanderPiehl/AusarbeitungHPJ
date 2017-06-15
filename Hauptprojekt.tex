@@ -27,7 +27,8 @@ Innerhalb dieser Ausarbeitung soll erarbeitet werden, ob PACT die im Grundprojek
 Da PACT Schnittstellen testet, wird am Anfang der Ausarbeitung der Architekturstil erläutert, mit dem die Schnittstellen von MARS implementiert wurden sind. In MARS sind alle Schnittstellen mit dem Architekturstil REST entworfen worden \cite{chakrabarti2009test}. Nach der grundsätzlichen Erklärung von REST, werden noch Besonderheiten beim Testen definiert, welche sich aus der Schnittstelle und der Verwendung von REST ergeben. Diese neu ausgearbeiteten Herausforderungen sollen die im Grundprojekt ausgearbeiteten Herausforderungen ergänzen. Der Aspekt der Schnittstellen wurde im Grundprojekt zunächst ausgeblendet, da sonst der Umfang zu groß geworden wäre.
 Im nächsten Kapitel wird anschließend Consumer Driven Contract Test detaillierter vorgestellt und erläutert. Die Erläuterung wird mit einer Beispielimplementierung von PACT unterstützt. Im Anschluss wird die Implementierung von PACT innerhalb von MARS beschrieben, da sich diese vom generellen Ablauf von PACT unterscheidet. Für das Ausprobieren von PACT innerhalb von MARS wurden zwei Service ausgesucht, an denen beispielhaft die Implementierung ausgeführt wurden ist. Nach der Implementierung der Schnittstellentests mit PACT wurden verschiedene Untersuchungen durchgeführt, die dazu dienten PACT zu bewerten. In dieser Bewertung wird auch eine Aussage getroffen, ob PACT sinnvoll für MARS bzw. generell für eine Microservice Architektur ist. Im letzten Kapitel wird ein Ausblick auf die Masterarbeit gegeben.
 \nocite{*}
-\section{REST}
+\section{Grundlagen}
+\subsection{REST}
 REST ist ein Architekturstil für verteilte Systeme. Die Abkürzung REST steht für Representational State Transfer \cite{chakrabarti2009test}.
 Erstmals wurde REST im Jahr 2000 von Roy Fielding vorgestellt \citep{kao2013performance}.
 Die REST-Architektur wird häufig für Client-Server Anwendungen verwendet, ist jedoch nicht darauf beschränkt.
@@ -70,7 +71,7 @@ Zusammenfassend lässt sich REST in vier Grundprinzipien zusammenfassen \citep{p
 
 Webservices, welche die vier Grundprinzipien einhalten, bekommen häufig den Beinamen RESTful \citep{porres2011modeling}. Der Begriff RESTful ist nicht eindeutig definiert.  
 
-\subsection{Kontrakte}
+\subsubsection{Kontrakte}
 In der allgemeinen Definition bedeutet Kontrakt eine Vereinbarung zwischen zwei unterschiedlichen Parteien. Diese Definition kann sehr gut auf diesen Kontext übertragen werden. Der Kontrakt enthält die Vereinbarungen über die möglichen Interaktionen zwischen dem Service, der anfragt und dem Service, der antwortet \cite{pact, bayer2015jaxcenter}.
 
 Verwaltet wird der Kontrakt vom Service, der angefragt werden soll. In dem Sinne ist der Kontrakt eine Beschreibung, welche Funktionen er anderen Services anbietet und wie diese verwendet werden können.
@@ -123,7 +124,7 @@ Dazu enthält der Kontrakt Informationen darüber über welche Pfade die Ressour
 
 Welche und wie die Informationen im Kontrakt abgelegt werden sollen, ist abhängig von dem verwendeten Schnittstellen-Format.
 
-\subsection{Besonderheiten beim Testen einer REST-Schnittstelle}
+\subsubsection{Besonderheiten beim Testen einer REST-Schnittstelle}
 Die Kommunikation zwischen Consumer und Provider erfolgt nach einem festgelegten Kontrakt, welcher auch Schnittstelle genannt wird. Wie im vorherigen Abschnitt bereits erläutert, beschreibt der Kontrakt die Kommunikation zwischen zwei Services. Dahingehend ist es enorm wichtig, dass der Kontrakt eingehalten wird. Andernfalls kann es zu Fehlern führen.
 
 Deswegen muss ein Schwerpunkt beim Testen von Anwendungen, welche REST verwenden, darauf liegen zu kontrollieren, dass der Kontrakt weiterhin gültig ist. Genau heißt das, dass die angeboten Funktionen so angefragt werden, wie es im Kontrakt definiert ist und dass auch die Antworten im Kontrakt definierten Format vorliegen. Es ist zu vergleichen mit dem Testen eines Methodenaufrufes. Fehlen notwendige Parameter beim Aufrufen oder Werte beim zurückgeben, kann dies zu Fehlern führen. Ähnlich verhält es sich auch beim Testen einer Schnittstelle. Daher muss geprüft werden das Veränderungen am Consumer bzw. Provider nicht zu einer Verletzung des Kontraktes führt.
@@ -134,7 +135,7 @@ Besonders bei gewünschten Änderungen eines Kontraktes kann es unübersichtlich
 
 Eine andere Problematik, die durch die Verlagerung der Kommunikation in das Netzwerk entsteht ist, dass damit der Traffic im Netzwerk erhöht wird. Dadurch kann es vermehrt auftreten, dass Nachrichten beschädigt werden oder verloren gehen. Mit dieser Problematik müssen die Provider und Consumer umgehen können.
 
-\section{Consumer Driven Contract Test}
+\subsection{Consumer Driven Contract Test}
 Bei dem Ansatz Consumer Driven Contract werden die Schnittstellen bzw. die Kontrakte aus der Sicht des Clients/Consumers definiert \cite{Robinson2006, bayer2015jaxcenter, vitz2016inno}. Dabei spielt es keine Rolle, ob nur einen Consumer oder mehrere existieren. Die jeweiligen Anfragen und gewünschten Antworten werden gesammelt und auf Grundlage dieser Informationen wird der Provider implementiert. Dabei baut der Ansatz auf der Annahme auf, dass der Consumer am besten wüsste, was er nutzen möchte. Dies bedeutet auch, dass zu erst der Kontrakt existiert und erst dann der Provider entwickelt wird.
 
 Wie sich aus der generellen Beschreibung dieses Ansatzes ableiten lässt, eignet er sich am Besten, wenn sowohl die Consumer wie der Provider neu implementiert werden. Bei bestehenden Anwendungen könnte dieses Verfahren unter anderem dafür genutzt werden, um zu prüfen, ob der Provider unnötige Schnittstellen bzw. Methoden anbietet.
@@ -151,13 +152,13 @@ Mit Consumer Driven Contract Tests wird die Einhaltung des Kontraktes getestet u
 
 Im nächsten Abschnitt wird der generelle Ablauf von PACT anhand eines Beispiels erläutert, bevor im darauffolgenden Abschnitt die Vorteile beschrieben werden, die durch die Verwendung von Consumer Driven Contract Tests entstehen sollen. Denn einige vermeintliche Vorteile leiten sich direkt aus dem Ablauf von Consumer Driven Contract Test ab.
 
-\subsection{Ablauf Consumer Driven Contract Test}
+\subsubsection{Ablauf Consumer Driven Contract Test}
 In diesem Kapitel wird der generelle Ablauf von Consumer Driven Contract Tests beschrieben. Der Ablauf wird anhand eines Beispiele erläutert \cite{bayer2015jaxcenter, vitz2016inno, Vincent2015}. Dabei findet die Implementierung mit Java statt.
 
 \begin{figure}[htbp]
   \centering
       \includegraphics[width=0.8\textwidth]{./Images/pact}
-    \caption{Ablauf Pact}
+    \caption{Ablauf Pact \cite{pact}}
     \label{fig:Pact}
 \end{figure}
 
@@ -303,10 +304,10 @@ pact {
 \end{lstlisting}
 
 Sobald der Provider gestartet ist, kann das Plugin für den Provider ausgeführt werden. Die Ergebnisse des Tests werden in der Konsole angezeigt.
-\subsection{Vorteile Consumer Driven Contract Test}
+\subsubsection{Vorteile Consumer Driven Contract Test}
 Neben dem generellen Vorteilen, welche man sich von dem Ansatz Consumer Driven Contract Test verspricht und schon im vorherigen Kapitel kurz skizziert wurden, gibt es noch weitere Vorteile, die sich explizit auf das Testen beziehen. Aus Gründen der Übersichtlichkeit wird der Begriff Service wieder verwendet, wenn sich ein Vorteil gleichermaßen auf Consumer und Provider bezieht.
 
-Einer der Gedanken hinter der Microservice-Architektur ist die unabhängige Entwicklung der einzelnen Services. Dementsprechend macht es Sinn auch ein unabhängiges Testen voneinander zu ermöglichen. Beim üblichen Verfahren zum Testen der Zusammenarbeit der verschiedenen Services, also Integrationstests, müssen die einzelnen Services gestartet werden. Dies kann mit ziemlichen Aufwand verbunden sein. Consumer Driven Contract Test verspricht ein unabhängiges Testen der Services dahingehend, ob die Zusammenarbeit mit den anderen Services funktioniert \cite{Vincent2015, bayer2015jaxcenter}. 
+Einer der Gedanken hinter der Microservice-Architektur ist die unabhängige Entwicklung der einzelnen Services. Dementsprechend macht es Sinn auch ein unabhängiges Testen voneinander zu ermöglichen. Beim üblichen Verfahren zum Testen der Zusammenarbeit der verschiedenen Services, also Integrationstests, müssen die einzelnen Services gestartet werden. Dies kann mit ziemlichen Aufwand verbunden sein. Consumer Driven Contract Test verspricht ein unabhängiges Testen der Services dahingehend, ob die Zusammenarbeit mit den anderen Services funktioniert \cite{Vincent2015, bayer2015jaxcenter}. Dafür wird getestet, ob beide Seite den Kontrakt einhalten.
 
 Ein weiterer Vorteil von Consumer Driven Contract Test soll sein, dass jede Änderung am Service dahingehend getestet werden kann, ob sie die definierte Schnittstelle verändert. Damit können Entwickler überprüfen, ob ihre Änderungen zu ungewollten Veränderung der Schnittstellen führen \cite{bayer2015jaxcenter}.
 
@@ -320,7 +321,11 @@ Kurz zusammengefasst geht es um ein schnelles Feedback von den Tests, besonders 
 
 Im Gegensatz zum eigentlichen gedachten Ablauf von PACT ist MARS ein sehr fortgeschrittenes Projekt, welches kurz vor dem Release steht. Dies hat zur Folge, dass PACT in ein bestehendes System eingebunden werden muss und nicht gleichzeitig mit der Implementierung des Consumers bzw. Providers eingeführt werden konnte.
 
-Ergänzend dazu ist MARS ein sehr umfangreiches System mit vielen verschiedenen Consumern und Providern. Daher wird PACT zunächst nur in einem übersichtlichen Teil von MARS verwendet, um eine Machbarkeitsstudie zu erstellen und im Folgenden zu analysieren ob die Verwendung sinnvoll ist.
+Ergänzend dazu ist MARS ein sehr umfangreiches System mit vielen verschiedenen Consumern und Providern. 
+
+Ziel hierbei ist eine Machbarkeitsstudie zu zu erstellten und zu analysieren, ob die Verwendung von PACT sinnvoll ist.
+
+Wegen der vorher beschriebenen Ausgangssituation soll PACT zunächst nur in einem übersichtlichen Teil von MARS verwendet. Andernfalls wäre das Erreichen des Ziels zu umfangreich.
 
 Für die Erstellung der Machbarkeitsstudie wurde der Bereich der Imports in MARS ausgewählt. Diese Services haben die Aufgabe Daten und Modelle hochzuladen und damit für die Simulation bereitzustellen. Für diese Entscheidung sprechen mehrere Gründe. Zum Einem ist es für eine Microservice-Architektur ein relatives geschlossenes System und zum Anderem sind die einzelnen Komponenten überschaubar. Dazu ist man in der Lage diesen Bereich des Systems schnell mit Testdaten zu befüllen. Für die Einführung von PACT in MARS werden die Interaktionen zwischen dem Metadata-Client (Consumer) und dem Provider Metadata verwendet.
 
@@ -371,7 +376,7 @@ Die mit Swagger erstellte Datei kann importiert werden, welche dann auf Grundlag
 Da leider manche Informationen in den Swagger-Dateien von MARS fehlten oder veraltet waren, mussten die automatisch erstellten Tests manuell aktualisiert werden. Dafür waren die Entwicklungswerkzeuge vom Browser Chromium bzw. Chrome sehr hilfreich. Denn die einzelnen Interaktionen konnten hiermit aufgezeichnet und analysiert werden. Dafür wurden die jeweiligen Interaktionen über das Frontend ausgeführt, aufgezeichnet und anschließend ausgewertet. Mit Hilfe dieser Informationen wurden die Testfälle innerhalb von Postman aktualisiert. Sobald alle Tests implementiert waren und erfolgreich abliefen, wurde damit begonnen PACT auf der Seite des Consumers einzubinden. Der Schritt über Postman war notwendig, um die die Interaktionen besser verstehen zu können. Erst dadurch war es möglich die Interaktionen in PACT umzusetzen. Jedoch gab es ein Problem mit der DELETE-Methode. Beim Testen konnte der Aufruf nicht ausgeführt werden. Der Service antwortete mit dem Statuscode 405. Dies bedeutet, dass die gewählte Methode nicht erlaubt ist. Die Interaktion wurde jedoch in PACT implementiert, da es sich um einen Fehler in MARS handelte und der Service die Anfrage nicht korrekt verarbeitete. Dahingehend wurde die Implementierung der Interaktion mit der DELETE-Methode in PACT alleine auf Grundlage der Swagger-Datei ausgeführt.
 
 \subsubsection{Implementierung des Consumers}
-Bei der Implementierung von PACT beim Consumer wurde ähnlich vorgegangen, wie im allgemeinen Beispiel beschrieben. Hierbei wird getestet, ob der Consumer die Anfragen so stellt, wie es im Kontrakt definiert ist. Auch hier wurde zunächst eine neue Klasse erstellt, die Klasse MetadataClientConsumerTest, welche von ConsumerPactTest erbt. Damit waren wieder die vier Methoden providerName(), consumerName(), createFragment() und runTest() vorgegeben. Der Consumer bekam den Namen metadata-client und der Provider den Namen metadata-service. 
+Bei der Implementierung von PACT beim Consumer wurde ähnlich vorgegangen, wie im allgemeinen Beispiel beschrieben. Hierbei wird getestet, ob der Consumer die Anfragen so stellt, wie es im Kontrakt definiert ist. Auch hier wurde zunächst eine neue Klasse erstellt, die Klasse MetadataClientConsumerTest, welche von ConsumerPactTest erbt. Damit waren wieder die vier Methoden providerName(), consumerName(), createFragment() und runTest() vorgegeben. Der Consumer bekam den Namen metadata-client und der Provider den Namen metadata-service. Diese Informationen werden für den Consumer sowie für den Provider benötigt. Jedoch findet die Festlegung der Namen im Consumer statt.
 
 In den Methoden createFragment und runTest sind jeweils alle fünf Interaktionen abgebildet. Aus Gründen der Übersichtlichkeit wird die Umsetzung einer Interaktionen nach der Anderen beschrieben.
 
